@@ -10,7 +10,5 @@ public class User {
 	private String email;
 	//etc...
 
-
 	//getters / setters for all info
-
 }
