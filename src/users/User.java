@@ -45,4 +45,16 @@ public class User implements Serializable{
 		this.email = theEmail;
 	}
 
+	//View all items I have bid on
+	public void printAllPlacedBids() {
+	}
+
+	//View all auctions I have placed bids on
+	public void printAllMyBidAuctions() {
+	}
+	//view all of my bids on a single auction
+	public void printBidsInAnAuction() {
+		//prompt user for which auction they want to view bids on
+		//display all items for that auction
+	}
 }

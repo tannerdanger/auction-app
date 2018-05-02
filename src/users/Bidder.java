@@ -11,4 +11,9 @@ public class Bidder extends User {
 	public Bidder(String theFirst, String theLast, String theEmail) {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
 	}
+
+
+	public static void placeBid() {
+		//Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
+	}
 }
