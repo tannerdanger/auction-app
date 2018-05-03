@@ -36,7 +36,7 @@ public class SchedulerTestMaxDate {
 	}
 	
 	@Test
-	public void isAuctionDateLessThanOrEqualToMaxDaysOut_greaterThanMaxDaysOut_True() {
+	public void isAuctionDateLessThanOrEqualToMaxDaysOut_greaterThanMaxDaysOut_False() {
 		assertFalse(Scheduler
 					.isAuctionDateLessThanEqualToMaxDaysOut
 					(LocalDate.now().plusDays(
