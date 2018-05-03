@@ -1,4 +1,4 @@
-import storage.Calendar;
+import storage.AuctionCalendar;
 import storage.UserDB;
 import users.*;
 
@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class ConsoleUI {
 	private static Scanner scanner;
-	private static Calendar myAuctionCalendar;
+	private static AuctionCalendar myAuctionAuctionCalendar;
 	private static UserDB myUserDB;
 	private static final String USERDB_FILE_NAME = "users.ser";
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
@@ -28,7 +28,7 @@ public class ConsoleUI {
 		scanner = new Scanner(System.in);
 
 		myUserDB = new UserDB();
-		myAuctionCalendar = new Calendar();
+		myAuctionAuctionCalendar = new AuctionCalendar();
 		//deserialize();
 		initialize(); //do this if data is empty?
 
@@ -66,12 +66,12 @@ public class ConsoleUI {
 		}
 
 		//Load the auction history data
-		myAuctionCalendar = null;
+		myAuctionAuctionCalendar = null;
 		try {
 
 			FileInputStream fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
 			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			myAuctionCalendar = (Calendar) objectIn.readObject();
+			myAuctionAuctionCalendar = (AuctionCalendar) objectIn.readObject();
 
 		} catch (IOException e) {
 			System.out.println("IOException Auction Data deserialization is caught");
@@ -99,7 +99,7 @@ public class ConsoleUI {
 		try{
 			FileOutputStream fileOut = new FileOutputStream(AUCTIONDB_FILE_NAME);
 			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(myAuctionCalendar);
+			objectOut.writeObject(myAuctionAuctionCalendar);
 			fileOut.close();
 			objectOut.close();
 		}catch (IOException e){
@@ -132,7 +132,7 @@ public class ConsoleUI {
 
 				case 0: //menu was top level menu
 					if(userResponse.compareTo("1") == 0) { //view upcoming auctions
-						myAuctionCalendar.printActiveAuctions();
+						myAuctionAuctionCalendar.printActiveAuctions();
 						currentMenuLevel = 2; //place bid menu
 						break;
 
@@ -187,6 +187,7 @@ public class ConsoleUI {
 
 
 
+//7e No auction can be scheduled less than a set number of days from the current date, default of 14.
 
 
 
