@@ -11,11 +11,11 @@ import java.util.ArrayList;
  * A helper class for determining if auctions fall into
  * acceptable date ranges.
  *
- * @author Tanner Brown
+ * @author Tanner Brown, Charlie Grumer
  */
 public class Scheduler {
 
-
+	private static final int MAX_DAYS_OUT = 60;
 
 	/**
 	 * Checks to ensure auction is more than 13 days from today
@@ -51,5 +51,10 @@ public class Scheduler {
 
 		//Auction is scheduled for less than 60 days from now
 		return theAuctionDate.isBefore(LocalDate.now().plusDays(61));
+	}
+	
+	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDate theAuctionDate) {
+		
+		return theAuctionDate.isBefore(LocalDate.now().plusDays(MAX_DAYS_OUT + 1));
 	}
 }
