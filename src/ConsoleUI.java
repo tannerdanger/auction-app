@@ -23,6 +23,8 @@ public class ConsoleUI {
 	private static UserDB myUserDB;
 	private static final String USERDB_FILE_NAME = "users.ser";
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
+	private User activeUser;
+	private static TreeNode headNode;
 
 	public static void start() {
 		scanner = new Scanner(System.in);
@@ -108,91 +110,148 @@ public class ConsoleUI {
 
 	}
 
-	private static void bidderConsole(User theBidder){
+	private static void bidderConsole(User theUser){
 
-		ArrayList<String> menuArray = buildBidderConsole(theBidder);
-		int currentMenuLevel = 0;
-		String userResponse = null;
-		boolean validResponse = false;
-		boolean logout = false;
+		//ConsoleTree tree = new ConsoleTree(theBidder);
+		buildBidder(theUser);
+		runBehavior();
 
 
-		while(!logout) {
-			scanner = new Scanner(System.in);
+	}
 
-			System.out.println(menuArray.get(currentMenuLevel));
+	private static void buildBidder(User theUser) {
 
-			//if(currentMenuLevel != 0)
-				System.out.println("\nPlease select an option:");
+		TreeNode welcome_Node = new TreeNode(buildTopMessage(theUser), null);
 
-			userResponse = scanner.next();
+		TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), AuctionCalendar::getActiveAuctions);
 
-			switch(currentMenuLevel){
+		TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theUser), null);
 
+		TreeNode auctionsBidOn_Node = new TreeNode("", theUser::printAllMyBidAuctions);
 
-				case 0: //menu was top level menu
-					if(userResponse.compareTo("1") == 0) { //view upcoming auctions
-						myAuctionAuctionCalendar.printActiveAuctions();
-						currentMenuLevel = 2; //place bid menu
-						break;
+		TreeNode itemsBidOn_Node = new TreeNode("\n1. View All\n2. By Specific Auction\n\n0. Return", ()->printItemsBid(theUser));
 
-					}else if(userResponse.compareTo("2") == 0){ //view my history
-						currentMenuLevel = 1; //view history menu
-						break;
+		welcome_Node.response1 = viewAuctions_Node;
+		welcome_Node.response2 = historyOptions_Node;
 
-					}else if(userResponse.compareTo("0") == 0){ //logout
+		historyOptions_Node.response1 = auctionsBidOn_Node;
+		historyOptions_Node.response2 = itemsBidOn_Node;
 
-						currentMenuLevel = 3;
-						break;
-					}
+		welcome_Node.parent = null;
+		viewAuctions_Node.parent = welcome_Node;
+		historyOptions_Node.parent = welcome_Node;
+		auctionsBidOn_Node.parent = historyOptions_Node;
+		itemsBidOn_Node.parent = historyOptions_Node;
 
-				case 1: //view menu history
-					if(userResponse.compareTo("1") == 0){ //view all auctions I have placed bids on
-						theBidder.printAllMyBidAuctions();
-						//currentMenuLevel = ?;
-						break;
+		headNode = welcome_Node;
 
-					}else if(userResponse.compareTo("2") == 0){ //view all items I have bid on
-						theBidder.printAllPlacedBids();
-						//currentMenuLevel = ?;
-						break;
+	}
 
-					}else if(userResponse.compareTo("3") == 0){ //View all of my bids on a single auction
-						theBidder.printBidsInAnAuction();
-						//currentMenuLevel = ?;
-						break;
+	private static void runBehavior() {
+		boolean loop = true;
+		TreeNode currentNode = headNode;
+		Scanner scan = new Scanner(System.in);
+		int response = 0;
+		while (loop){
+			System.out.println(currentNode);
+			if(null != currentNode.nodeAction){
 
-					}else if(0 == userResponse.compareTo("0")){ //Return to previous menu
-						currentMenuLevel = 0;
-						break;
+				currentNode.nodeAction.run();
 
-					}
+				System.out.println(currentNode.consoleMessage);
+				response = Integer.parseInt(scan.next());
 
-				case 2: //place bid menu
-					if(userResponse.compareTo("1") == 0) { //place bid
-						Bidder.placeBid();
-						break;
+				if(response == 1)
+					currentNode = currentNode.response1;
+				else if(response == 2)
+					currentNode = currentNode.response2;
+				else if(response == 0)
+					currentNode = currentNode.parent;
 
-					}else if(userResponse.compareTo("0") == 0) { //Return to previous menu
-						currentMenuLevel = 0;
-						break;
+			} else {
 
-					}
+				System.out.println(currentNode.consoleMessage);
+				response = Integer.parseInt(scan.next());
 
-				case 3: //logout
-					logout();
+				if (response == 1)
+					currentNode = currentNode.response1;
+				else if (response == 2)
+					currentNode = currentNode.response2;
+				else if (response == 0)
+					currentNode = currentNode.parent;
 
 			}
-			//todo: loop to ensure valid response
-
-
-
-//7e No auction can be scheduled less than a set number of days from the current date, default of 14.
-
-
 
 
 		}
+
+	}
+
+	private static void printItemsBid(User theUser) {
+
+		//Scanner scan = new Scanner(System.in);
+		//int userResponse = Integer.parseInt(scan.next());
+		int userResponse = 1;
+
+		if (userResponse == 1){
+			theUser.printAllPlacedBids();
+		}else if(userResponse == 2){
+			theUser.printBidsInAnAuction();
+		}
+	}
+
+	private void viewMyAuctionsWithBids() {
+		AuctionCalendar.getActiveAuctions();
+		System.out.println("1. Place Bid \n");
+		System.out.println("0. Return");
+	}
+
+	private static String buildViewAuctions() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("------------------------------------------\n");
+		sb.append("         * Available  Auctions *          \n");
+		sb.append("------------------------------------------\n");
+
+		return sb.toString();
+	}
+
+	private static String buildHistoryMessage(User theUser) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("------------------------------------------\n");
+		sb.append("           * History Options *            \n");
+		sb.append("------------------------------------------\n");
+		if (Bidder.class.equals(theUser.getClass())) {
+			sb.append("1. View all auctions I have placed bids on" +
+					"\n2. View items I have bid on" +
+					"\n\n0. Return to previous menu");
+		}
+
+
+		return sb.toString();
+	}
+
+	private void logout(User theUser) {
+		System.out.println("Thank you for using Auction Central!");
+		System.out.println("\nGoodbye, " + theUser.getFirstName() + " " + theUser.getLastName() + "!\n\n" );
+		System.exit(0);
+	}
+
+	private static String buildTopMessage(User theUser) {
+
+		StringBuilder sb = new StringBuilder();
+
+		//Menu 0 - Top level menu
+		sb.append("------------------------------------------\n");
+		sb.append("          * Available Options *           \n");
+		sb.append("------------------------------------------\n");
+		if (Bidder.class.equals(theUser.getClass())) {
+			sb.append("1. View Upcoming Auctions\n2. View my history\n\n0. Logout");
+		} else if (ContactPerson.class.equals(theUser.getClass())) {
+			sb.append("1. View My Active Auction\n2. Submit New Auction Request\n\n0. Logout");
+		}
+
+		return sb.toString();
+
 	}
 
 	private static void logout() {
@@ -203,54 +262,6 @@ public class ConsoleUI {
 		System.out.println("You are a Contact");
 	}
 
-
-	private static ArrayList<String> buildBidderConsole(User theBidder){
-		ArrayList<String> responseArray = new ArrayList<String>();
-
-		StringBuilder sb = new StringBuilder();
-
-		//Menu 0 - Top level menu
-		sb.append("\nWelcome " + theBidder.getFirstName() + " " + theBidder.getLastName() + "!\n\n" );
-		sb.append("------------------------------------------\n");
-		sb.append("          * Available Options *           \n");
-		sb.append("------------------------------------------\n");
-		sb.append("1. View Upcoming Auctions\n2. View my history\n\n0. Logout");
-
-		responseArray.add(sb.toString());
-		sb.setLength(0); //clear stringbuilder
-
-		//Menu 1 - View My History
-		sb.append("------------------------------------------\n");
-		sb.append("           * History Options *            \n");
-		sb.append("------------------------------------------\n");
-		sb.append("1. View all auctions I have placed bids on" +
-				"\n2. View all items I have bid on" +
-				"\n3. View all of my bids on a single auction" +
-				"\n\n0. Return to previous menu");
-		responseArray.add(sb.toString());
-		sb.setLength(0); //clear stringbuilder
-
-
-		//Menu 2 - Place Bid Options
-		sb.append("------------------------------------------\n");
-		sb.append("             * Bid Options *              \n");
-		sb.append("------------------------------------------\n");
-		sb.append("1. Place bid\n\n0. Return");
-		responseArray.add(sb.toString());
-		sb.setLength(0); //clear stringbuilder
-
-
-		//Menu 3 - Logout message
-		sb.append("Thank you for using Auction Central!");
-		sb.append("\nGoodbye, " + theBidder.getFirstName() + " " + theBidder.getLastName() + "!\n\n" );
-		responseArray.add(sb.toString());
-		sb.setLength(0);
-
-
-
-		return responseArray;
-
-	}
 
 
 	//Builds sample data so deliverable 1 methods can be tested.
@@ -264,4 +275,31 @@ public class ConsoleUI {
 		myUserDB.addUser(bidderUser);
 
 	}
+
+	private static class TreeNode {
+
+		/**
+		 * The message associated with this string
+		 */
+		private String consoleMessage;
+
+		private Runnable nodeAction;
+
+
+		private TreeNode response1;
+		private TreeNode response2;
+
+		private TreeNode parent;
+
+
+		public TreeNode(String theMessage, Runnable theAction){
+			consoleMessage = theMessage;
+		}
+
+
+
+	}
+
+
+
 }
