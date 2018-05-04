@@ -11,6 +11,8 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import auctiondata.Scheduler;
+
 /**
  * Things I need from other classes:
  * 1. auctionDB needs to print active auctions
@@ -25,6 +27,7 @@ public class ConsoleUI {
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
 	private User activeUser;
 	private static TreeNode headNode;
+	private static Scheduler myScheduler;
 
 	public static void start() {
 		scanner = new Scanner(System.in);
@@ -267,7 +270,7 @@ public class ConsoleUI {
 	//Builds sample data so deliverable 1 methods can be tested.
 	private static void initialize(){
 
-		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com");
+		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com", myScheduler);
 
 		User bidderUser = new Bidder("Bidder","McBidder", "bidder@bidder.com");
 
