@@ -1,5 +1,6 @@
 package auctiondata;
 
+import users.ContactPerson;
 import users.User;
 import storage.*;
 
@@ -11,11 +12,16 @@ import java.util.ArrayList;
  * A helper class for determining if auctions fall into
  * acceptable date ranges.
  *
- * @author Tanner Brown, Charlie Grumer
+ * @author Tanner Brown, Charlie Grumer, David Perez
+ * 
  */
 public class Scheduler {
 
 	private static final int MAX_DAYS_OUT = 60;
+	private static final long REQUIRED_YEARS_IN_BETWEEN_AUCTION = 1;
+	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
+	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
+	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
 
 	/**
 	 * Checks to ensure auction is more than 13 days from today
@@ -27,14 +33,10 @@ public class Scheduler {
 		return theAuctionDate.isAfter(LocalDate.now().plusDays(13));
 	}
 
-	public static boolean isYearSinceLastAuction(User theUser){
-
-
-		return false;
-
-	}
-
-	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
+	//I'm not entirely sure, but instead of using AuctionCalender.get....
+	//It will instead need a reference to a calender object we create somewhere
+	//that holds all the auctions.
+	public static boolean isMaxDailyAuctionsExceeded(LocalDate auctionRequestDate){
 
 		ArrayList<Auction> auctions = AuctionCalendar.getActiveAuctions();
 
@@ -56,5 +58,68 @@ public class Scheduler {
 	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDate theAuctionDate) {
 		
 		return theAuctionDate.isBefore(LocalDate.now().plusDays(MAX_DAYS_OUT + 1));
+	}
+	
+	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
+			final LocalDate theNewAuctionDate) {
+		
+		LocalDate checkRequiredTimePassDate = 
+		thePriorAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
+		).plusMonths(REQUIRED_MONTHS_IN_BETWEEN_AUCTION
+		).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
+		
+		return checkRequiredTimePassDate.equals(theNewAuctionDate);
+
+	}
+	
+	public static boolean isThereNoPriorAuction (final Auction thePriorAuction,
+												 final Auction theCurrentAuction) {
+		boolean flag = false;
+		if (thePriorAuction == null && theCurrentAuction == null) {
+			flag = true;
+		}
+		return flag;
+	}
+	
+	//I'm not entirely sure, but instead of using AuctionCalender.get....
+	//It will instead need a reference to a calender object we create somewhere
+	//that holds all the auctions.
+	public static boolean isMaxUpcomingAuctionsExceeded() {
+		return AuctionCalendar.getActiveAuctions().size()
+				< MAX_UPCOMING_AUCTIONS_LIMIT;
+	}
+	
+	/**
+	 * This method goes through several checks that see if we can turn an
+	 * auction request into an actual auction.
+	 * @param thePriorAuction contact person's previous auction
+	 * @param theCurrentAuction contact person's current auction
+	 * @param theNewDate the contact person's suggested date for their new auction
+	 * @return true if we can turn this request into an auction, false otherwise.
+	 */
+	public boolean isAuctionRequestValid(Auction thePriorAuction,
+			Auction theCurrentAuction, LocalDate theNewDate) {
+		boolean flag = true;
+		if (flag) {
+			flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction); 
+		}
+		if (!flag) {
+			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(thePriorAuction,
+					theNewDate);
+		}
+		if (flag) {
+			flag = isMaxDailyAuctionsExceeded(theNewDate); 
+		}
+		if (flag) {
+			flag = isMaxUpcomingAuctionsExceeded();
+		}
+		if (flag) {
+			flag = isMaxDaysOutExceeded(theNewDate); 
+		}
+		if (flag) {
+			flag = isMinDaysOut(theNewDate); 
+		}
+		return flag;
+		
 	}
 }
