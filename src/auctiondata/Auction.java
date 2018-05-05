@@ -32,7 +32,7 @@ public class Auction {
 	 * A private constructor to prevent the default constructor to create an null auction.
 	 * User has to provide all item info to create the auction class object.
 	 */
-	private Auction(){
+	public Auction(){
 		organizationName = null;
 		organizationID = null;
 	}
@@ -79,4 +79,9 @@ public class Auction {
 		return inventorySheet;
 	}
 
+	public void printInventorySheet(){
+		for (AuctionItem item : inventorySheet.values()) {
+			System.out.println(item.toString());
+		}
+	}
 }

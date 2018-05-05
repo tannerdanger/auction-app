@@ -1,7 +1,6 @@
 package auctiondata;
 
-import users.ContactPerson;
-import users.User;
+import users.*;
 import storage.*;
 
 import java.time.LocalDate;
@@ -97,7 +96,7 @@ public class Scheduler {
 	 * @param theNewDate the contact person's suggested date for their new auction
 	 * @return true if we can turn this request into an auction, false otherwise.
 	 */
-	public boolean isAuctionRequestValid(Auction thePriorAuction,
+	public static boolean isAuctionRequestValid(Auction thePriorAuction,
 			Auction theCurrentAuction, LocalDate theNewDate) {
 		boolean flag = true;
 		if (flag) {

@@ -1,14 +1,13 @@
+import jdk.nashorn.api.tree.Tree;
 import storage.AuctionCalendar;
 import storage.UserDB;
 import users.*;
-
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import auctiondata.Scheduler;
@@ -19,38 +18,38 @@ import auctiondata.Scheduler;
  * 2. Auction class toString() needs to print the auction in the format: | <Auction ID#> -- <Auction Date> |
  * 3. Bid class toString() needs to print the item in the format: | <Item><Bid Amount> -- <Auction Date> |
  */
-public class ConsoleUI {
-	private static Scanner scanner;
+class ConsoleUI {
 	private static AuctionCalendar myAuctionAuctionCalendar;
 	private static UserDB myUserDB;
 	private static final String USERDB_FILE_NAME = "users.ser";
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
-	private User activeUser;
 	private static TreeNode headNode;
-	private static Scheduler myScheduler;
 
-	public static void start() {
-		scanner = new Scanner(System.in);
+	protected static void start() {
+        Scanner scanner = new Scanner(System.in);
 
 		myUserDB = new UserDB();
 		myAuctionAuctionCalendar = new AuctionCalendar();
 		//deserialize();
-		initialize(); //do this if data is empty?
+		initialize();
 
 
-		System.out.println("Login:"); //prompt user to reenter email address, or register new account?
-		User currentUser = myUserDB.getUser(scanner.next());//user enters email, system checks userDB for user
+		System.out.println("Login:");
+		User activeUser = myUserDB.getUser(scanner.next());
 		//scanner.close();
 		//if user is null (doesn't exist)
-		if (null != currentUser) {
+		if (null != activeUser) {
+            System.out.println("Welcome " +activeUser.getFirstName() + " " + activeUser.getLastName() + "!");
 
 			//else if user is a Bidder
-			if (Bidder.class.equals(currentUser.getClass())) {
-				bidderConsole(currentUser);
+			if (Bidder.class.equals(activeUser.getClass())) {
+                buildBidder((Bidder)activeUser);
+                runBehavior();
 
 				//else user is a contact
-			}else if(ContactPerson.class.equals(currentUser.getClass())){
-				contactConsole(currentUser);
+			}else if(ContactPerson.class.equals(activeUser.getClass())){
+			    buildContact((ContactPerson) activeUser);
+			    runBehavior();
 			}
 		}
 		//serialize();
@@ -112,27 +111,66 @@ public class ConsoleUI {
 		}
 
 	}
+	private static void buildContact(ContactPerson theContact){
 
-	private static void bidderConsole(User theUser){
+        TreeNode welcome_Node = new TreeNode(buildTopMessage(theContact), null);
 
-		//ConsoleTree tree = new ConsoleTree(theBidder);
-		buildBidder(theUser);
-		runBehavior();
+        TreeNode auctionRequest_Node = new TreeNode("", theContact::submitAuctionRequest);
+
+        TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact), () -> theContact.getMyCurrentAuction().toString());
+
+        TreeNode viewAllItems_Node = new TreeNode("\n0. Return", () -> theContact.getMyCurrentAuction().printInventorySheet());
+
+        TreeNode addItem_Node = new TreeNode("0. Return", theContact::addInventoryItem);
+
+        welcome_Node.response1 = activeAuction_Node;
+        welcome_Node.response2 = auctionRequest_Node;
+        activeAuction_Node.response1 = viewAllItems_Node;
+        activeAuction_Node.response2 = addItem_Node;
+        viewAllItems_Node.response1 = addItem_Node;
+
+        activeAuction_Node.parent = welcome_Node;
+        viewAllItems_Node.parent = welcome_Node;
+        auctionRequest_Node.parent = welcome_Node;
+        addItem_Node.parent = viewAllItems_Node;
+
+        headNode = welcome_Node;
+
+    }
+
+    private static String buildAuctionMessage(User theUser) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("------------------------------------------\n");
+        sb.append("           * Auction Options *            \n");
+        sb.append("------------------------------------------\n");
+
+        sb.append("1. View All Items in this Auction" +
+                    "\n2. Add new auction item" +
+                    "\n\n0. Return to previous menu");
 
 
-	}
 
-	private static void buildBidder(User theUser) {
+        return sb.toString();
 
-		TreeNode welcome_Node = new TreeNode(buildTopMessage(theUser), null);
+    }
+
+
+    private static void buildBidder(Bidder theBidder) {
+
+		TreeNode welcome_Node = new TreeNode(buildTopMessage(theBidder), null);
 
 		TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), AuctionCalendar::getActiveAuctions);
 
-		TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theUser), null);
+		TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theBidder), null);
 
-		TreeNode auctionsBidOn_Node = new TreeNode("", theUser::printAllMyBidAuctions);
+		TreeNode auctionsBidOn_Node = new TreeNode("", theBidder::printAllMyBidAuctions);
 
-		TreeNode itemsBidOn_Node = new TreeNode("\n1. View All\n2. By Specific Auction\n\n0. Return", ()->printItemsBid(theUser));
+		TreeNode itemsBidOn_Node = new TreeNode("\n1. View All\n2. By Specific Auction\n\n0. Return", null);
+
+		TreeNode allItemBids_Node = new TreeNode("", theBidder::printAllPlacedBids);
+
+        TreeNode itemsByAuction_Node = new TreeNode("", theBidder::printBidsInAnAuction);
 
 		welcome_Node.response1 = viewAuctions_Node;
 		welcome_Node.response2 = historyOptions_Node;
@@ -140,24 +178,32 @@ public class ConsoleUI {
 		historyOptions_Node.response1 = auctionsBidOn_Node;
 		historyOptions_Node.response2 = itemsBidOn_Node;
 
+		itemsBidOn_Node.response1 = allItemBids_Node;
+		itemsBidOn_Node.response2 = auctionsBidOn_Node;
+
 		welcome_Node.parent = null;
 		viewAuctions_Node.parent = welcome_Node;
 		historyOptions_Node.parent = welcome_Node;
 		auctionsBidOn_Node.parent = historyOptions_Node;
 		itemsBidOn_Node.parent = historyOptions_Node;
+		allItemBids_Node.parent = itemsBidOn_Node;
+		itemsByAuction_Node.parent = itemsBidOn_Node;
 
 		headNode = welcome_Node;
 
 	}
 
 	private static void runBehavior() {
-		boolean loop = true;
+
 		TreeNode currentNode = headNode;
 		Scanner scan = new Scanner(System.in);
 		int response = 0;
-		while (loop){
-			System.out.println(currentNode);
+
+		while (null != currentNode){
+
+
 			if(null != currentNode.nodeAction){
+
 
 				currentNode.nodeAction.run();
 
@@ -176,10 +222,12 @@ public class ConsoleUI {
 				System.out.println(currentNode.consoleMessage);
 				response = Integer.parseInt(scan.next());
 
-				if (response == 1)
+				if (null != currentNode.response1 && response == 1)
 					currentNode = currentNode.response1;
-				else if (response == 2)
+
+				else if (null != currentNode.response2 && response == 2)
 					currentNode = currentNode.response2;
+
 				else if (response == 0)
 					currentNode = currentNode.parent;
 
@@ -188,25 +236,6 @@ public class ConsoleUI {
 
 		}
 
-	}
-
-	private static void printItemsBid(User theUser) {
-
-		//Scanner scan = new Scanner(System.in);
-		//int userResponse = Integer.parseInt(scan.next());
-		int userResponse = 1;
-
-		if (userResponse == 1){
-			theUser.printAllPlacedBids();
-		}else if(userResponse == 2){
-			theUser.printBidsInAnAuction();
-		}
-	}
-
-	private void viewMyAuctionsWithBids() {
-		AuctionCalendar.getActiveAuctions();
-		System.out.println("1. Place Bid \n");
-		System.out.println("0. Return");
 	}
 
 	private static String buildViewAuctions() {
@@ -233,7 +262,7 @@ public class ConsoleUI {
 		return sb.toString();
 	}
 
-	private void logout(User theUser) {
+	private static void logout(User theUser) {
 		System.out.println("Thank you for using Auction Central!");
 		System.out.println("\nGoodbye, " + theUser.getFirstName() + " " + theUser.getLastName() + "!\n\n" );
 		System.exit(0);
@@ -257,11 +286,9 @@ public class ConsoleUI {
 
 	}
 
-	private static void logout() {
-		System.exit(0);
-	}
 
-	private static void contactConsole(User theContact){
+
+	private static void contactConsole(){
 		System.out.println("You are a Contact");
 	}
 
@@ -270,7 +297,7 @@ public class ConsoleUI {
 	//Builds sample data so deliverable 1 methods can be tested.
 	private static void initialize(){
 
-		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com", myScheduler);
+		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com");
 
 		User bidderUser = new Bidder("Bidder","McBidder", "bidder@bidder.com");
 
@@ -295,12 +322,10 @@ public class ConsoleUI {
 		private TreeNode parent;
 
 
-		public TreeNode(String theMessage, Runnable theAction){
+		protected TreeNode(String theMessage, Runnable theAction){
 			consoleMessage = theMessage;
+			nodeAction = theAction;
 		}
-
-
-
 	}
 
 

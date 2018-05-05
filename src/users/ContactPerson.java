@@ -20,6 +20,8 @@ public class ContactPerson extends User {
 	 * The Contact Person's previous Auction
 	 */
 	private Auction myPriorAuction;
+
+
 	/*
 	 * The Contact Person's current Auction
 	 */
@@ -29,11 +31,11 @@ public class ContactPerson extends User {
 	 * Constructor for Contact Person, Will take a First name, Last name, and email.
 	 * Will set the current and prior auction to null.
 	 */
-	public ContactPerson(String theFirst, String theLast, String theEmail, Scheduler theScheduler) {
+	public ContactPerson(String theFirst, String theLast, String theEmail) {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
 		myPriorAuction = null;
 		myCurrentAuction = null;
-		myScheduler = theScheduler;
+		//myScheduler = theScheduler; I think our idea is for this class to be static and call-able at any time so we don't need to declare it.
 	}
 	
 	/*
@@ -61,7 +63,7 @@ public class ContactPerson extends User {
 		System.out.println("Validating your auction inventory sheet...");
 		LocalDate newDate = LocalDate.of(theYear, theMonth, theDay);	
 		
-		if (myScheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
+		if (Scheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
 			System.out.println("Auction Inventory Sheet confirmed.");
 			System.out.println("Your Auction is booked on " + newDate.toString());
 			Auction newAuction = new Auction();
@@ -85,6 +87,10 @@ public class ContactPerson extends User {
 	}
 	public void addInventoryItem() {
 		//TODO
+	}
+
+	public Auction getMyCurrentAuction() {
+		return myCurrentAuction;
 	}
 	
 }
