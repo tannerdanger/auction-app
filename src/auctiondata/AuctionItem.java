@@ -19,7 +19,7 @@ public class AuctionItem {
 	
 	private String name;
 	
-	private final String uniqueID;
+	private final int uniqueID;
 	
 	private Map<String, BigDecimal> sealedBids = new HashMap<String, BigDecimal>();
 	
@@ -28,17 +28,28 @@ public class AuctionItem {
 	 * User has to provide all item info to create the auction item class object.
 	 */
 	private AuctionItem() {
-		uniqueID = null;
+		uniqueID = -1;
 		minPrice = null;
 		name = null;
 	}
 	
-	public AuctionItem(final double theMinPrice, String theName, String theUniqueID) {
+	public AuctionItem(final double theMinPrice, String theName) {
 		minPrice = new BigDecimal(theMinPrice);
 		name = theName;
-		uniqueID = theUniqueID;
+		uniqueID = createID();
 	}
-	
+
+	private int createID() {
+		int id = Math.abs(name.hashCode() + minPrice.hashCode());
+
+		if(id <= 1000)
+			id /= 2;
+		else
+			id %= 1000;
+
+		return id;
+	}
+
 	public void setName(String theName) {
 		name = theName;
 	}
@@ -55,7 +66,7 @@ public class AuctionItem {
 		return minPrice.doubleValue();
 	}
 	
-	public String getUniqueID() {
+	public int getUniqueID() {
 		return uniqueID;
 	}
 	
@@ -65,5 +76,10 @@ public class AuctionItem {
 	
 	public Map<String, BigDecimal> getSealedBids(){
 		return sealedBids;
+	}
+
+	@Override
+	public String toString(){
+		return "ID: " + String.valueOf(this.uniqueID) + " | NAME: " + this.name;
 	}
 }

@@ -27,15 +27,15 @@ public class Scheduler {
 	 * @param theAuctionDate the requested date of auction
 	 * @return true if date is valid
 	 */
-	public static boolean isMinDaysOut(LocalDate theAuctionDate){
+	public static boolean isMinDaysOut(LocalDateTime theAuctionDate){
 
-		return theAuctionDate.isAfter(LocalDate.now().plusDays(13));
+		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(13));
 	}
 
 	//I'm not entirely sure, but instead of using AuctionCalender.get....
 	//It will instead need a reference to a calender object we create somewhere
 	//that holds all the auctions.
-	public static boolean isMaxDailyAuctionsExceeded(LocalDate auctionRequestDate){
+	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
 
 		ArrayList<Auction> auctions = AuctionCalendar.getActiveAuctions();
 
@@ -48,19 +48,19 @@ public class Scheduler {
 		return auctionCount < 2;
 	}
 
-	public static boolean isMaxDaysOutExceeded(LocalDate theAuctionDate){
+	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
 
 		//Auction is scheduled for less than 60 days from now
-		return theAuctionDate.isBefore(LocalDate.now().plusDays(61));
+		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(61));
 	}
 	
-	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDate theAuctionDate) {
+	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDateTime theAuctionDate) {
 		
-		return theAuctionDate.isBefore(LocalDate.now().plusDays(MAX_DAYS_OUT + 1));
+		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
 	}
 	
 	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
-			final LocalDate theNewAuctionDate) {
+			final LocalDateTime theNewAuctionDate) {
 		
 		LocalDate checkRequiredTimePassDate = 
 		thePriorAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
@@ -97,7 +97,7 @@ public class Scheduler {
 	 * @return true if we can turn this request into an auction, false otherwise.
 	 */
 	public static boolean isAuctionRequestValid(Auction thePriorAuction,
-			Auction theCurrentAuction, LocalDate theNewDate) {
+			Auction theCurrentAuction, LocalDateTime theNewDate) {
 		boolean flag = true;
 		if (flag) {
 			flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction); 

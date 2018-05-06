@@ -2,7 +2,7 @@ package tests;
 
 import auctiondata.Scheduler;
 import org.junit.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import static org.junit.Assert.*;
 
 /**
@@ -26,7 +26,7 @@ public class SchedulerTest {
 		 * (Min = 14)
 		 */
 		assertTrue(Scheduler.isMinDaysOut(
-				LocalDate.now().plusDays(15)));
+				LocalDateTime.now().plusDays(15)));
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class SchedulerTest {
 		 * (Min = 14)
 		 */
 		assertTrue(Scheduler.isMinDaysOut(
-				LocalDate.now().plusDays(14)));
+				LocalDateTime.now().plusDays(14)));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class SchedulerTest {
 		 * (Min = 14)
 		 */
 		assertFalse(Scheduler.isMinDaysOut(
-				LocalDate.now().plusDays(13)));
+				LocalDateTime.now().plusDays(13)));
 	}
 
 }

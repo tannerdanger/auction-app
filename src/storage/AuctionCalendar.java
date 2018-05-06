@@ -20,13 +20,13 @@ public class AuctionCalendar implements Serializable {
 	//TODO: an array of PAST auctions? (not in current requrements)
 
 	//TODO: an array of currently scheduled auctions (next 30 days)
-	public void printActiveAuctions() {
+	public static void printActiveAuctions() {
 		for(Auction a : activeAuctions){
 			System.out.println(a.toString());
 		}
 	}
 
-	public void addAuction(Auction theAuction){
+	public static void addAuction(Auction theAuction){
 
 		activeAuctions.add(theAuction);
 

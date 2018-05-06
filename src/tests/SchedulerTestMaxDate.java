@@ -2,7 +2,7 @@ package tests;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class SchedulerTestMaxDate {
 	public void isAuctionDateLessThanOrEqualToMaxDaysOut_lessThanMaxDaysOut_True() {
 		assertTrue(Scheduler
 				  .isAuctionDateLessThanEqualToMaxDaysOut
-				  (LocalDate.now().plusDays(
+				  (LocalDateTime.now().plusDays(
 				  MAX_DAYS_OUT - 1)));
 	}
 
@@ -31,7 +31,7 @@ public class SchedulerTestMaxDate {
 	public void isAuctionDateLessThanOrEqualToMaxDaysOut_equalToMaxDaysOut_True() {
 		assertTrue(Scheduler
 				  .isAuctionDateLessThanEqualToMaxDaysOut
-				  (LocalDate.now().plusDays(
+				  (LocalDateTime.now().plusDays(
 				  MAX_DAYS_OUT)));
 	}
 	
@@ -39,7 +39,7 @@ public class SchedulerTestMaxDate {
 	public void isAuctionDateLessThanOrEqualToMaxDaysOut_greaterThanMaxDaysOut_False() {
 		assertFalse(Scheduler
 					.isAuctionDateLessThanEqualToMaxDaysOut
-					(LocalDate.now().plusDays(
+					(LocalDateTime.now().plusDays(
 					MAX_DAYS_OUT + 1)));
 	}
 	

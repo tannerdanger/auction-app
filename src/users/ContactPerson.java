@@ -2,9 +2,12 @@ package users;
 
 import auctiondata.Auction;
 import auctiondata.Scheduler;
+import storage.AuctionCalendar;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 /**
  * Contact person class, saves relevent information to a Contact
@@ -15,6 +18,9 @@ public class ContactPerson extends User {
 	 */
 	private static final long serialVersionUID = -710092057770182337L;
 	private ArrayList<Auction> mySubmittedAuctions;
+
+	private String myOrgName;
+	private int myOrgID;
 	
 	/*
 	 * The Contact Person's previous Auction
@@ -22,7 +28,8 @@ public class ContactPerson extends User {
 	private Auction myPriorAuction;
 
 
-	/*
+
+    /*
 	 * The Contact Person's current Auction
 	 */
 	private Auction myCurrentAuction;
@@ -61,16 +68,17 @@ public class ContactPerson extends User {
 		int theYear = lineScan.nextInt();
 		
 		System.out.println("Validating your auction inventory sheet...");
-		LocalDate newDate = LocalDate.of(theYear, theMonth, theDay);	
+		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
 		
 		if (Scheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
 			System.out.println("Auction Inventory Sheet confirmed.");
 			System.out.println("Your Auction is booked on " + newDate.toString());
-			Auction newAuction = new Auction();
-			newAuction.setAuctionDate(newDate);
-			
-			myCurrentAuction = newAuction;
-			mySubmittedAuctions.add(newAuction);
+		//	Auction newAuction = new Auction();
+		//	newAuction.setAuctionDate(newDate);
+			Auction newAuction = new Auction(myOrgName, myOrgID, newDate, null);
+			setMyCurrentAuction(newAuction);
+		    mySubmittedAuctions.add(newAuction);
+            AuctionCalendar.addAuction(newAuction);
 			
 			//TODO ITEM INVENTORY SHEET PRINTOUT
 			System.out.println("Here is your inventory sheet: ");
@@ -92,5 +100,21 @@ public class ContactPerson extends User {
 	public Auction getMyCurrentAuction() {
 		return myCurrentAuction;
 	}
-	
+
+	public void setMyOrgName(String myOrgName) {
+		this.myOrgName = myOrgName;
+		this.myOrgID = myOrgName.hashCode();
+	}
+
+    public int getMyOrgID() {
+        return myOrgID;
+    }
+
+    public String getMyOrgName() {
+        return myOrgName;
+    }
+    //TODO: Delete this after testing?
+    public void setMyCurrentAuction(Auction myCurrentAuction) {
+        this.myCurrentAuction = myCurrentAuction;
+    }
 }

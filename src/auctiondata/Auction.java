@@ -5,6 +5,8 @@
 package auctiondata;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,33 +22,41 @@ public class Auction {
 
 	private LocalDate auctionDate;
 	
-	private Date auctionTime;
+	private LocalTime auctionTime;
 	
 	private final String organizationName;
 	
-	private final String organizationID;
+	//private final String organizationID;
+    private final int organizationID;
 
-	private Map<String, AuctionItem> inventorySheet = new HashMap<String, AuctionItem>();
+    private int auctionID;
+
+	private Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
 	
 	/**
 	 * A private constructor to prevent the default constructor to create an null auction.
 	 * User has to provide all item info to create the auction class object.
 	 */
-	public Auction(){
+	private Auction(){
 		organizationName = null;
-		organizationID = null;
+		organizationID = -1;
 	}
+
+
 	
 	public Auction(final String theOrganizationName,
-				   final String theOranizationID,
-				   final LocalDate theAuctionDate,
-				   final Date theAuctionTime,
-				   Map<String, AuctionItem> theInventorySheet) {
+				   int theOranizationID,// make orgID a hash value of the orgName?
+				   final LocalDateTime theAuctionDate,
+				   //final LocalDateTime theAuctionTime,
+				   Map<Integer, AuctionItem> theInventorySheet) {
 		organizationName = theOrganizationName;
 		organizationID = theOranizationID;
-		auctionDate = theAuctionDate;
-		auctionTime = theAuctionTime;
-		inventorySheet = theInventorySheet;
+		auctionDate = theAuctionDate.toLocalDate();
+		auctionTime = theAuctionDate.toLocalTime();
+		if(null != theInventorySheet)
+		    inventorySheet = theInventorySheet;
+
+		auctionID = createUniqueID();
 	}
 	
 	public void addInventoryItem(final AuctionItem theItem) {
@@ -60,10 +70,11 @@ public class Auction {
 	public void setAuctionDate(LocalDate auctionDate) {
 		this.auctionDate = auctionDate;
 	}
-	
-	@SuppressWarnings("deprecation")
-	public void setAuctionTime(int theHours) {
-		auctionTime.setHours(theHours);
+
+
+	public void setAuctionTime(String theHours) {
+	    this.auctionTime = LocalTime.parse(theHours);
+		//auctionTime(theHours);
 	}
 
 	public LocalDate getAuctionDate() {
@@ -71,17 +82,38 @@ public class Auction {
 	}
 
 	@SuppressWarnings("deprecation")
-	public int getAuctionTime() {
-		return auctionTime.getHours();
+	public LocalTime getAuctionTime() {
+		return auctionTime;
 	}
 	
-	public Map<String, AuctionItem> getInventorySheet(){
+	public Map<Integer, AuctionItem> getInventorySheet(){
 		return inventorySheet;
 	}
 
 	public void printInventorySheet(){
+	    int i = 1;
 		for (AuctionItem item : inventorySheet.values()) {
+		    System.out.print(i + ": ");
 			System.out.println(item.toString());
 		}
 	}
+
+    private int createUniqueID(){
+	    int id = Math.abs(organizationID + auctionDate.hashCode());
+	    if(id <= 10000)
+	        id /= 2;
+	    else
+	        id %= 10000;
+
+	    return id;
+    }
+
+    public int getauctionID(){
+	    return this.auctionID;
+    }
+
+    @Override
+    public String toString(){
+	    return "ID: " + String.valueOf(this.auctionID) + " | DATE: " + this.auctionDate.toString();
+    }
 }
