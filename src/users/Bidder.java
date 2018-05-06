@@ -23,6 +23,7 @@ public class Bidder extends User {
 	//TODO: Define values associated with a bidder. i.e. an array of auctions that bids have been placed in?
 	//And/or an array of auction items that have been bid on?
 	private final List<Bid> myBids;
+	private final String myID;
 
 	public Bidder(String theFirst, String theLast, String theEmail) {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
@@ -34,6 +35,7 @@ public class Bidder extends User {
 		final Bid b = new Bid(theAuction, theBidAmount, theItem);
 		if (b.isBidPlaced()) {
 			myBids.add(b);
+			item.addSealedBids(myID, theBidAmount);
 		} else {
 			System.out.println("Bid failed to be placed");
 		}
