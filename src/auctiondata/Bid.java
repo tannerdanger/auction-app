@@ -16,7 +16,11 @@ public class Bid {
 		whichAuction = theAuction;
 		sealedBidAmount = theBidAmount;
 		item = theItem;
-		placedBid = false;
+		placedBid = checkBid();
+	}
+	
+	private boolean checkBid() {
+		return sealedBidAmount.doubleValue() >= item.getMinPrice();
 	}
 	
 	public boolean isBidPlaced() {
