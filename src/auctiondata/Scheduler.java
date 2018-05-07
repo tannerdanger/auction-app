@@ -102,27 +102,14 @@ public class Scheduler {
 	 */
 	public boolean isAuctionRequestValid(Auction thePriorAuction,
 										 Auction theCurrentAuction, LocalDateTime theNewDate) {
-		boolean flag = true;
-		if (flag) {
-			flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction); 
-		}
+		
+		boolean flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction);
+		
 		if (!flag) {
 			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(thePriorAuction,
-					theNewDate);
-		}
-		if (flag) {
-			flag = isMaxDailyAuctionsExceeded(theNewDate); 
-		}
-		if (flag) {
-			flag = isMaxUpcomingAuctionsExceeded();
-		}
-		if (flag) {
-			flag = isMaxDaysOutExceeded(theNewDate); 
-		}
-		if (flag) {
-			flag = isMinDaysOut(theNewDate); 
+					theNewDate) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
+					isMaxDaysOutExceeded(theNewDate) && isMinDaysOut(theNewDate);
 		}
 		return flag;
-		
 	}
 }

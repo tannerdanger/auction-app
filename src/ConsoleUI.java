@@ -51,7 +51,7 @@ class ConsoleUI {
 			    runBehavior();
 			}
 		}
-		scanner.close();
+//		scanner.close();
 		    //serialize();
 	}
 
@@ -71,7 +71,7 @@ class ConsoleUI {
 				currentNode.nodeAction.run();
 
 				System.out.println(currentNode.consoleMessage);
-				response = Integer.parseInt(scan.next());
+				response = scan.nextInt();
 
 				if(response == 1)
 					currentNode = currentNode.response1;
@@ -101,7 +101,7 @@ class ConsoleUI {
 
 
 		}
-		scan.close();
+//		scan.close();
 	}
 	private static void logout() {
 	    myData.serialize();
@@ -190,7 +190,7 @@ class ConsoleUI {
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theContact), null);
 
-        TreeNode auctionRequest_Node = new TreeNode("", ()->theContact.submitAuctionRequest(myData));
+        TreeNode auctionRequest_Node = new TreeNode("", ()->createAuctionRequest(theContact));
         Auction currAuc = theContact.getMyCurrentAuction();
 
         TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact),
@@ -236,7 +236,7 @@ class ConsoleUI {
             	printBid(b);
             }
         }
-        scan.close();
+//        scan.close();
     }
     
     public static void printBid(Bid theBid) {
@@ -278,7 +278,7 @@ class ConsoleUI {
                 }
             }
         }
-        scan.close();
+//        scan.close();
     }
 	
 	public static void addInventoryItem(ContactPerson theContact) {
@@ -295,14 +295,14 @@ class ConsoleUI {
 		} else {
 			System.out.println("Item add failed.");
 		}
-		theScanner.close();
+//		theScanner.close();
 	}
 	
 	public static void createAuctionRequest(ContactPerson theContact) {
 		Scanner Scan = new Scanner(System.in);
 
 		System.out.println("When do you plan to host your auction?");
-		System.out.println("Please enter Time and Date (24Hour time (HH:MI); MM/DD/YYYY:");
+		System.out.println("Please enter Date in the format MM/DD/YYYY:");
 		String scannedLine = Scan.nextLine();
 
 		Scanner lineScan = new Scanner(scannedLine);
@@ -314,8 +314,9 @@ class ConsoleUI {
 
 		System.out.println("Validating your auction inventory sheet...");
 		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
-
-		if (myScheduler.isAuctionRequestValid(theContact.getPriorAuction(), theContact.getMyCurrentAuction(), newDate)) {
+		
+		Boolean sched = myScheduler.isAuctionRequestValid(theContact.getPriorAuction(), theContact.getMyCurrentAuction(), newDate);
+		if (sched != null && sched) {
 			System.out.println("Auction Inventory Sheet confirmed.");
 			System.out.println("Your Auction is booked on " + newDate.toString());
 		//	Auction newAuction = new Auction();
@@ -328,8 +329,8 @@ class ConsoleUI {
 		}
 
 
-		Scan.close();
-		lineScan.close();
+//		Scan.close();
+//		lineScan.close();
 	}
 	
     private static String buildTopMessage(User theUser) {
