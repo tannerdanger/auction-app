@@ -1,13 +1,12 @@
 package users;
 
 import auctiondata.Auction;
+import auctiondata.AuctionItem;
 import auctiondata.Scheduler;
 import storage.AuctionCalendar;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Scanner;
 /**
  * Contact person class, saves relevent information to a Contact
@@ -21,7 +20,7 @@ public class ContactPerson extends User {
 
 	private String myOrgName;
 	private int myOrgID;
-	
+
 	/*
 	 * The Contact Person's previous Auction
 	 */
@@ -42,9 +41,8 @@ public class ContactPerson extends User {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
 		myPriorAuction = null;
 		myCurrentAuction = null;
-		//myScheduler = theScheduler; I think our idea is for this class to be static and call-able at any time so we don't need to declare it.
 	}
-	
+
 	/*
 	 * Goes through the process of submitting an auction request.
 	 * Asks user for the date of the new auction.
@@ -59,17 +57,17 @@ public class ContactPerson extends User {
 		System.out.println("When do you plan to host your auction?");
 		System.out.println("Please enter Time and Date (24Hour time (HH:MI); MM/DD/YYYY:");
 		String scannedLine = Scan.nextLine();
-		
+
 		Scanner lineScan = new Scanner(scannedLine);
 	    lineScan.useDelimiter("/");
-		
-	    int theMonth = lineScan.nextInt();	
+
+	    int theMonth = lineScan.nextInt();
 		int theDay = lineScan.nextInt();
 		int theYear = lineScan.nextInt();
-		
+
 		System.out.println("Validating your auction inventory sheet...");
 		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
-		
+
 		if (Scheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
 			System.out.println("Auction Inventory Sheet confirmed.");
 			System.out.println("Your Auction is booked on " + newDate.toString());
@@ -79,12 +77,12 @@ public class ContactPerson extends User {
 			setMyCurrentAuction(newAuction);
 		    mySubmittedAuctions.add(newAuction);
             AuctionCalendar.addAuction(newAuction);
-			
+
 			//TODO ITEM INVENTORY SHEET PRINTOUT
 			System.out.println("Here is your inventory sheet: ");
 		}
-			
-		
+
+
 		Scan.close();
 		lineScan.close();
 	}
@@ -94,7 +92,18 @@ public class ContactPerson extends User {
 		}
 	}
 	public void addInventoryItem() {
-		//TODO
+		Scanner theScanner = new Scanner(System.in);
+		System.out.println("Please enter your new item's name: ");
+
+		String name = theScanner.nextLine();
+
+		System.out.println("Please enter the minimum bid for " + name + " (Can be 0 for no minimum)");
+		Double minBid = theScanner.nextDouble();
+
+		if(null != name && null != minBid) {
+			myCurrentAuction.addInventoryItem(new AuctionItem(minBid, name));
+			myCurrentAuction.printInventorySheet();
+		}
 	}
 
 	public Auction getMyCurrentAuction() {

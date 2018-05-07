@@ -95,6 +95,7 @@ public class Auction {
 		for (AuctionItem item : inventorySheet.values()) {
 		    System.out.print(i + ": ");
 			System.out.println(item.toString());
+			i++;
 		}
 	}
 
@@ -104,7 +105,6 @@ public class Auction {
 	        id /= 2;
 	    else
 	        id %= 10000;
-
 	    return id;
     }
 
@@ -114,6 +114,6 @@ public class Auction {
 
     @Override
     public String toString(){
-	    return "ID: " + String.valueOf(this.auctionID) + " | DATE: " + this.auctionDate.toString();
+	    return "| ID: " + String.valueOf(this.auctionID) + " | ORG: " +organizationName+ " | DATE: " + this.auctionDate.toString()+ " |";
     }
 }

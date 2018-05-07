@@ -181,6 +181,8 @@ class ConsoleUI {
 
         TreeNode itemsByAuction_Node = new TreeNode("", theBidder::printBidsInAnAuction);
 
+        TreeNode auctionItemsInAuction_Node = new TreeNode(" ", ()-> printItemsByAuction());
+
         welcome_Node.response1 = viewAuctions_Node;
         welcome_Node.response2 = historyOptions_Node;
 
@@ -189,6 +191,8 @@ class ConsoleUI {
 
         itemsBidOn_Node.response1 = allItemBids_Node;
         itemsBidOn_Node.response2 = auctionsBidOn_Node;
+
+        viewAuctions_Node.response1 = auctionItemsInAuction_Node;
 
         welcome_Node.parent = null;
         viewAuctions_Node.parent = welcome_Node;
@@ -201,7 +205,19 @@ class ConsoleUI {
         headNode = welcome_Node;
 
     }
-    private static void buildContact(ContactPerson theContact){
+
+	private static void printItemsByAuction() {
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Which auction would you like to view?");
+		int response = scan.nextInt();
+		Auction auction = AuctionCalendar.getAuction(response);
+		while (null == auction && response != 0){
+			//TODO: Left off here, parsing to ensure auction item is correct
+		}
+		auction.printInventorySheet();
+	}
+
+	private static void buildContact(ContactPerson theContact){
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theContact), null);
 
@@ -250,8 +266,10 @@ class ConsoleUI {
     private static String buildViewAuctions() {
         StringBuilder sb = new StringBuilder();
         sb.append("------------------------------------------\n");
-        sb.append("         * Available  Auctions *          \n");
+        sb.append("         * Auctions Options *          \n");
         sb.append("------------------------------------------\n");
+        sb.append("\n1. View Items in an Auction / Place a bid");
+        sb.append("\n\n0. Return");
 
         return sb.toString();
     }

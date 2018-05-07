@@ -31,5 +31,15 @@ public class AuctionCalendar implements Serializable {
 		activeAuctions.add(theAuction);
 
 	}
+	public static Auction getAuction(int auctionID){
+		Auction returnAuction = null;
+		for(Auction a: activeAuctions){
+			if(a.getauctionID() == auctionID) {
+				returnAuction = a;
+				break;
+			}
+		}
+		return returnAuction;
+	}
 
 }

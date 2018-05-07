@@ -14,7 +14,7 @@ public class UserDB implements Serializable {
 	private static final long serialVersionUID = 12813308004L;
 
 	//email is key(username), value is the user associated with email address
-	public Map<String, User> userDirectory;
+	public static Map<String, User> userDirectory;
 
 	public UserDB(){
 		userDirectory = new HashMap<String, User>();
@@ -26,7 +26,7 @@ public class UserDB implements Serializable {
 	 * @param emailAddress the email address of the user being returned
 	 * @return a user
 	 */
-	public User getUser(String emailAddress){
+	public static User getUser(String emailAddress){
 
 		//If user exists in hashmap,
 		if(userDirectory.containsKey(emailAddress)) {
@@ -43,10 +43,10 @@ public class UserDB implements Serializable {
 	// * @param email the email address for the user, used as the key to identify them.
 	 * @param theUser the user being added to the directory.
 	 */
-	public void addUser(User theUser){
+	public static void addUser(User theUser){
 
 		if(userDirectory.containsKey(theUser.getEmail()))
-			System.out.println("User " + theUser.getFirstName() +" " +theUser.getLastName() + " already exists.");
+			System.out.println("User " +theUser.getEmail() +" already exists.");
 		else
 			userDirectory.put(theUser.getEmail(), theUser);
 	}
