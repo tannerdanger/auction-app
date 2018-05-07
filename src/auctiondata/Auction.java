@@ -4,6 +4,7 @@
  */
 package auctiondata;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,7 +19,9 @@ import auctiondata.AuctionItem;
  * @author Wen Shu
  * @version May 4th 2018
  */
-public class Auction {
+public class Auction implements Serializable {
+
+    private static final long serialVersionUID = 92884087991050331L;
 
 	private LocalDate auctionDate;
 	
@@ -76,6 +79,10 @@ public class Auction {
 	    this.auctionTime = LocalTime.parse(theHours);
 		//auctionTime(theHours);
 	}
+
+	public AuctionItem getItem(int theItemID){
+        return inventorySheet.get(theItemID);
+    }
 
 	public LocalDate getAuctionDate() {
 		return auctionDate;

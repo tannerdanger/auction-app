@@ -1,18 +1,19 @@
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import storage.AuctionCalendar;
+import storage.DataHandler;
 import storage.UserDB;
 import users.*;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
+import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
 import auctiondata.Scheduler;
+
+import javax.xml.crypto.Data;
 
 /**
  * Things I need from other classes:
@@ -21,25 +22,23 @@ import auctiondata.Scheduler;
  * 3. Bid class toString() needs to print the item in the format: | <Item><Bid Amount> -- <Auction Date> |
  */
 class ConsoleUI {
-	private static AuctionCalendar myAuctionAuctionCalendar;
+	private static AuctionCalendar myCalendar;
 	private static UserDB myUserDB;
 	private static final String USERDB_FILE_NAME = "users.ser";
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
 	private static TreeNode headNode;
+	private static DataHandler myData;
 
 	protected static void start() {
         Scanner scanner = new Scanner(System.in);
-
-		myUserDB = new UserDB();
-		myAuctionAuctionCalendar = new AuctionCalendar();
-		//deserialize();
-		initialize();
+        myData = new DataHandler();
+        myUserDB = myData.getMyUserDB();
+        myCalendar = myData.getMyAuctionCalendar();
 
 
 		System.out.println("Login:");
 		User activeUser = myUserDB.getUser(scanner.next());
-		//scanner.close();
-		//if user is null (doesn't exist)
+
 		if (null != activeUser) {
             System.out.println("Welcome " +activeUser.getFirstName() + " " + activeUser.getLastName() + "!");
 
@@ -54,65 +53,9 @@ class ConsoleUI {
 			    runBehavior();
 			}
 		}
-		//serialize();
+		    //serialize();
 	}
 
-	//Serialize & Deserialize
-	private static void deserialize() {
-
-		//Load the users data
-		myUserDB = null;
-		try {
-			FileInputStream fileIn = new FileInputStream(USERDB_FILE_NAME);
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			myUserDB = (UserDB)objectIn.readObject();
-		} catch (IOException e) {
-			System.out.println("IOException user deserialization is caught");
-		} catch (ClassNotFoundException e){
-			System.out.println("User database class not found");
-		}
-
-		//Load the auction history data
-		myAuctionAuctionCalendar = null;
-		try {
-
-			FileInputStream fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			myAuctionAuctionCalendar = (AuctionCalendar) objectIn.readObject();
-
-		} catch (IOException e) {
-			System.out.println("IOException Auction Data deserialization is caught");
-		} catch (ClassNotFoundException e){
-			System.out.println("Auction Database class not found");
-		}
-
-
-	}
-	private static void serialize(){
-
-		//Serialize users
-		try{
-			FileOutputStream fileOut = new FileOutputStream(USERDB_FILE_NAME);
-			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(myUserDB);
-			fileOut.close();
-			objectOut.close();
-		}catch (IOException e){
-			System.out.println("IOException Serializing User DB");
-		}
-
-		//Serialize Auctions
-		try{
-			FileOutputStream fileOut = new FileOutputStream(AUCTIONDB_FILE_NAME);
-			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(myAuctionAuctionCalendar);
-			fileOut.close();
-			objectOut.close();
-		}catch (IOException e){
-			System.out.println("IOException Serializing Auction DB");
-		}
-
-	}
 
 	private static void runBehavior() {
 
@@ -149,8 +92,11 @@ class ConsoleUI {
 				else if (null != currentNode.response2 && response == 2)
 					currentNode = currentNode.response2;
 
-				else if (response == 0)
-					currentNode = currentNode.parent;
+				else if (response == 0) {
+				    if(null == currentNode.parent)
+				        logout();
+                    currentNode = currentNode.parent;
+                }
 
 			}
 
@@ -158,9 +104,10 @@ class ConsoleUI {
 		}
 
 	}
-	private static void logout(User theUser) {
+	private static void logout() {
+	    myData.serialize();
 		System.out.println("Thank you for using Auction Central!");
-		System.out.println("\nGoodbye, " + theUser.getFirstName() + " " + theUser.getLastName() + "!\n\n" );
+		System.out.println("You have sucessfully logged out. Goodbye! ");
 		System.exit(0);
 	}
 
@@ -169,19 +116,20 @@ class ConsoleUI {
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theBidder), null);
 
-        TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), () -> AuctionCalendar.printActiveAuctions());
+        TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), () -> myCalendar.printActiveAuctions());
 
         TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theBidder), null);
 
-        TreeNode auctionsBidOn_Node = new TreeNode("", theBidder::printAllMyBidAuctions);
+        TreeNode auctionsBidOn_Node = new TreeNode("\n 1. View All Bids in an Auction\n0. Return", theBidder::printAllMyBidAuctions);
 
         TreeNode itemsBidOn_Node = new TreeNode("\n1. View All\n2. By Specific Auction\n\n0. Return", null);
 
         TreeNode allItemBids_Node = new TreeNode("", theBidder::printAllPlacedBids);
 
-        TreeNode itemsByAuction_Node = new TreeNode("", theBidder::printBidsInAnAuction);
+        TreeNode itemsByAuction_Node = new TreeNode("", ()->theBidder.printBidsInAnAuction(myCalendar));
 
-        TreeNode auctionItemsInAuction_Node = new TreeNode(" ", ()-> printItemsByAuction());
+        TreeNode auctionItemsInAuction_Node = new TreeNode("0. Return", ()->theBidder.promptBid(myData));
+
 
         welcome_Node.response1 = viewAuctions_Node;
         welcome_Node.response2 = historyOptions_Node;
@@ -189,10 +137,14 @@ class ConsoleUI {
         historyOptions_Node.response1 = auctionsBidOn_Node;
         historyOptions_Node.response2 = itemsBidOn_Node;
 
+        auctionsBidOn_Node.response1 = itemsBidOn_Node;
+
         itemsBidOn_Node.response1 = allItemBids_Node;
         itemsBidOn_Node.response2 = auctionsBidOn_Node;
 
         viewAuctions_Node.response1 = auctionItemsInAuction_Node;
+        //auctionItemsInAuction_Node.response1 = placeBid_Node;
+        //placeBid_Node.parent = welcome_Node;
 
         welcome_Node.parent = null;
         viewAuctions_Node.parent = welcome_Node;
@@ -201,27 +153,17 @@ class ConsoleUI {
         itemsBidOn_Node.parent = historyOptions_Node;
         allItemBids_Node.parent = itemsBidOn_Node;
         itemsByAuction_Node.parent = itemsBidOn_Node;
+        auctionItemsInAuction_Node.parent = welcome_Node;
 
         headNode = welcome_Node;
 
     }
 
-	private static void printItemsByAuction() {
-		Scanner scan = new Scanner(System.in);
-		System.out.println("Which auction would you like to view?");
-		int response = scan.nextInt();
-		Auction auction = AuctionCalendar.getAuction(response);
-		while (null == auction && response != 0){
-			//TODO: Left off here, parsing to ensure auction item is correct
-		}
-		auction.printInventorySheet();
-	}
-
 	private static void buildContact(ContactPerson theContact){
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theContact), null);
 
-        TreeNode auctionRequest_Node = new TreeNode("", theContact::submitAuctionRequest);
+        TreeNode auctionRequest_Node = new TreeNode("", ()->theContact.submitAuctionRequest(myData));
 
         TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact),
                 ()->System.out.println(" Active Auction  \n"
@@ -303,35 +245,34 @@ class ConsoleUI {
 
 
     //Builds sample data so deliverable 1 methods can be tested.
-	private static void initialize(){
-		//create users
-		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com");
-		((ContactPerson) contactUser).setMyOrgName("Pat's Pneumonic Penguin Preservation");
-		User bidderUser = new Bidder("Bidder","McBidder", "bidder@bidder.com");
-
-		//create auctions
-        Auction auction1 = new Auction(((ContactPerson) contactUser).getMyOrgName(),
-                ((ContactPerson) contactUser).getMyOrgID(),
-                LocalDateTime.of(2018, 05, 30, 10, 00),
-				null);
-
-        Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
-                LocalDateTime.of(2018, 05, 30, 15, 00),
-                null);
-
-        AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
-        AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
-        auction1.addInventoryItem(item1);
-        auction1.addInventoryItem(item2);
-
-        ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
-        myAuctionAuctionCalendar.addAuction(auction1);
-        myAuctionAuctionCalendar.addAuction(auction2);
-
-		myUserDB.addUser(contactUser);
-		myUserDB.addUser(bidderUser);
-
-	}
+//	private static void initialize(){
+//	    myUserDB = new UserDB();
+//	    myAuctionAuctionCalendar = new AuctionCalendar();
+//		//create users
+//		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com");
+//		((ContactPerson) contactUser).setMyOrgName("Pat's Pneumonic Penguin Preservation");
+//		User bidderUser = new Bidder("Bidder","McBidder", "bidder@bidder.com");
+//
+//		//create auctions
+//        Auction auction1 = new Auction(((ContactPerson) contactUser).getMyOrgName(),
+//                ((ContactPerson) contactUser).getMyOrgID(),
+//                LocalDateTime.of(2018, 05, 30, 10, 00),
+//				null);
+//
+//        Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
+//                LocalDateTime.of(2018, 05, 30, 15, 00),
+//                null);
+//
+//        AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
+//        AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
+//        auction1.addInventoryItem(item1);
+//        auction1.addInventoryItem(item2);
+//
+//        ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
+//        myAuctionAuctionCalendar.addAuction(auction1);
+//        myAuctionAuctionCalendar.addAuction(auction2);
+//
+//	}
     //Nodes for console behavior
 	private static class TreeNode {
 

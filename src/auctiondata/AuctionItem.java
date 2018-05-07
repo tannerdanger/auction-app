@@ -4,6 +4,7 @@
  */
 package auctiondata;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,8 @@ import java.util.Map;
  * @author Wen Shu
  * @version May 4th 2018
  */
-public class AuctionItem {
+public class AuctionItem implements Serializable {
+    private static final long serialVersionUID = 9212387915390331L;
 	private BigDecimal minPrice;
 	
 	private String name;

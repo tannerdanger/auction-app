@@ -12,26 +12,25 @@ public class AuctionCalendar implements Serializable {
 
 	private static final long serialVersionUID = 18675309L;
 
-	public static ArrayList<Auction> getActiveAuctions() {
+	public ArrayList<Auction> getActiveAuctions() {
 		return activeAuctions;
 	}
 
-	private static ArrayList<Auction> activeAuctions = new ArrayList<>();
+	private ArrayList<Auction> activeAuctions = new ArrayList<>();
 	//TODO: an array of PAST auctions? (not in current requrements)
 
-	//TODO: an array of currently scheduled auctions (next 30 days)
-	public static void printActiveAuctions() {
+	public void printActiveAuctions() {
 		for(Auction a : activeAuctions){
 			System.out.println(a.toString());
 		}
 	}
 
-	public static void addAuction(Auction theAuction){
+	public void addAuction(Auction theAuction){
 
 		activeAuctions.add(theAuction);
 
 	}
-	public static Auction getAuction(int auctionID){
+	public Auction getAuction(int auctionID){
 		Auction returnAuction = null;
 		for(Auction a: activeAuctions){
 			if(a.getauctionID() == auctionID) {

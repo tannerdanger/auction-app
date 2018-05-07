@@ -4,6 +4,8 @@ import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Scheduler;
 import storage.AuctionCalendar;
+import storage.DataHandler;
+import storage.UserDB;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class ContactPerson extends User {
 	 * 		Side note, this does not yet check for current auction as I'm not sure yet sure how we will
 	 * 		deal with transitioning current auctions to prior auctions yet.
 	 */
-	public void submitAuctionRequest() {
+	public void submitAuctionRequest(DataHandler theData) {
 		Scanner Scan = new Scanner(System.in);
 		System.out.println("When do you plan to host your auction?");
 		System.out.println("Please enter Time and Date (24Hour time (HH:MI); MM/DD/YYYY:");
@@ -68,7 +70,7 @@ public class ContactPerson extends User {
 		System.out.println("Validating your auction inventory sheet...");
 		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
 
-		if (Scheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
+		if (myScheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
 			System.out.println("Auction Inventory Sheet confirmed.");
 			System.out.println("Your Auction is booked on " + newDate.toString());
 		//	Auction newAuction = new Auction();
@@ -76,7 +78,7 @@ public class ContactPerson extends User {
 			Auction newAuction = new Auction(myOrgName, myOrgID, newDate, null);
 			setMyCurrentAuction(newAuction);
 		    mySubmittedAuctions.add(newAuction);
-            AuctionCalendar.addAuction(newAuction);
+            theData.getMyAuctionCalendar().addAuction(newAuction);
 
 			//TODO ITEM INVENTORY SHEET PRINTOUT
 			System.out.println("Here is your inventory sheet: ");

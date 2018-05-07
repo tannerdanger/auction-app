@@ -1,16 +1,18 @@
 package auctiondata;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * An object representing a user's bid
  */
-public class Bid {
+public class Bid implements Serializable {
+	private static final long serialversionUID = 129348938L;
 	
-	final Auction whichAuction;
-	final AuctionItem item;
-	final BigDecimal sealedBidAmount;
-	final Boolean placedBid;
+	private Auction whichAuction;
+	private AuctionItem item;
+	private BigDecimal sealedBidAmount;
+	private Boolean placedBid;
 	
 	public Bid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
 		whichAuction = theAuction;
@@ -26,4 +28,10 @@ public class Bid {
 	public boolean isBidPlaced() {
 		return placedBid;
 	}
+
+	public Auction getAuction(){
+		return this.whichAuction;
+	}
+
+	//TODO: ToString method
 }

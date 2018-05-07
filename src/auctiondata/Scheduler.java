@@ -21,6 +21,11 @@ public class Scheduler {
 	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
 	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
 	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
+	DataHandler myData;
+
+	public Scheduler(DataHandler theData){
+		myData = theData;
+	}
 
 	/**
 	 * Checks to ensure auction is more than 13 days from today
@@ -35,9 +40,9 @@ public class Scheduler {
 	//I'm not entirely sure, but instead of using AuctionCalender.get....
 	//It will instead need a reference to a calender object we create somewhere
 	//that holds all the auctions.
-	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
+	public boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
 
-		ArrayList<Auction> auctions = AuctionCalendar.getActiveAuctions();
+		ArrayList<Auction> auctions = myData.getMyAuctionCalendar().getActiveAuctions();
 
 		int auctionCount = 0;
 		for (Auction a : auctions) {
@@ -83,8 +88,8 @@ public class Scheduler {
 	//I'm not entirely sure, but instead of using AuctionCalender.get....
 	//It will instead need a reference to a calender object we create somewhere
 	//that holds all the auctions.
-	public static boolean isMaxUpcomingAuctionsExceeded() {
-		return AuctionCalendar.getActiveAuctions().size()
+	public boolean isMaxUpcomingAuctionsExceeded() {
+		return myData.getMyAuctionCalendar().getActiveAuctions().size()
 				< MAX_UPCOMING_AUCTIONS_LIMIT;
 	}
 	
@@ -96,8 +101,8 @@ public class Scheduler {
 	 * @param theNewDate the contact person's suggested date for their new auction
 	 * @return true if we can turn this request into an auction, false otherwise.
 	 */
-	public static boolean isAuctionRequestValid(Auction thePriorAuction,
-			Auction theCurrentAuction, LocalDateTime theNewDate) {
+	public boolean isAuctionRequestValid(Auction thePriorAuction,
+										 Auction theCurrentAuction, LocalDateTime theNewDate) {
 		boolean flag = true;
 		if (flag) {
 			flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction); 
