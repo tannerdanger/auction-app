@@ -34,30 +34,7 @@ public class Bidder extends User implements Serializable {
         super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
         myBids = new ArrayList<>();
         myID = theEmail;
-    }
-
-    public void promptBid(DataHandler myData) {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Which auction would you like to view?");
-        int response = scan.nextInt();
-        Auction selectedAuction = myData.getMyAuctionCalendar().getAuction(response);
-        while (null == selectedAuction && response != 0) {
-            //TODO: Left off here, parsing to ensure auction item is correct
-        }
-        selectedAuction.printInventorySheet();
-        System.out.println("\n1. Place Bid \n0. Return");
-        if (scan.nextInt() == 1) {
-            System.out.println("Enter Item ID:");
-            int itemID = scan.nextInt(); //TODO: Check for correct input
-            AuctionItem bidItem = selectedAuction.getItem(itemID);
-            System.out.println("Bid Amount for " + bidItem.getName() + " (min bet is $" + bidItem.getMinPrice() + ") :");
-            double bidAmount = scan.nextDouble(); //TODO: Check for correct input
-            System.out.println("\nConfirm place a $" + bidAmount + " bid on " + bidItem.getName() + "? (y/n)");
-            if (scan.next().contains("y") || scan.next().contains("Y")) {
-                placeBid(selectedAuction, BigDecimal.valueOf(bidAmount), bidItem);
-            }
-        }
-    }
+    } 
 
 
     public List<Bid> getBids() {
@@ -65,7 +42,7 @@ public class Bidder extends User implements Serializable {
     }
 
 
-    private void placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
+    public void placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
         //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
         final Bid b = new Bid(theAuction, theBidAmount, theItem);
         if (b.isBidPlaced()) {

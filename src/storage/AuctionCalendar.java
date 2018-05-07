@@ -17,13 +17,6 @@ public class AuctionCalendar implements Serializable {
 	}
 
 	private ArrayList<Auction> activeAuctions = new ArrayList<>();
-	//TODO: an array of PAST auctions? (not in current requrements)
-
-	public void printActiveAuctions() {
-		for(Auction a : activeAuctions){
-			System.out.println(a.toString());
-		}
-	}
 
 	public void addAuction(Auction theAuction){
 

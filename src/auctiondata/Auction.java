@@ -119,6 +119,9 @@ public class Auction implements Serializable {
 	    return this.auctionID;
     }
 
+    public String getOrgName() {
+    	return organizationName;
+    }
     @Override
     public String toString(){
 	    return "| ID: " + String.valueOf(this.auctionID) + " | ORG: " +organizationName+ " | DATE: " + this.auctionDate.toString()+ " |";

@@ -23,6 +23,7 @@ import javax.xml.crypto.Data;
  */
 class ConsoleUI {
 	private static AuctionCalendar myCalendar;
+	private static Scheduler myScheduler;
 	private static UserDB myUserDB;
 	private static final String USERDB_FILE_NAME = "users.ser";
 	private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
@@ -34,7 +35,7 @@ class ConsoleUI {
         myData = new DataHandler();
         myUserDB = myData.getMyUserDB();
         myCalendar = myData.getMyAuctionCalendar();
-
+        myScheduler = new Scheduler(myData);
 
 		System.out.println("Login:");
 		User activeUser = myUserDB.getUser(scanner.next());
@@ -116,7 +117,7 @@ class ConsoleUI {
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theBidder), null);
 
-        TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), () -> myCalendar.printActiveAuctions());
+        TreeNode viewAuctions_Node = new TreeNode(buildViewAuctions(), () -> printActiveAuctions());
 
         TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theBidder), null);
 
@@ -128,7 +129,7 @@ class ConsoleUI {
 
         TreeNode itemsByAuction_Node = new TreeNode("", ()->theBidder.printBidsInAnAuction(myCalendar));
 
-        TreeNode auctionItemsInAuction_Node = new TreeNode("0. Return", ()->theBidder.promptBid(myData));
+        TreeNode auctionItemsInAuction_Node = new TreeNode("0. Return", ()->promptBid(theBidder));
 
 
         welcome_Node.response1 = viewAuctions_Node;
@@ -158,18 +159,27 @@ class ConsoleUI {
         headNode = welcome_Node;
 
     }
+    
+    public static void printActiveAuctions() {
+    	System.out.println(" Active Auction  \n" +" ---------------\n ");
+    	for(Auction a : myCalendar.getActiveAuctions()){
+			System.out.println("| Auction ID: " + String.valueOf(a.getauctionID()) + " | ORG: " 
+								+ a.getOrgName() + " | DATE: " + a.getAuctionDate().toString() 
+								+ " |" + "\n");
+		}
+    }
 
 	private static void buildContact(ContactPerson theContact){
 
         TreeNode welcome_Node = new TreeNode(buildTopMessage(theContact), null);
 
         TreeNode auctionRequest_Node = new TreeNode("", ()->theContact.submitAuctionRequest(myData));
+        Auction currAuc = theContact.getMyCurrentAuction();
+
 
         TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact),
-                ()->System.out.println(" Active Auction  \n"
-                        +" ---------------\n "
-                        + theContact.getMyCurrentAuction().toString() + "\n"));
-
+                ()->printCurrentAuction(theContact));
+        
         TreeNode viewAllItems_Node = new TreeNode("\n0. Return", () -> theContact.getMyCurrentAuction().printInventorySheet());
 
         TreeNode addItem_Node = new TreeNode("0. Return", theContact::addInventoryItem);
@@ -188,6 +198,70 @@ class ConsoleUI {
         headNode = welcome_Node;
 
     }
+	
+	public static void printCurrentAuction(ContactPerson theContact) {
+		System.out.println("| Auction ID: " + String.valueOf(theContact.getMyCurrentAuction().getauctionID()) + " | ORG: " 
+				+ theContact.getMyOrgName() + " | DATE: " + theContact.getMyCurrentAuction().getAuctionDate().toString()
+				+ " |" + "\n");
+	}
+	
+	public static void promptBid(Bidder theBidder) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Which auction would you like to view?");
+        int response = scan.nextInt();
+        Auction selectedAuction = myData.getMyAuctionCalendar().getAuction(response);
+        while (null == selectedAuction && response != 0) {
+            //TODO: Left off here, parsing to ensure auction item is correct
+        }
+        selectedAuction.printInventorySheet();
+        System.out.println("\n1. Place Bid \n0. Return");
+        if (scan.nextInt() == 1) {
+            System.out.println("Enter Item ID:");
+            int itemID = scan.nextInt(); //TODO: Check for correct input
+            AuctionItem bidItem = selectedAuction.getItem(itemID);
+            System.out.println("Bid Amount for " + bidItem.getName() + " (min bet is $" + bidItem.getMinPrice() + ") :");
+            double bidAmount = scan.nextDouble(); //TODO: Check for correct input
+            System.out.println("\nConfirm place a $" + bidAmount + " bid on " + bidItem.getName() + "? (y/n)");
+            if (scan.next().contains("y") || scan.next().contains("Y")) {
+                theBidder.placeBid(selectedAuction, BigDecimal.valueOf(bidAmount), bidItem);
+            }
+        }
+    }
+	
+	public static void createAuctionRequest(ContactPerson theContact) {
+		Scanner Scan = new Scanner(System.in);
+
+		System.out.println("When do you plan to host your auction?");
+		System.out.println("Please enter Time and Date (24Hour time (HH:MI); MM/DD/YYYY:");
+		String scannedLine = Scan.nextLine();
+
+		Scanner lineScan = new Scanner(scannedLine);
+	    lineScan.useDelimiter("/");
+
+	    int theMonth = lineScan.nextInt();
+		int theDay = lineScan.nextInt();
+		int theYear = lineScan.nextInt();
+
+		System.out.println("Validating your auction inventory sheet...");
+		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
+
+		if (myScheduler.isAuctionRequestValid(theContact.getPriorAuction(), theContact.getMyCurrentAuction(), newDate)) {
+			System.out.println("Auction Inventory Sheet confirmed.");
+			System.out.println("Your Auction is booked on " + newDate.toString());
+		//	Auction newAuction = new Auction();
+		//	newAuction.setAuctionDate(newDate);
+			Auction a = theContact.createNewAuction(newDate);
+            myCalendar.addAuction(a);
+
+			//TODO ITEM INVENTORY SHEET PRINTOUT
+			System.out.println("Here is your inventory sheet: ");
+		}
+
+
+		Scan.close();
+		lineScan.close();
+	}
+	
     private static String buildTopMessage(User theUser) {
 
         StringBuilder sb = new StringBuilder();

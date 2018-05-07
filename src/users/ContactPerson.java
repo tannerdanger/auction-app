@@ -55,38 +55,8 @@ public class ContactPerson extends User {
 	 * 		deal with transitioning current auctions to prior auctions yet.
 	 */
 	public void submitAuctionRequest(DataHandler theData) {
-		Scanner Scan = new Scanner(System.in);
-		System.out.println("When do you plan to host your auction?");
-		System.out.println("Please enter Time and Date (24Hour time (HH:MI); MM/DD/YYYY:");
-		String scannedLine = Scan.nextLine();
-
-		Scanner lineScan = new Scanner(scannedLine);
-	    lineScan.useDelimiter("/");
-
-	    int theMonth = lineScan.nextInt();
-		int theDay = lineScan.nextInt();
-		int theYear = lineScan.nextInt();
-
-		System.out.println("Validating your auction inventory sheet...");
-		LocalDateTime newDate = LocalDateTime.of(theYear, theMonth, theDay, 0,0);
-
-		if (myScheduler.isAuctionRequestValid(myPriorAuction, myCurrentAuction, newDate)) {
-			System.out.println("Auction Inventory Sheet confirmed.");
-			System.out.println("Your Auction is booked on " + newDate.toString());
-		//	Auction newAuction = new Auction();
-		//	newAuction.setAuctionDate(newDate);
-			Auction newAuction = new Auction(myOrgName, myOrgID, newDate, null);
-			setMyCurrentAuction(newAuction);
-		    mySubmittedAuctions.add(newAuction);
-            theData.getMyAuctionCalendar().addAuction(newAuction);
-
-			//TODO ITEM INVENTORY SHEET PRINTOUT
-			System.out.println("Here is your inventory sheet: ");
-		}
-
-
-		Scan.close();
-		lineScan.close();
+		
+		
 	}
 	public void displaySubmittedAuctions() {
 		for(Auction a : mySubmittedAuctions){
@@ -104,10 +74,18 @@ public class ContactPerson extends User {
 
 		if(null != name && null != minBid) {
 			myCurrentAuction.addInventoryItem(new AuctionItem(minBid, name));
+			
 			myCurrentAuction.printInventorySheet();
 		}
 	}
 
+	public Auction createNewAuction(LocalDateTime theDate) {
+		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
+		setMyCurrentAuction(newAuction);
+	    mySubmittedAuctions.add(newAuction);
+		return newAuction;
+	}
+	
 	public Auction getMyCurrentAuction() {
 		return myCurrentAuction;
 	}
@@ -121,11 +99,18 @@ public class ContactPerson extends User {
         return myOrgID;
     }
 
+    public Auction getPriorAuction() {
+    	return myPriorAuction;
+    }
+    
     public String getMyOrgName() {
         return myOrgName;
     }
     //TODO: Delete this after testing?
-    public void setMyCurrentAuction(Auction myCurrentAuction) {
-        this.myCurrentAuction = myCurrentAuction;
+    public void setMyCurrentAuction(Auction theCurrentAuction) {
+    	if(myCurrentAuction != null) {
+    		myPriorAuction = myCurrentAuction;
+    	}
+        myCurrentAuction = theCurrentAuction;
     }
 }
