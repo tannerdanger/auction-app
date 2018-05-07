@@ -7,6 +7,7 @@ import storage.AuctionCalendar;
 import storage.DataHandler;
 import storage.UserDB;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -63,20 +64,16 @@ public class ContactPerson extends User {
 			System.out.println(a.toString());
 		}
 	}
-	public void addInventoryItem() {
-		Scanner theScanner = new Scanner(System.in);
-		System.out.println("Please enter your new item's name: ");
+	public boolean addInventoryItem(String name, BigDecimal minBid) {
+		boolean result = false;
 
-		String name = theScanner.nextLine();
 
-		System.out.println("Please enter the minimum bid for " + name + " (Can be 0 for no minimum)");
-		Double minBid = theScanner.nextDouble();
-
-		if(null != name && null != minBid) {
-			myCurrentAuction.addInventoryItem(new AuctionItem(minBid, name));
-			
+		if(null != name && minBid != null) {
+			myCurrentAuction.addInventoryItem(new AuctionItem(minBid.doubleValue(), name));
 			myCurrentAuction.printInventorySheet();
+			result = true;
 		}
+		return result;
 	}
 
 	public Auction createNewAuction(LocalDateTime theDate) {

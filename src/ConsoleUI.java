@@ -1,5 +1,6 @@
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
+import auctiondata.Bid;
 import storage.AuctionCalendar;
 import storage.DataHandler;
 import storage.UserDB;
@@ -121,13 +122,13 @@ class ConsoleUI {
 
         TreeNode historyOptions_Node = new TreeNode(buildHistoryMessage(theBidder), null);
 
-        TreeNode auctionsBidOn_Node = new TreeNode("\n 1. View All Bids in an Auction\n0. Return", theBidder::printAllMyBidAuctions);
+        TreeNode auctionsBidOn_Node = new TreeNode("0. Return", () -> printAllMyBidAuctions(theBidder));
 
         TreeNode itemsBidOn_Node = new TreeNode("\n1. View All\n2. By Specific Auction\n\n0. Return", null);
 
-        TreeNode allItemBids_Node = new TreeNode("", theBidder::printAllPlacedBids);
+        TreeNode allItemBids_Node = new TreeNode("", () -> printAllPlacedBids(theBidder));
 
-        TreeNode itemsByAuction_Node = new TreeNode("", ()->theBidder.printBidsInAnAuction(myCalendar));
+        TreeNode itemsByAuction_Node = new TreeNode("", ()->printBidsInAnAuction(theBidder));
 
         TreeNode auctionItemsInAuction_Node = new TreeNode("0. Return", ()->promptBid(theBidder));
 
@@ -138,10 +139,8 @@ class ConsoleUI {
         historyOptions_Node.response1 = auctionsBidOn_Node;
         historyOptions_Node.response2 = itemsBidOn_Node;
 
-        auctionsBidOn_Node.response1 = itemsBidOn_Node;
-
         itemsBidOn_Node.response1 = allItemBids_Node;
-        itemsBidOn_Node.response2 = auctionsBidOn_Node;
+        itemsBidOn_Node.response2 = itemsByAuction_Node;
 
         viewAuctions_Node.response1 = auctionItemsInAuction_Node;
         //auctionItemsInAuction_Node.response1 = placeBid_Node;
@@ -160,6 +159,29 @@ class ConsoleUI {
 
     }
     
+    //View all items I have bid on
+    public static void printAllPlacedBids(Bidder theBidder) {
+
+
+        //Todo: Print out placed bids (all items). Return response covered in console logic
+        int i = 1;
+        for(Bid b : theBidder.getBids()){
+            System.out.println(i +". " + b.toString());
+        }
+        System.out.println("0. Return");
+    }
+
+    //View all auctions I have placed bids on
+    public static void printAllMyBidAuctions(Bidder theBidder) {
+
+        //Todo: Print out all auctions that have been bid in (all auctions I have placed bids in).
+
+        int i = 1;
+        for(Bid b : theBidder.getBids()){
+            System.out.println(i + ".  " + b.getAuction().toString());
+        }
+    }
+    
     public static void printActiveAuctions() {
     	System.out.println(" Active Auction  \n" +" ---------------\n ");
     	for(Auction a : myCalendar.getActiveAuctions()){
@@ -176,13 +198,12 @@ class ConsoleUI {
         TreeNode auctionRequest_Node = new TreeNode("", ()->theContact.submitAuctionRequest(myData));
         Auction currAuc = theContact.getMyCurrentAuction();
 
-
         TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact),
                 ()->printCurrentAuction(theContact));
         
         TreeNode viewAllItems_Node = new TreeNode("\n0. Return", () -> theContact.getMyCurrentAuction().printInventorySheet());
 
-        TreeNode addItem_Node = new TreeNode("0. Return", theContact::addInventoryItem);
+        TreeNode addItem_Node = new TreeNode("0. Return", () -> addInventoryItem(theContact));
 
         welcome_Node.response1 = activeAuction_Node;
         welcome_Node.response2 = auctionRequest_Node;
@@ -205,6 +226,31 @@ class ConsoleUI {
 				+ " |" + "\n");
 	}
 	
+    //view all of my bids on a single auction
+    public static void printBidsInAnAuction(Bidder theBidder) {
+        //prompt user for which auction they want to view bids on
+        //display all items for that auction
+        //TODO: Prompt user for which auction, and then call getAuction from the calendar with that auction ID
+        Scanner scan = new Scanner(System.in);
+        printBidderAuctions(theBidder);
+        System.out.println("Enter Auction ID:");
+        Auction auction = myCalendar.getAuction(scan.nextInt());
+        for(Bid b : theBidder.getBids()){
+            if(b.getAuction().getauctionID() == auction.getauctionID()){
+                System.out.println(b.toString());
+            }
+        }
+    }
+    
+    public static void printBidderAuctions(Bidder theBidder) {
+    	System.out.println(" Auctions bid in  \n" +" ---------------\n ");
+    	for(Bid b : theBidder.getBids()) {
+    		System.out.println("| Auction ID: " + String.valueOf(b.getAuction().getauctionID()) + " | ORG: " 
+    				+ b.getAuction().getOrgName() + " | DATE: " + b.getAuction().getAuctionDate().toString()
+    				+ " |" + "\n");
+    	}
+    }
+	
 	public static void promptBid(Bidder theBidder) {
         Scanner scan = new Scanner(System.in);
         System.out.println("Which auction would you like to view?");
@@ -223,10 +269,26 @@ class ConsoleUI {
             double bidAmount = scan.nextDouble(); //TODO: Check for correct input
             System.out.println("\nConfirm place a $" + bidAmount + " bid on " + bidItem.getName() + "? (y/n)");
             if (scan.next().contains("y") || scan.next().contains("Y")) {
-                theBidder.placeBid(selectedAuction, BigDecimal.valueOf(bidAmount), bidItem);
+                boolean result = theBidder.placeBid(selectedAuction, BigDecimal.valueOf(bidAmount), bidItem);
+                if(result) {
+                	System.out.println("Bid placed successfully.");
+                } else {
+                	System.out.println("Bid failed.");
+                }
             }
         }
     }
+	
+	public static void addInventoryItem(ContactPerson theContact) {
+		Scanner theScanner = new Scanner(System.in);
+		System.out.println("Please enter your new item's name: ");
+
+		String name = theScanner.nextLine();
+
+		System.out.println("Please enter the minimum bid for " + name + " (Can be 0 for no minimum)");
+		Double minBid = theScanner.nextDouble();
+		boolean result = theContact.addInventoryItem(name, new BigDecimal(minBid));
+	}
 	
 	public static void createAuctionRequest(ContactPerson theContact) {
 		Scanner Scan = new Scanner(System.in);

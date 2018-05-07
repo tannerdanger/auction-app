@@ -32,6 +32,4 @@ public class Bid implements Serializable {
 	public Auction getAuction(){
 		return this.whichAuction;
 	}
-
-	//TODO: ToString method
 }
