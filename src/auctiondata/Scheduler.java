@@ -1,6 +1,5 @@
 package auctiondata;
 
-import users.*;
 import storage.*;
 
 import java.time.LocalDate;

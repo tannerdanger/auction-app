@@ -2,7 +2,6 @@ package storage;
 
 import auctiondata.*;
 import users.*;
-import storage.*;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -29,6 +28,7 @@ public class DataHandler {
             FileInputStream fileIn = new FileInputStream(USERDB_FILE_NAME);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             myUserDB = (UserDB)objectIn.readObject();
+            objectIn.close();
         } catch (IOException e) {
             System.out.println("IOException user deserialization is caught. Initializing Sample Data.");
             initializeData();
@@ -43,7 +43,7 @@ public class DataHandler {
                 FileInputStream fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
                 ObjectInputStream objectIn = new ObjectInputStream(fileIn);
                 myAuctionCalendar = (AuctionCalendar) objectIn.readObject();
-
+                objectIn.close();
             } catch (IOException e) {
                 System.out.println("IOException Auction Data deserialization is caught. Using Sample Data");
 
@@ -52,8 +52,6 @@ public class DataHandler {
 
             }
         }
-
-
     }
     public void initializeData(){
 

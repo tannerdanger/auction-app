@@ -6,15 +6,11 @@ import storage.DataHandler;
 import storage.UserDB;
 import users.*;
 
-import java.io.*;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
 import auctiondata.Scheduler;
-
-import javax.xml.crypto.Data;
 
 /**
  * Things I need from other classes:
@@ -55,6 +51,7 @@ class ConsoleUI {
 			    runBehavior();
 			}
 		}
+		scanner.close();
 		    //serialize();
 	}
 
@@ -104,7 +101,7 @@ class ConsoleUI {
 
 
 		}
-
+		scan.close();
 	}
 	private static void logout() {
 	    myData.serialize();
@@ -185,9 +182,7 @@ class ConsoleUI {
     public static void printActiveAuctions() {
     	System.out.println(" Active Auction  \n" +" ---------------\n ");
     	for(Auction a : myCalendar.getActiveAuctions()){
-			System.out.println("| Auction ID: " + String.valueOf(a.getauctionID()) + " | ORG: " 
-								+ a.getOrgName() + " | DATE: " + a.getAuctionDate().toString() 
-								+ " |" + "\n");
+			printAuction(a);
 		}
     }
 
@@ -199,7 +194,7 @@ class ConsoleUI {
         Auction currAuc = theContact.getMyCurrentAuction();
 
         TreeNode activeAuction_Node = new TreeNode(buildAuctionMessage(theContact),
-                ()->printCurrentAuction(theContact));
+                ()->printAuction(theContact.getMyCurrentAuction()));
         
         TreeNode viewAllItems_Node = new TreeNode("\n0. Return", () -> theContact.getMyCurrentAuction().printInventorySheet());
 
@@ -220,10 +215,11 @@ class ConsoleUI {
 
     }
 	
-	public static void printCurrentAuction(ContactPerson theContact) {
-		System.out.println("| Auction ID: " + String.valueOf(theContact.getMyCurrentAuction().getauctionID()) + " | ORG: " 
-				+ theContact.getMyOrgName() + " | DATE: " + theContact.getMyCurrentAuction().getAuctionDate().toString()
+	public static void printAuction(Auction theAuction) {
+		System.out.println("| Auction ID: " + String.valueOf(theAuction.getauctionID()) + " | ORG: " 
+				+ theAuction.getOrgName() + " | DATE: " + theAuction.getAuctionDate().toString()
 				+ " |" + "\n");
+
 	}
 	
     //view all of my bids on a single auction
@@ -236,18 +232,23 @@ class ConsoleUI {
         System.out.println("Enter Auction ID:");
         Auction auction = myCalendar.getAuction(scan.nextInt());
         for(Bid b : theBidder.getBids()){
-            if(b.getAuction().getauctionID() == auction.getauctionID()){
-                System.out.println(b.toString());
+            if(b.getAuction().getauctionID() == auction.getauctionID()) {
+            	printBid(b);
             }
         }
+        scan.close();
+    }
+    
+    public static void printBid(Bid theBid) {
+    	System.out.println("| Auction ID: " + String.valueOf(theBid.getAuction().getauctionID()) + " | ORG: " 
+				+ theBid.getAuction().getOrgName() + " | DATE: " + theBid.getAuction().getAuctionDate().toString()
+				+ " |" + "\n");
     }
     
     public static void printBidderAuctions(Bidder theBidder) {
     	System.out.println(" Auctions bid in  \n" +" ---------------\n ");
     	for(Bid b : theBidder.getBids()) {
-    		System.out.println("| Auction ID: " + String.valueOf(b.getAuction().getauctionID()) + " | ORG: " 
-    				+ b.getAuction().getOrgName() + " | DATE: " + b.getAuction().getAuctionDate().toString()
-    				+ " |" + "\n");
+        	printBid(b);
     	}
     }
 	
@@ -277,6 +278,7 @@ class ConsoleUI {
                 }
             }
         }
+        scan.close();
     }
 	
 	public static void addInventoryItem(ContactPerson theContact) {
@@ -288,6 +290,12 @@ class ConsoleUI {
 		System.out.println("Please enter the minimum bid for " + name + " (Can be 0 for no minimum)");
 		Double minBid = theScanner.nextDouble();
 		boolean result = theContact.addInventoryItem(name, new BigDecimal(minBid));
+		if(result) {
+			System.out.println("Item added successfully");
+		} else {
+			System.out.println("Item add failed.");
+		}
+		theScanner.close();
 	}
 	
 	public static void createAuctionRequest(ContactPerson theContact) {
@@ -379,36 +387,6 @@ class ConsoleUI {
         return sb.toString();
     }
 
-
-    //Builds sample data so deliverable 1 methods can be tested.
-//	private static void initialize(){
-//	    myUserDB = new UserDB();
-//	    myAuctionAuctionCalendar = new AuctionCalendar();
-//		//create users
-//		User contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com");
-//		((ContactPerson) contactUser).setMyOrgName("Pat's Pneumonic Penguin Preservation");
-//		User bidderUser = new Bidder("Bidder","McBidder", "bidder@bidder.com");
-//
-//		//create auctions
-//        Auction auction1 = new Auction(((ContactPerson) contactUser).getMyOrgName(),
-//                ((ContactPerson) contactUser).getMyOrgID(),
-//                LocalDateTime.of(2018, 05, 30, 10, 00),
-//				null);
-//
-//        Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
-//                LocalDateTime.of(2018, 05, 30, 15, 00),
-//                null);
-//
-//        AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
-//        AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
-//        auction1.addInventoryItem(item1);
-//        auction1.addInventoryItem(item2);
-//
-//        ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
-//        myAuctionAuctionCalendar.addAuction(auction1);
-//        myAuctionAuctionCalendar.addAuction(auction2);
-//
-//	}
     //Nodes for console behavior
 	private static class TreeNode {
 

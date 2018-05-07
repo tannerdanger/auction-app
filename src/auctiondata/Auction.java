@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +43,6 @@ public class Auction implements Serializable {
 		organizationName = null;
 		organizationID = -1;
 	}
-
-
 	
 	public Auction(final String theOrganizationName,
 				   int theOranizationID,// make orgID a hash value of the orgName?
@@ -88,7 +85,6 @@ public class Auction implements Serializable {
 		return auctionDate;
 	}
 
-	@SuppressWarnings("deprecation")
 	public LocalTime getAuctionTime() {
 		return auctionTime;
 	}
