@@ -20,6 +20,14 @@ public class DataHandler {
             //Else, initialize with sample data.
         else
             initializeData();
+
+        createAdditionalSampleData();
+    }
+
+    private void createAdditionalSampleData() {
+
+
+
     }
 
     public void deserialize(){

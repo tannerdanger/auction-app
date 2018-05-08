@@ -10,6 +10,7 @@ public class Bid implements Serializable {
 	private static final long serialversionUID = 129348938L;
 	
 	private Auction whichAuction;
+
 	private AuctionItem item;
 	private BigDecimal sealedBidAmount;
 	private Boolean placedBid;
@@ -31,5 +32,13 @@ public class Bid implements Serializable {
 
 	public Auction getAuction(){
 		return this.whichAuction;
+	}
+
+	public double getBidAmount(){
+		return sealedBidAmount.doubleValue();
+	}
+
+	public AuctionItem getItem() {
+		return item;
 	}
 }
