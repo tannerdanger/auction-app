@@ -53,15 +53,24 @@ public class Bidder extends User implements Serializable {
         return result;
     }
 
-    public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
-        //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
-        final Bid b = new Bid(theAuction, theBidAmount, theItem);
-        boolean result = false;
-        if (b.isBidPlaced()) {
-            myBids.add(b);
-            theItem.addSealedBids(myID, theBidAmount);
-            result = true;
-        }
-        return result;
-    }
+  public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
+  //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
+	  final Bid b = new Bid(theAuction, theBidAmount, theItem);
+	  boolean result = false;
+	
+	  try {
+	      myBidsPerAuction.putIfAbsent(theAuction, 0);
+	      if (b.isBidPlaced() && myBidsPerAuction.get(theAuction) < 4) {
+	          myBids.add(b);
+	          theItem.addSealedBids(myID, theBidAmount);
+	          myBidsPerAuction.put(theAuction, myBidsPerAuction.get(theAuction) + 1);
+	          result = true;
+	      }
+	  } catch(NullPointerException e) {
+	      System.out.print("NullPointerException caught");
+	
+	  }
+	
+	          return result;
+	}
 }
