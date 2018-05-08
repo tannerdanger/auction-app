@@ -20,6 +20,7 @@ public class Scheduler {
 	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
 	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
 	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
+	private static final int MAX_DAILY_AUCTION_CAPACITY = 2;
 	DataHandler myData;
 
 	public Scheduler(DataHandler theData){
@@ -47,7 +48,7 @@ public class Scheduler {
 			if (a.getAuctionDate().equals(auctionRequestDate))
 				auctionCount++;
 		}
-		return auctionCount > 2;
+		return auctionCount >= MAX_DAILY_AUCTION_CAPACITY;
 	}
 
 	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
