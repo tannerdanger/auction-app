@@ -5,19 +5,18 @@ import auctiondata.AuctionItem;
 import auctiondata.Scheduler;
 import storage.DataHandler;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 /**
  * Contact person class, saves relevent information to a Contact
  */
-public class ContactPerson extends User implements Serializable {
+public class ContactPerson extends User {
 	/**
 	 * serialized id
 	 */
 	private static final long serialVersionUID = -710092057770182337L;
-	//private ArrayList<Auction> mySubmittedAuctions;
+	private ArrayList<Auction> mySubmittedAuctions;
 
 	private String myOrgName;
 	private int myOrgID;
@@ -25,25 +24,36 @@ public class ContactPerson extends User implements Serializable {
 	/*
 	 * The Contact Person's previous Auction
 	 */
-	private Auction myPriorAuction;
-
-
-
-    /*
-	 * The Contact Person's current Auction
-	 */
 	private Auction myCurrentAuction;
-	private Scheduler myScheduler;
+
 	/*
 	 * Constructor for Contact Person, Will take a First name, Last name, and email.
 	 * Will set the current and prior auction to null.
 	 */
 	public ContactPerson(String theFirst, String theLast, String theEmail) {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
-		myPriorAuction = null;
 		myCurrentAuction = null;
+		mySubmittedAuctions = new ArrayList<Auction>();
 	}
 
+	/*
+	 * Goes through the process of submitting an auction request.
+	 * Asks user for the date of the new auction.
+	 * Checks the validity of this date.
+	 * If valid, it lets the Contact Person know and then creates this auction and sets it to
+	 * 		the Contact Person's current auction.
+	 * 		Side note, this does not yet check for current auction as I'm not sure yet sure how we will
+	 * 		deal with transitioning current auctions to prior auctions yet.
+	 */
+	public void submitAuctionRequest(DataHandler theData) {
+		
+		
+	}
+	public void displaySubmittedAuctions() {
+		for(Auction a : mySubmittedAuctions){
+			System.out.println(a.toString());
+		}
+	}
 	public boolean addInventoryItem(String name, BigDecimal minBid) {
 		boolean result = false;
 
@@ -59,13 +69,8 @@ public class ContactPerson extends User implements Serializable {
 	public Auction createNewAuction(LocalDateTime theDate) {
 		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
 		setMyCurrentAuction(newAuction);
-	    //mySubmittedAuctions.add(newAuction);
-		myCurrentAuction = newAuction;
+	    mySubmittedAuctions.add(newAuction);
 		return newAuction;
-	}
-	
-	public Auction getMyCurrentAuction() {
-		return myCurrentAuction;
 	}
 
 	public void setMyOrgName(String myOrgName) {
@@ -77,8 +82,8 @@ public class ContactPerson extends User implements Serializable {
         return myOrgID;
     }
 
-    public Auction getPriorAuction() {
-    	return myPriorAuction;
+    public Auction getCurrentAuction() {
+    	return myCurrentAuction;
     }
     
     public String getMyOrgName() {
@@ -86,9 +91,6 @@ public class ContactPerson extends User implements Serializable {
     }
     //TODO: Delete this after testing?
     public void setMyCurrentAuction(Auction theCurrentAuction) {
-    	if(myCurrentAuction != null) {
-    		myPriorAuction = myCurrentAuction;
-    	}
         myCurrentAuction = theCurrentAuction;
     }
-}
+}	

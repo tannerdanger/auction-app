@@ -20,6 +20,7 @@ public class Scheduler {
 	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
 	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
 	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
+	private static final int MAX_DAILY_AUCTION_CAPACITY = 2;
 	DataHandler myData;
 
 	public Scheduler(DataHandler theData){
@@ -32,7 +33,6 @@ public class Scheduler {
 	 * @return true if date is valid
 	 */
 	public static boolean isMinDaysOut(LocalDateTime theAuctionDate){
-
 		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(13));
 	}
 
@@ -48,8 +48,7 @@ public class Scheduler {
 			if (a.getAuctionDate().equals(auctionRequestDate))
 				auctionCount++;
 		}
-
-		return auctionCount < 2;
+		return auctionCount >= MAX_DAILY_AUCTION_CAPACITY;
 	}
 
 	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
@@ -59,26 +58,24 @@ public class Scheduler {
 	}
 	
 	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDateTime theAuctionDate) {
-		
 		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
 	}
 	
 	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
-			final LocalDateTime theNewAuctionDate) {
+			final LocalDate theNewAuctionDate) {
 		
 		LocalDate checkRequiredTimePassDate = 
 		thePriorAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
 		).plusMonths(REQUIRED_MONTHS_IN_BETWEEN_AUCTION
 		).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
-		
-		return checkRequiredTimePassDate.equals(theNewAuctionDate);
+		return checkRequiredTimePassDate.isBefore(theNewAuctionDate) 
+				|| checkRequiredTimePassDate.equals(theNewAuctionDate);
 
 	}
 	
-	public static boolean isThereNoPriorAuction (final Auction thePriorAuction,
-												 final Auction theCurrentAuction) {
+	public static boolean isThereNoPriorAuction (final Auction thePriorAuction) {
 		boolean flag = false;
-		if (thePriorAuction == null && theCurrentAuction == null) {
+		if (thePriorAuction == null) {
 			flag = true;
 		}
 		return flag;
@@ -89,7 +86,7 @@ public class Scheduler {
 	//that holds all the auctions.
 	public boolean isMaxUpcomingAuctionsExceeded() {
 		return myData.getMyAuctionCalendar().getActiveAuctions().size()
-				< MAX_UPCOMING_AUCTIONS_LIMIT;
+				>= MAX_UPCOMING_AUCTIONS_LIMIT;
 	}
 	
 	/**
@@ -100,15 +97,14 @@ public class Scheduler {
 	 * @param theNewDate the contact person's suggested date for their new auction
 	 * @return true if we can turn this request into an auction, false otherwise.
 	 */
-	public boolean isAuctionRequestValid(Auction thePriorAuction,
-										 Auction theCurrentAuction, LocalDateTime theNewDate) {
+	public boolean isAuctionRequestValid(Auction thePriorAuction, LocalDateTime theNewDate) {
 		
-		boolean flag = isThereNoPriorAuction(thePriorAuction, theCurrentAuction);
+		boolean flag = isThereNoPriorAuction(thePriorAuction);
 		
 		if (!flag) {
 			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(thePriorAuction,
-					theNewDate) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
-					isMaxDaysOutExceeded(theNewDate) && isMinDaysOut(theNewDate);
+					theNewDate.toLocalDate()) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
+					isMinDaysOut(theNewDate) && isMaxDaysOutExceeded(theNewDate);
 		}
 		return flag;
 	}
