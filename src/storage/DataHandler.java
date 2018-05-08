@@ -6,6 +6,11 @@ import users.*;
 import java.io.*;
 import java.time.LocalDateTime;
 
+/**
+ * 
+ * @author Tanner Brown
+ * @version 05/07/2018
+ */
 public class DataHandler {
     private static final String USERDB_FILE_NAME = "users.ser";
     private static final String AUCTIONDB_FILE_NAME = "calendar.ser";

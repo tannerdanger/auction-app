@@ -13,7 +13,13 @@ import org.junit.Test;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import users.Bidder;
-
+/**
+ * JUnit 4 test class that checks if requested auction date
+ * is too far away.
+ * 
+ * @Author Wen Shu, Charlie Grumer
+ * @version 05/07/2018
+ */
 public class AuctionDate {
 
 	    private static final double MIN_PRICE = 99;

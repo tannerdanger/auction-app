@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 /**
  * A serializable class that stores all auction data
+ * 
+ * @author Tanner Brown
+ * @version 05/07/2018
  */
 public class AuctionCalendar implements Serializable {
 

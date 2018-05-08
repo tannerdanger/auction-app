@@ -8,6 +8,8 @@ import java.util.Map;
 
 /**
  * A serializable class that stores all users data
+ * @author Tanner Brown
+ * @version 05/07/2018
  */
 public class UserDB implements Serializable {
 

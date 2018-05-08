@@ -9,7 +9,8 @@ import static org.junit.Assert.*;
  * A JUnit4 class to test the Scheduler class to ensure the date
  * checks for new auctions work properly.
  *
- * @Author Tanner Brown
+ * @Author Tanner Brown, Charlie Grumer
+ * @version 05/07/2018
  */
 public class SchedulerTestMinDaysOut {
 

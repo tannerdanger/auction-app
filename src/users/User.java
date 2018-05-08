@@ -5,6 +5,8 @@ import java.io.Serializable;
 /**
  * User class, saves relevent information to both bidders and contacts,
  * i.e. contact information
+ * @author Tanner Brown
+ * @version 05/07/2018
  */
 public class User implements Serializable{
 

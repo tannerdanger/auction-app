@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * acceptable date ranges.
  *
  * @author Tanner Brown, Charlie Grumer, David Perez
- * 
+ * @version 05/07/2018
  */
 public class Scheduler {
 

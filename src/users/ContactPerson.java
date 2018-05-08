@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 /**
  * Contact person class, saves relevent information to a Contact
+ * @author Gurchetan Singh, David Perez
+ * @version 05/07/2018
  */
 public class ContactPerson extends User {
 	/**

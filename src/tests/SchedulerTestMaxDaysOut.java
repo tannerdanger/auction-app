@@ -14,6 +14,7 @@ import auctiondata.Scheduler;
  * is too far away.
  *
  * @Author Charlie Grumer
+ * @version 05/07/2018
  */
 public class SchedulerTestMaxDaysOut {
 	

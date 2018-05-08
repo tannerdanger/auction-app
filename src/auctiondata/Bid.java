@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 
 /**
  * An object representing a user's bid
+ * 
+ * @author Charlie Grumer
+ * @version 05/07/2018
  */
 public class Bid implements Serializable {
 	private static final long serialversionUID = 129348938L;
