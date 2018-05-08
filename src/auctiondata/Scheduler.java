@@ -21,6 +21,7 @@ public class Scheduler {
 	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
 	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
 	private static final int MAX_DAILY_AUCTION_CAPACITY = 2;
+	private static final int MIN_DAYS_OUT = 14;
 	DataHandler myData;
 
 	public Scheduler(DataHandler theData){
@@ -28,12 +29,12 @@ public class Scheduler {
 	}
 
 	/**
-	 * Checks to ensure auction is more than 13 days from today
+	 * Checks to ensure auction is more than min days from today
 	 * @param theAuctionDate the requested date of auction
 	 * @return true if date is valid
 	 */
 	public static boolean isMinDaysOut(LocalDateTime theAuctionDate){
-		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(13));
+		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(MIN_DAYS_OUT - 1));
 	}
 
 	//I'm not entirely sure, but instead of using AuctionCalender.get....
@@ -59,6 +60,10 @@ public class Scheduler {
 	
 	public static int getMaxDaysOut() {
 		return MAX_DAYS_OUT;
+	}
+	
+	public static int getMinDaysOut() {
+		return MIN_DAYS_OUT;
 	}
 	
 	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,

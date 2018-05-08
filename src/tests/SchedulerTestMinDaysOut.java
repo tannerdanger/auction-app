@@ -11,10 +11,7 @@ import static org.junit.Assert.*;
  *
  * @Author Tanner Brown
  */
-public class SchedulerTest {
-
-
-
+public class SchedulerTestMinDaysOut {
 
 	//The following tests business rule 7e: No auction can be scheduled
 	// less than a set # of days from the current date, default of 14.
@@ -23,10 +20,9 @@ public class SchedulerTest {
 		/**
 		 * Tests to ensure that an auction can be scheduled
 		 * if it is the min+1 days from current date.
-		 * (Min = 14)
 		 */
 		assertTrue(Scheduler.isMinDaysOut(
-				LocalDateTime.now().plusDays(15)));
+				LocalDateTime.now().plusDays(Scheduler.getMinDaysOut() + 1)));
 	}
 
 	@Test
@@ -34,10 +30,9 @@ public class SchedulerTest {
 		/**
 		 * Tests to ensure that an auction can be scheduled
 		 * if it is exactly the min days from current date.
-		 * (Min = 14)
 		 */
 		assertTrue(Scheduler.isMinDaysOut(
-				LocalDateTime.now().plusDays(14)));
+				LocalDateTime.now().plusDays(Scheduler.getMinDaysOut())));
 	}
 
 	@Test
@@ -45,10 +40,9 @@ public class SchedulerTest {
 		/**
 		 * Tests to ensure that an auction can NOT be scheduled
 		 * if it is the min-1 days from current date.
-		 * (Min = 14)
 		 */
 		assertFalse(Scheduler.isMinDaysOut(
-				LocalDateTime.now().plusDays(13)));
+				LocalDateTime.now().plusDays(Scheduler.getMinDaysOut() - 1)));
 	}
 
 }

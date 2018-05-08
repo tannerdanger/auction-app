@@ -15,7 +15,7 @@ import auctiondata.Scheduler;
  *
  * @Author Charlie Grumer
  */
-public class SchedulerTestMaxDate {
+public class SchedulerTestMaxDaysOut {
 	
 	@Test
 	public void isMaxDaysOutExceeded_lessThanMaxDaysOut_True() {
