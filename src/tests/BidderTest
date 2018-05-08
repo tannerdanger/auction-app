@@ -1,0 +1,86 @@
+
+package users;
+
+
+import static org.junit.Assert.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import auctiondata.Auction;
+import auctiondata.AuctionItem;
+
+public class BidderTest {
+	
+	/**
+	 * @author Wen Shu, Gurchetan Singh
+	 */
+
+    private static final double MIN_PRICE = 99;
+    private static final int AUCTIONID = 12345;
+    Bidder bidder;
+    Auction auction;
+    AuctionItem item, item1, item2, item3, item4, item5;
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        bidder = new Bidder("wen", "shu", "bidder_wen@bidder.com");
+        
+        item = new AuctionItem(MIN_PRICE, "answers for TCSS 360 final");
+        
+        item1 = new AuctionItem(MIN_PRICE, "Item1");
+        item2 = new AuctionItem(MIN_PRICE, "Item2");
+        item3 = new AuctionItem(MIN_PRICE, "Item3");
+        item4 = new AuctionItem(MIN_PRICE, "Item4");
+        item5 = new AuctionItem(MIN_PRICE, "Item5");
+        
+        auction = new Auction("UWTacoma", AUCTIONID, LocalDateTime.of(2018, 05, 25, 12, 00), null);
+        auction.addInventoryItem(item);
+        auction.addInventoryItem(item1);
+        auction.addInventoryItem(item2);
+        auction.addInventoryItem(item3);
+        auction.addInventoryItem(item4);
+        auction.addInventoryItem(item5);
+        
+    }
+    
+   
+
+    @Test
+    public void placeBid_bidIsGreaterThanMinPrice_True() {
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item));
+    }
+
+    @Test
+    public void placeBid_bidIsEqualtoMinPrice_True() {
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE), item));
+    }
+
+    @Test
+    public void placeBid_bidIsLessThanMinPrice_False() {
+        assertFalse(bidder.placeBid(auction, new BigDecimal(MIN_PRICE - 1), item));
+    }
+
+    @Test
+    public void placeBid_IfLessThanMaximum_True() {
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item1));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item2));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item3));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item4));
+    }
+
+    @Test
+    public void placeBid_IfMoreThanMaximum_False() {
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item1));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item2));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item3));
+        assertTrue(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item4));
+        
+        assertFalse(bidder.placeBid(auction, new BigDecimal(MIN_PRICE + 1), item5));
+    }
+}
