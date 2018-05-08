@@ -2,6 +2,7 @@ package users;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,13 @@ public class Bidder extends User implements Serializable {
         return new ArrayList<Bid>(myBids);
     }
     
+    public boolean isDateValid(LocalDate theAuctionDate) {
+        boolean result = false;
+           if(LocalDate.now().isBefore(theAuctionDate)) {
+            result = true;
+        }
+        return result;
+    }
 
     public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
         //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
