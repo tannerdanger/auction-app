@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import auctiondata.Auction;
@@ -28,12 +29,14 @@ public class Bidder extends User implements Serializable {
     private final List<Bid> myBids;
     private final String myID;
     private int myBidCounter;
+    private HashMap<Auction, Integer> myBidsPerAuction;
 
     public Bidder(String theFirst, String theLast, String theEmail) {
         super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
         myBids = new ArrayList<>();
         myID = theEmail;
         myBidCounter = 0;
+        myBidsPerAuction = new HashMap<>();
     } 
 
 
@@ -53,10 +56,10 @@ public class Bidder extends User implements Serializable {
         //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
         final Bid b = new Bid(theAuction, theBidAmount, theItem);
         boolean result = false;
-        if (b.isBidPlaced() && (myBidCounter < 4)) {
+        if (b.isBidPlaced() && (myBidsPerAuction.get(theAuction) < 4)) {
             myBids.add(b);
             theItem.addSealedBids(myID, theBidAmount);
-            myBidCounter++;
+            myBidsPerAuction.put(theAuction, myBidsPerAuction.get(theAuction) + 1);
             result = true;
         }
         return result;
