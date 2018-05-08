@@ -54,11 +54,11 @@ public class Scheduler {
 	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
 
 		//Auction is scheduled for less than 60 days from now
-		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(61));
+		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
 	}
 	
-	public static boolean isAuctionDateLessThanEqualToMaxDaysOut(final LocalDateTime theAuctionDate) {
-		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
+	public static int getMaxDaysOut() {
+		return MAX_DAYS_OUT;
 	}
 	
 	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
