@@ -289,7 +289,6 @@ class ConsoleUI {
                 }
             }
         }
-//        scan.close();
     }
 
     public static void addInventoryItem(ContactPerson theContact) {
