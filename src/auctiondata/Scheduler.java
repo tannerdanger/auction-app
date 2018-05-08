@@ -64,14 +64,13 @@ public class Scheduler {
 	}
 	
 	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
-			final LocalDateTime theNewAuctionDate) {
+			final LocalDate theNewAuctionDate) {
 		
 		LocalDate checkRequiredTimePassDate = 
 		thePriorAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
 		).plusMonths(REQUIRED_MONTHS_IN_BETWEEN_AUCTION
 		).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
-		
-		return checkRequiredTimePassDate.equals(theNewAuctionDate);
+		return checkRequiredTimePassDate.isBefore(theNewAuctionDate) || checkRequiredTimePassDate.equals(theNewAuctionDate);
 
 	}
 	
@@ -107,7 +106,7 @@ public class Scheduler {
 		
 		if (!flag) {
 			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(thePriorAuction,
-					theNewDate) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
+					theNewDate.toLocalDate()) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
 					isMaxDaysOutExceeded(theNewDate) && isMinDaysOut(theNewDate);
 		}
 		return flag;
