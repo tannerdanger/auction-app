@@ -20,27 +20,21 @@ public class SchedulerTestMaxDate {
 	private static final int MAX_DAYS_OUT = 60;
 
 	@Test
-	public void isAuctionDateLessThanOrEqualToMaxDaysOut_lessThanMaxDaysOut_True() {
-		assertTrue(Scheduler
-				  .isAuctionDateLessThanEqualToMaxDaysOut
-				  (LocalDateTime.now().plusDays(
-				  MAX_DAYS_OUT - 1)));
+	public void isMaxDaysOutExceeded_lessThanMaxDaysOut_True() {
+		assertTrue(Scheduler.isMaxDaysOutExceeded
+				  (LocalDateTime.now().plusDays(Scheduler.getMaxDaysOut() - 1)));
 	}
 
 	@Test
-	public void isAuctionDateLessThanOrEqualToMaxDaysOut_equalToMaxDaysOut_True() {
-		assertTrue(Scheduler
-				  .isAuctionDateLessThanEqualToMaxDaysOut
-				  (LocalDateTime.now().plusDays(
-				  MAX_DAYS_OUT)));
+	public void isMaxDaysOutExceeded_equalToMaxDaysOut_True() {
+		assertTrue(Scheduler.isMaxDaysOutExceeded
+				  (LocalDateTime.now().plusDays(Scheduler.getMaxDaysOut())));
 	}
 	
 	@Test
-	public void isAuctionDateLessThanOrEqualToMaxDaysOut_greaterThanMaxDaysOut_False() {
-		assertFalse(Scheduler
-					.isAuctionDateLessThanEqualToMaxDaysOut
-					(LocalDateTime.now().plusDays(
-					MAX_DAYS_OUT + 1)));
+	public void isMaxDaysOutExceeded_greaterThanToMaxDaysOut_False() {
+		assertFalse(Scheduler.isMaxDaysOutExceeded
+				  (LocalDateTime.now().plusDays(Scheduler.getMaxDaysOut() + 1)));
 	}
 	
 }
