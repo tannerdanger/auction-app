@@ -16,9 +16,7 @@ import auctiondata.Scheduler;
  * @Author Charlie Grumer
  */
 public class SchedulerTestMaxDate {
-
-	private static final int MAX_DAYS_OUT = 60;
-
+	
 	@Test
 	public void isMaxDaysOutExceeded_lessThanMaxDaysOut_True() {
 		assertTrue(Scheduler.isMaxDaysOutExceeded
