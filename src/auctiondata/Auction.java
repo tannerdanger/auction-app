@@ -59,13 +59,23 @@ public class Auction implements Serializable {
 		auctionID = createUniqueID();
 	}
 	
-	public void addInventoryItem(final AuctionItem theItem) {
-		inventorySheet.put(theItem.getUniqueID(), theItem);
-	}
-	
-	public void removeInventoryItem(final String theUniqueID) {
-		inventorySheet.remove(theUniqueID);
-	}
+	public boolean addInventoryItem(final AuctionItem theItem) {
+        boolean result = false;
+        if(inventorySheet.size() < 10) {
+            inventorySheet.put(theItem.getUniqueID(), theItem);
+            result = true;
+        }
+        return result;
+    }
+
+    public boolean removeInventoryItem(final int theUniqueID) {
+        boolean result = false;
+        if(inventorySheet.size() != 0) {
+            inventorySheet.remove(theUniqueID);
+        }
+        return result;
+    }
+
 	
 	public void setAuctionDate(LocalDate auctionDate) {
 		this.auctionDate = auctionDate;
