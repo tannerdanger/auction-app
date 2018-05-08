@@ -131,6 +131,47 @@ public class SubmitAuctionRequestTest {
 		
 		assertTrue(theScheduler.isMaxUpcomingAuctionsExceeded());
 	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_noAuctionsOnThisDay_False() {
+		DataHandler newData = new DataHandler();
+		
+		newData.initializeData();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		
+		Scheduler theScheduler = new Scheduler(newData);
+		assertFalse(theScheduler.isMaxDailyAuctionsExceeded(priorDate));
+	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_lessThanMaxAuctions_False() {
+		DataHandler newData = new DataHandler();
+		
+		newData.initializeData();
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 1; i++) {
+			Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+			newData.getMyAuctionCalendar().getActiveAuctions().add(priorAuction);
+			
+		}
+		Scheduler theScheduler = new Scheduler(newData);
+		
+		assertFalse(theScheduler.isMaxDailyAuctionsExceeded(priorDate));
+	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_atMaxCapacityDailyAuctions_True() {
+		DataHandler newData = new DataHandler();
+		
+		newData.initializeData();
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 2; i++) {
+			Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+			newData.getMyAuctionCalendar().getActiveAuctions().add(priorAuction);
+			
 
-
+		}
+		Scheduler theScheduler = new Scheduler(newData);
+		
+		assertTrue(theScheduler.isMaxDailyAuctionsExceeded(priorDate));
+	}
 }

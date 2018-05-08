@@ -46,7 +46,7 @@ public class Scheduler {
 
 		int auctionCount = 0;
 		for (Auction a : auctions) {
-			if (a.getAuctionDate().equals(auctionRequestDate))
+			if (a.getAuctionDate().isEqual(auctionRequestDate.toLocalDate()))
 				auctionCount++;
 		}
 		return auctionCount >= MAX_DAILY_AUCTION_CAPACITY;
