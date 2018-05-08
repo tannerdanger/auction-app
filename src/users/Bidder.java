@@ -56,7 +56,10 @@ public class Bidder extends User implements Serializable {
         //Todo: Prompt user for info for a bid to place, then try to create a new Bid object and add it to the bidder's bid array
         final Bid b = new Bid(theAuction, theBidAmount, theItem);
         boolean result = false;
-        if (b.isBidPlaced() && myBidsPerAuction.get(theAuction) != null && myBidsPerAuction.get(theAuction) < 4) {
+        if(myBidsPerAuction.get(theAuction) == null) {
+            myBidsPerAuction.put(theAuction, 0);
+        }
+        if (b.isBidPlaced() && myBidsPerAuction.get(theAuction) < 4) {
             myBids.add(b);
             theItem.addSealedBids(myID, theBidAmount);
             myBidsPerAuction.put(theAuction, myBidsPerAuction.get(theAuction) + 1);
