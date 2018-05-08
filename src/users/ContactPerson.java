@@ -95,4 +95,5 @@ public class ContactPerson extends User {
     public void setMyCurrentAuction(Auction theCurrentAuction) {
         myCurrentAuction = theCurrentAuction;
     }
+    
 }	

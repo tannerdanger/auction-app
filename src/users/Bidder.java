@@ -23,6 +23,7 @@ public class Bidder extends User implements Serializable {
      *
      */
     private static final long serialVersionUID = 2136532391266767810L;
+    private static final int TOTAL_MAX_ALLOWED_BIDS = 10;
 
     //TODO: Define values associated with a bidder. i.e. an array of auctions that bids have been placed in?
     //And/or an array of auction items that have been bid on?
@@ -59,7 +60,8 @@ public class Bidder extends User implements Serializable {
         if(myBidsPerAuction.get(theAuction) == null) {
             myBidsPerAuction.put(theAuction, 0);
         }
-        if (b.isBidPlaced() && myBidsPerAuction.get(theAuction) < 4) {
+        if (b.isBidPlaced() && myBidsPerAuction.get(theAuction) < 4 
+        		&& myBids.size() < TOTAL_MAX_ALLOWED_BIDS) {
             myBids.add(b);
             theItem.addSealedBids(myID, theBidAmount);
             myBidsPerAuction.put(theAuction, myBidsPerAuction.get(theAuction) + 1);
