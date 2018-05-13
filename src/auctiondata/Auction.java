@@ -19,6 +19,8 @@ import auctiondata.AuctionItem;
  * @version May 4th 2018
  */
 public class Auction implements Serializable {
+	
+	private static final int DEFAULT_INVENTORY_CAPACITY = 10;
 
     private static final long serialVersionUID = 92884087991050331L;
 
@@ -61,7 +63,7 @@ public class Auction implements Serializable {
 	
 	public boolean addInventoryItem(final AuctionItem theItem) {
         boolean result = false;
-        if(inventorySheet.size() < 10) {
+        if(inventorySheet.size() < DEFAULT_INVENTORY_CAPACITY) {
             inventorySheet.put(theItem.getUniqueID(), theItem);
             result = true;
         }
@@ -70,10 +72,23 @@ public class Auction implements Serializable {
 
     public boolean removeInventoryItem(final int theUniqueID) {
         boolean result = false;
-        if(inventorySheet.size() != 0) {
+        if(inventorySheet.size() > 0) {
             inventorySheet.remove(theUniqueID);
+            result = true;
         }
         return result;
+    }
+    
+    /**
+     * 
+     * @return true if the inventory sheet is full; otherwise, false.
+     */
+    public boolean isInventoryFull() {
+    	boolean result = false;
+    	if(!(inventorySheet.size() < 10)) {
+    		result = true;
+    	}
+    	return result;
     }
 
 	
