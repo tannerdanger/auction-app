@@ -23,8 +23,8 @@ public class Bidder extends User implements Serializable {
      *
      */
     private static final long serialVersionUID = 2136532391266767810L;
-    private static final int MAX_BIDS_TOTAL = 12;
-    private static final int MAX_BIDS_PER_AUCTION = 8;
+    public static final int MAX_BIDS_TOTAL = 12;
+    public static final int MAX_BIDS_PER_AUCTION = 8;
 
     //TODO: Define values associated with a bidder. i.e. an array of auctions that bids have been placed in?
     //And/or an array of auction items that have been bid on?
@@ -50,12 +50,8 @@ public class Bidder extends User implements Serializable {
     	return theBidAmount.doubleValue() > theItem.getMinPrice();
     }
        
-    public boolean isDateValid(LocalDate theAuctionDate) {
-        boolean result = false;
-           if(LocalDate.now().isBefore(theAuctionDate)) {
-            result = true;
-        }
-        return result;
+    public static boolean isDateValid(LocalDate theAuctionDate) {
+        return LocalDate.now().isBefore(theAuctionDate);
     }
 
     public boolean isBelowMaxBidsPerAuction(final Auction theAuction) {
