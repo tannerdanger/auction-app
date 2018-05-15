@@ -11,8 +11,8 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
-		//ConsoleUI.start();
-	    runAuctionCentral();
+    		ConsoleUI.start();
+	    //runAuctionCentral();
     }
 
 	private static void runAuctionCentral() {
@@ -26,6 +26,7 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run(){
+				new MainGUI();
 
 				if(Bidder.class.equals(theUser.getClass()))
 					new BidderGUI((Bidder)theUser, calendar);
