@@ -1,9 +1,11 @@
 import GUI.BidderGUI;
+import auctiondata.Auction;
 import storage.*;
 import users.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -12,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
 		//ConsoleUI.start();
-	    runAuctionCentral();
+	   runAuctionCentral();
     }
 
 	private static void runAuctionCentral() {
@@ -29,8 +31,9 @@ public class Main {
 
 				if(Bidder.class.equals(theUser.getClass()))
 					new BidderGUI((Bidder)theUser, calendar);
-				else if(ContactPerson.class.equals(theUser.getClass()))
-					System.out.println("Logging in Contact - (This print for testing only)");
+				else if(ContactPerson.class.equals(theUser.getClass())) {
+					//Do other stuff
+				}
 					//new ContactPersonGUI((ContactPerson)theUser, calendar);
 			}
 		});
