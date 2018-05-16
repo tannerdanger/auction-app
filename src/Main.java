@@ -1,4 +1,5 @@
 import GUI.BidderGUI;
+import GUI.ContactPersonGUIold;
 import storage.*;
 import users.*;
 
@@ -11,8 +12,8 @@ import java.awt.*;
 public class Main {
 
     public static void main(String[] args) {
-    		ConsoleUI.start();
-	    //runAuctionCentral();
+    		//ConsoleUI.start();
+	    runAuctionCentral();
     }
 
 	private static void runAuctionCentral() {
@@ -26,13 +27,15 @@ public class Main {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run(){
-				new MainGUI();
 
-				if(Bidder.class.equals(theUser.getClass()))
+				if(Bidder.class.equals(theUser.getClass())) {
 					new BidderGUI((Bidder)theUser, calendar);
-				else if(ContactPerson.class.equals(theUser.getClass()))
-					System.out.println("Logging in Contact - (This print for testing only)");
-					//new ContactPersonGUI((ContactPerson)theUser, calendar);
+				}
+				else if(ContactPerson.class.equals(theUser.getClass())) {
+					new ContactPersonGUIold((ContactPerson)theUser);
+					System.out.println("A GUI should be visible by now - (This print for testing only)");
+				}
+					
 			}
 		});
 	}
