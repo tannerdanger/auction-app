@@ -35,6 +35,9 @@ public class Main {
 					new ContactPersonGUIold((ContactPerson)theUser);
 					System.out.println("A GUI should be visible by now - (This print for testing only)");
 				}
+				else {
+					runAuctionCentral();
+				}
 					
 			}
 		});
