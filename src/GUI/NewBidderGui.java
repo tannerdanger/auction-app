@@ -55,9 +55,10 @@ public class NewBidderGui extends JPanel  {
 	
 	private JPanel createAuctionsPanel() {
 		final JPanel panel = new JPanel();
-		
+		panel.setLayout(new BorderLayout());
+
 		final JLabel label = new JLabel("Auctions you can bid in:");
-		
+
 		final DefaultListModel<Auction> auctionsList = createAuctionsList();
 		myAuctionsList = new JList<>(auctionsList);
 		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -69,16 +70,16 @@ public class NewBidderGui extends JPanel  {
 			}
 		});
 
-		panel.setLayout(new BorderLayout());
+		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
 		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
-		panel.add(label, BorderLayout.NORTH);
 		return panel;
 	}
 	
 	private JPanel createBidsPanel() {
 		final JPanel panel = new JPanel();
-		
+		panel.setLayout(new BorderLayout());
+
 		final JLabel label = new JLabel("Your bids:");
 		
 		final DefaultListModel<Bid> bidsList = createBidsList();
@@ -92,10 +93,9 @@ public class NewBidderGui extends JPanel  {
 			}
 		});
 		
-		panel.setLayout(new BorderLayout());
+		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
 		panel.add(myLoadItemButton, BorderLayout.SOUTH);
-		panel.add(label, BorderLayout.NORTH);
 
 		return panel;
 	}
