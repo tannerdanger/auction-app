@@ -4,8 +4,11 @@ import auctiondata.*;
 import users.*;
  
 import java.io.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
- 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 /**
  * A class that allows the program to handle data through serialization and creating
  * sample data for testing as necessary.
@@ -90,10 +93,19 @@ public class DataHandler {
  
         myUserDB = new UserDB();
         myAuctionCalendar = new AuctionCalendar();
+
         //create users
         User contactUser =
                 new ContactPerson("Contact", "McContact", "contact@contact.com");
         ((ContactPerson) contactUser).setMyOrgName("Pat's Pneumonic Penguin Preservation");
+
+        ContactPerson contactUser3 = new ContactPerson("Lars", "Rush", "contact3@contact.com");
+        contactUser3.setMyOrgName("Odio Corp.");
+
+        ContactPerson contactUser4 = new ContactPerson("Russ", "Walker", "Contact4@contact.com");
+        contactUser4.setMyOrgName("Risus Industries");
+
+
         User bidderUser =
                 new Bidder("Bidder","McBidder", "bidder@bidder.com");
  
@@ -107,15 +119,50 @@ public class DataHandler {
         Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
                 LocalDateTime.of(2018, 05, 30, 15, 00),
                 null);
+
+        Auction auction3 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2017, 04, 1, 11, 00), null);
+        Auction auction4 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2018, 06, 20, 11, 00), null);
+        Auction auction5 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2016, 03, 2, 11, 00), null);
+        Auction auction6 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2015, 2, 17, 11, 00), null);
+        Auction auction7 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2018, 2, 15, 11, 00), null);
+        Auction auction8 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2017 , 2, 10, 11, 00), null);
+        Auction auction9 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2016, 1, 25, 11, 00), null);
+        Auction auction10 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2014 , 8, 10, 11, 00), null);
+        Auction auction11 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2013 , 4, 21, 11, 00), null);
  
         AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
         AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
+        auction4.addInventoryItem(new AuctionItem(62.00, "Veal - Chops, Split, Frenched"));
+        auction4.addInventoryItem(new AuctionItem(	71.00, "Lettuce - Escarole"));
+        auction4.addInventoryItem(new AuctionItem(46.00, "Scampi Tail"));
+        auction4.addInventoryItem(new AuctionItem(76.00, "Tumeric"));
+        auction4.addInventoryItem(new AuctionItem(88.00, "Creamers - 10%"));
+        auction4.addInventoryItem(new AuctionItem(22.00, "Oil - Shortening - All - Purpose"));
+
+        auction7.addInventoryItem(new AuctionItem(22.00, "Tumeric"));
+        auction7.addInventoryItem(new AuctionItem(35.00, "Nantucket - Orange Mango Cktl"));
+        auction7.addInventoryItem(new AuctionItem(45.00, "Spinach - Spinach Leaf"));
+        auction7.addInventoryItem(new AuctionItem(85.00, "Truffle Cups - White Paper"));
+        auction7.addInventoryItem(new AuctionItem(26.00, "Milk - 1%"));
+        auction7.addInventoryItem(new AuctionItem(30.00, "Sultanas"));
+
+
         auction1.addInventoryItem(item1);
         auction1.addInventoryItem(item2);
  
         ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
         myAuctionCalendar.addAuction(auction1);
         myAuctionCalendar.addAuction(auction2);
+        myAuctionCalendar.addAuction(auction3);
+        myAuctionCalendar.addAuction(auction4);
+        myAuctionCalendar.addAuction(auction5);
+        myAuctionCalendar.addAuction(auction6);
+        myAuctionCalendar.addAuction(auction7);
+        myAuctionCalendar.addAuction(auction8);
+        myAuctionCalendar.addAuction(auction9);
+        myAuctionCalendar.addAuction(auction10);
+        myAuctionCalendar.addAuction(auction11);
+
         myUserDB.addUser(bidderUser);
         myUserDB.addUser(contactUser);
     }
@@ -163,5 +210,53 @@ public class DataHandler {
      */
     public UserDB getMyUserDB() {
         return myUserDB;
+    }
+
+    /**
+     * Returns a sorted list of all auctions by organization, sorted chronologically
+     * from newest to oldest.
+     * @return an array of auctions associated with an organization.
+     */
+    public ArrayList<Auction> getAuctionsByOrg(String theOrg){
+        ArrayList<Auction> tmpList = myAuctionCalendar.getAllAuctions();
+        ArrayList<Auction> returnList = new ArrayList<>();
+
+        for(Auction a : tmpList){
+            if(a.getOrgName().compareTo(theOrg) == 0){
+                returnList.add(a);
+            }
+        }
+        returnList.sort((a1, a2) -> {
+            if(a1.getAuctionDate().isBefore(a2.getAuctionDate())){
+                return 1;
+            }else{
+                return -1;
+            }
+        });
+
+        return returnList;
+    }
+
+    /**
+     * Creates an array list of auctions that have been scheduled that are "active" - meaning
+     * they haven't passed yet and can be actively bid on.
+     * @return an arraylist of auctions.
+     */
+    public ArrayList<Auction> getUpcomingAuctions(){
+        ArrayList<Auction> tmpList = myAuctionCalendar.getAllAuctions();
+        ArrayList<Auction> returnList = new ArrayList<>();
+
+        for(Auction a : tmpList){
+            if(a.getAuctionDate().isAfter(LocalDate.now()))
+                returnList.add(a);
+        }
+        returnList.sort((a1, a2) -> {
+            if(a1.getAuctionDate().isBefore(a2.getAuctionDate())){
+                return 1;
+            }else{
+                return -1;
+            }
+        });
+        return returnList;
     }
 }
