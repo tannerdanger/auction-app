@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -57,7 +58,7 @@ public class NewBidderGui extends JPanel  {
 		final JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 
-		final JLabel label = new JLabel("Auctions you can bid in:");
+		final JLabel label = new JLabel("Open auctions", SwingConstants.CENTER);
 
 		final DefaultListModel<Auction> auctionsList = createAuctionsList();
 		myAuctionsList = new JList<>(auctionsList);
@@ -80,7 +81,7 @@ public class NewBidderGui extends JPanel  {
 		final JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 
-		final JLabel label = new JLabel("Your bids:");
+		final JLabel label = new JLabel("Your bids", SwingConstants.CENTER);
 		
 		final DefaultListModel<Bid> bidsList = createBidsList();
 		myBidsList = new JList<>(bidsList);
