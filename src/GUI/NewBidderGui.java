@@ -52,6 +52,8 @@ public class NewBidderGui extends JPanel  {
 		this.setLayout(new GridLayout(1, 2));
 		this.add(createAuctionsPanel());
 		this.add(createBidsPanel());
+		System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
+		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
 	private JPanel createAuctionsPanel() {
