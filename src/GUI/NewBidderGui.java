@@ -14,12 +14,14 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
+import javafx.scene.control.SelectionMode;
 import storage.AuctionCalendar;
 import users.Bidder;
 
@@ -57,6 +59,7 @@ public class NewBidderGui extends JPanel  {
 		
 		final DefaultListModel<Auction> auctionsList = createAuctionsList();
 		myAuctionsList = new JList<>(auctionsList);
+		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(final ListSelectionEvent theEvent) {
@@ -76,6 +79,7 @@ public class NewBidderGui extends JPanel  {
 		
 		final DefaultListModel<Bid> bidsList = createBidsList();
 		myBidsList = new JList<>(bidsList);
+		myBidsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myBidsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(final ListSelectionEvent theEvent) {
