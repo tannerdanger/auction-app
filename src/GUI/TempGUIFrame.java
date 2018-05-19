@@ -1,4 +1,4 @@
 package GUI;
 
-public class TempGUI {
+public class TempGUIFrame {
 }
