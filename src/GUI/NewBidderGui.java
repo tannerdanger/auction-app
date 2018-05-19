@@ -21,7 +21,6 @@ import javax.swing.event.ListSelectionListener;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
-import javafx.scene.control.SelectionMode;
 import storage.AuctionCalendar;
 import users.Bidder;
 
@@ -57,6 +56,8 @@ public class NewBidderGui extends JPanel  {
 	private JPanel createAuctionsPanel() {
 		final JPanel panel = new JPanel();
 		
+		final JLabel label = new JLabel("Auctions you can bid in:");
+		
 		final DefaultListModel<Auction> auctionsList = createAuctionsList();
 		myAuctionsList = new JList<>(auctionsList);
 		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -71,11 +72,14 @@ public class NewBidderGui extends JPanel  {
 		panel.setLayout(new BorderLayout());
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
 		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
+		panel.add(label, BorderLayout.NORTH);
 		return panel;
 	}
 	
 	private JPanel createBidsPanel() {
 		final JPanel panel = new JPanel();
+		
+		final JLabel label = new JLabel("Your bids:");
 		
 		final DefaultListModel<Bid> bidsList = createBidsList();
 		myBidsList = new JList<>(bidsList);
@@ -91,6 +95,7 @@ public class NewBidderGui extends JPanel  {
 		panel.setLayout(new BorderLayout());
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
 		panel.add(myLoadItemButton, BorderLayout.SOUTH);
+		panel.add(label, BorderLayout.NORTH);
 
 		return panel;
 	}
@@ -98,6 +103,7 @@ public class NewBidderGui extends JPanel  {
 	private DefaultListModel<Bid> createBidsList() {
 		final DefaultListModel<Bid> list = new DefaultListModel<>();
 		for(final Bid b : myBidder.getBids()) {
+			System.out.println(b.toString());
 			list.addElement(b);
 		}
 		return list;
@@ -106,6 +112,7 @@ public class NewBidderGui extends JPanel  {
 	private DefaultListModel<Auction> createAuctionsList() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
 		for(final Auction a : myCalendar.getActiveAuctions()) {
+			System.out.println(a.toString());
 			list.addElement(a);
 		}
 		return list;
