@@ -99,7 +99,9 @@ public class Auction implements Serializable {
 	public boolean hasBid() {
 		boolean result = false;
 		for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
-			result = !(entry.getValue().getSealedBids().isEmpty());
+			if (result == false) {
+				result = !(entry.getValue().getSealedBids().isEmpty());
+			}
 		}
 		return result;
 	}
