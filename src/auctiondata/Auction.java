@@ -95,6 +95,14 @@ public class Auction implements Serializable {
 	public void setAuctionDate(LocalDate auctionDate) {
 		this.auctionDate = auctionDate;
 	}
+	
+	public boolean hasBid() {
+		boolean result = false;
+		for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
+			result = !(entry.getValue().getSealedBids().isEmpty());
+		}
+		return result;
+	}
 
 
 	public void setAuctionTime(String theHours) {
