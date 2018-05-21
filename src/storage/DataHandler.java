@@ -1,8 +1,8 @@
 package storage;
- 
+
 import auctiondata.*;
 import users.*;
- 
+
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,11 +19,11 @@ import java.util.Comparator;
 public class DataHandler {
     private static final String USERDB_FILE_NAME = "users.ser";
     private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
- 
- 
+
+
     AuctionCalendar myAuctionCalendar;
     UserDB myUserDB;
- 
+
     /**
      * Constructs data by serializing or initializing new data as necessary.
      */
@@ -34,19 +34,21 @@ public class DataHandler {
             //Else, initialize with sample data.
         else
             initializeData();
- 
+
         createAdditionalSampleData();
     }
- 
+
+    // ------------------- DATA CREATING METHODS --------------- //
+
     /**
      * A method for developers to add sample data to be serialized as necessary.
      */
     private void createAdditionalSampleData() {
- 
- 
- 
+
+
+
     }
- 
+
     /**
      * Deserializes userDB and auctionCalendar data.
      */
@@ -77,20 +79,20 @@ public class DataHandler {
             } catch (IOException e) {
                 System.out.println("IOException Auction Data "
                         + "deserialization is caught. Using Sample Data");
- 
+
             } catch (ClassNotFoundException e) {
                 System.out.println("Auction Database class "
                         + "not found. Using Sample Data");
- 
+
             }
         }
     }
-   
+
     /**
      * Initializes new data in case serialization fails.
      */
     public void initializeData(){
- 
+
         myUserDB = new UserDB();
         myAuctionCalendar = new AuctionCalendar();
 
@@ -108,14 +110,14 @@ public class DataHandler {
 
         User bidderUser =
                 new Bidder("Bidder","McBidder", "bidder@bidder.com");
- 
+
         //create auctions
         Auction auction1 =
                 new Auction(((ContactPerson) contactUser).getMyOrgName(),
-                ((ContactPerson) contactUser).getMyOrgID(),
-                LocalDateTime.of(2018, 05, 30, 10, 00),
-                null);
- 
+                        ((ContactPerson) contactUser).getMyOrgID(),
+                        LocalDateTime.of(2018, 05, 30, 10, 00),
+                        null);
+
         Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
                 LocalDateTime.of(2018, 05, 30, 15, 00),
                 null);
@@ -129,7 +131,7 @@ public class DataHandler {
         Auction auction9 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2016, 1, 25, 11, 00), null);
         Auction auction10 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2014 , 8, 10, 11, 00), null);
         Auction auction11 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2013 , 4, 21, 11, 00), null);
- 
+
         AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
         AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
         auction4.addInventoryItem(new AuctionItem(62.00, "Veal - Chops, Split, Frenched"));
@@ -149,7 +151,7 @@ public class DataHandler {
 
         auction1.addInventoryItem(item1);
         auction1.addInventoryItem(item2);
- 
+
         ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
         myAuctionCalendar.addAuction(auction1);
         myAuctionCalendar.addAuction(auction2);
@@ -166,12 +168,12 @@ public class DataHandler {
         myUserDB.addUser(bidderUser);
         myUserDB.addUser(contactUser);
     }
-   
+
     /**
      * Serializes the data to be used in the future.
      */
     public void serialize(){
- 
+
 //Delete old files
         //new File(USERDB_FILE_NAME).delete();
         //new File(AUCTIONDB_FILE_NAME).delete();
@@ -185,7 +187,7 @@ public class DataHandler {
         }catch (IOException e){
             System.out.println("IOException Serializing User DB");
         }
- 
+
         //Serialize Auctions
         try{
             FileOutputStream fileOut = new FileOutputStream(AUCTIONDB_FILE_NAME);
@@ -211,6 +213,8 @@ public class DataHandler {
     public UserDB getMyUserDB() {
         return myUserDB;
     }
+
+    // ------------------- DATA HANDLING METHODS --------------- //
 
     /**
      * Returns a sorted list of all auctions by organization, sorted chronologically
@@ -242,7 +246,7 @@ public class DataHandler {
      * they haven't passed yet and can be actively bid on.
      * @return an arraylist of auctions.
      */
-    public ArrayList<Auction> getUpcomingAuctions(){
+    public ArrayList<Auction> getActiveAuctions(){
         ArrayList<Auction> tmpList = myAuctionCalendar.getAllAuctions();
         ArrayList<Auction> returnList = new ArrayList<>();
 
@@ -258,5 +262,13 @@ public class DataHandler {
             }
         });
         return returnList;
+    }
+
+    public Boolean userExists(String email){
+        return myUserDB.userDirectory.containsKey(email);
+    }
+
+    public User getUser(String theEmail){
+        return myUserDB.getUser(theEmail);
     }
 }
