@@ -1,21 +1,21 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.text.NumberFormat;
-import java.util.Map;
+import java.util.Observable;
 
-import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -25,169 +25,182 @@ import auctiondata.Bid;
 import storage.AuctionCalendar;
 import users.Bidder;
 
-public final class BidderGUI extends JPanel {
+public class BidderGUI extends JPanel  {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3761509683757395546L;
-	private final AuctionCalendar myCalendar;
+	private static final long serialVersionUID = 1755050314040399620L;
+	private final ObservableBidderGui myObservable;
+	private Auction mySelectedAuction;
+	private AuctionItem mySelectedItem;
+	private final JButton myLoadAuctionButton;
+	private final JButton myLoadItemButton;
 	private final Bidder myBidder;
-	private final BidBar myBidBar;
-	private Auction myCurrentAuction;
-	private AuctionItem myCurrentItem;
-	private JPanel myViewAllItemsInAuction;
-	private JPanel myViewAllItemsinAuctionWithMyBids;
-	private JPanel myCurrentAuctionItemsPanel;
-	private JPanel myRadioPanel;
+	private final AuctionCalendar myCalendar;
+	private JList<Auction> myAuctionsList;
+	private JList<Bid> myBidsList;
 
+	
 	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar) {	
 		myCalendar = theCalendar;
 		myBidder = theBidder;
-		myCurrentAuction = null;
-		myCurrentItem = null;
-		myRadioPanel = createRadioPanel();
-		myCurrentAuctionItemsPanel = new JPanel();
-		myViewAllItemsInAuction = new JPanel();
-		myViewAllItemsinAuctionWithMyBids = new JPanel();
-		final JTabbedPane tabs = setupTabs();
-		myBidBar = new BidBar();
-		this.add(tabs, BorderLayout.CENTER);
-		this.add(myBidBar, BorderLayout.SOUTH);
-		this.setVisible(true);
-	}	
-	
-	private JPanel createRadioPanel() {
-		final JPanel radioPanel = new JPanel();
-		final JRadioButton allItemsAvailableInAuction = new JRadioButton();
-		final JRadioButton allItemsInAuctionWithMybids = new JRadioButton();
-		final ButtonGroup radioButtonGroup = new ButtonGroup();
-		radioButtonGroup.add(allItemsInAuctionWithMybids);
-		radioButtonGroup.add(allItemsAvailableInAuction);
-		radioPanel.add(allItemsInAuctionWithMybids);
-		radioPanel.add(allItemsAvailableInAuction);
-		
-		return radioPanel;
+		myObservable = new ObservableBidderGui();
+		mySelectedAuction = null;
+		mySelectedItem = null;
+		myLoadAuctionButton = createLoadAuctionButton();
+		myLoadItemButton = createLoadItemButton();
+		this.setLayout(new GridLayout(1, 2));
+		this.add(createAuctionsPanel());
+		this.add(createBidsPanel());
+		System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
+		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
-	private JTabbedPane setupTabs() {
-		final JTabbedPane tabs = new JTabbedPane();
-		
-		final JSplitPane viewAllBiddableAuctions = createViewBiddableAuctionsPanel();
-		final JPanel viewAllItemsWithMyBids = createViewAllItemsWithMyBids();
-		tabs.addTab("View auctions you can bid in", viewAllBiddableAuctions);
-		tabs.addTab("View your bids", viewAllItemsWithMyBids);
-		
-		return tabs;
-	}
-	
-	private JPanel createViewAllItemsWithMyBids() {
+	private JPanel createAuctionsPanel() {
 		final JPanel panel = new JPanel();
-		final String[] bids = new String[myBidder.getBids().size()];
-		int i = 0;
-		for(final Bid b : myBidder.getBids()) {
-			bids[i] = getBidString(b);
-			i++;
-		}
-		final JList<String> bidsList = new JList<>(bids);
-		panel.add(bidsList);
+		panel.setLayout(new BorderLayout());
+
+		final JLabel label = new JLabel("Open auctions", SwingConstants.CENTER);
+
+		final DefaultListModel<Auction> auctionsList = createAuctionsList();
+		myAuctionsList = new JList<>(auctionsList);
+		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(final ListSelectionEvent theEvent) {
+				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
+				mySelectedAuction = list.getSelectedValue();
+			}
+		});
+
+		panel.add(label, BorderLayout.NORTH);
+		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
+		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
 		return panel;
 	}
 	
-	private String getBidString(final Bid theBid) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(theBid.getItem().getName() + " from " + theBid.getAuction().getOrgName() 
-				  + " | Bid: $" + theBid.getBidAmount());
-		return sb.toString();
+	private JPanel createBidsPanel() {
+		final JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
 
-	}
-	
-	private String getAuctionItemString(final AuctionItem theItem) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("ID: " + theItem.getUniqueID() + " | " + theItem.getName() 
-		  + " | Min Price: $" + theItem.getMinPrice());
-		return sb.toString();
-	}
-
-	private JSplitPane createViewBiddableAuctionsPanel() {		
-		final JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		pane.setLeftComponent(createAuctionsList());
-		pane.setRightComponent(myCurrentAuctionItemsPanel);
-		return pane;
-	}
-
-	private void updateAuctionItemsList() {
-		final Map<Integer, AuctionItem> items = myCurrentAuction.getInventorySheet();
-		final String[] itemStrings = new String[items.size()];
-		for(final Integer i : items.keySet()) {
-			final AuctionItem item = items.get(i);
-			itemStrings[i] = getAuctionItemString(item);
-		}
-		final JList<String> itemList = new JList<>(itemStrings);
-		myCurrentAuctionItemsPanel.setLayout(new BorderLayout());
-		myCurrentAuctionItemsPanel.add(itemList, BorderLayout.CENTER);
-		itemList.addListSelectionListener(new ListSelectionListener() {
+		final JLabel label = new JLabel("Your bids", SwingConstants.CENTER);
+		
+		final DefaultListModel<Bid> bidsList = createBidsList();
+		myBidsList = new JList<>(bidsList);
+		myBidsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		myBidsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(final ListSelectionEvent theEvent) {
-				final int index = theEvent.getLastIndex();
-				myCurrentItem = myCurrentAuction.getInventorySheet().get(index);
-				myBidBar.setBidItem();
-			}
-		});		
-		myCurrentAuctionItemsPanel.add(myRadioPanel, BorderLayout.SOUTH);
-	}
-	
-	private JList<String> createAuctionsList() {
-		final String[] auctionStrings = new String[myCalendar.getActiveAuctions().size()];
-		int i = 0;
-		for(final Auction a : myCalendar.getActiveAuctions()) {
-			final StringBuilder sb = new StringBuilder();
-			sb.append("ID: " + + a.getauctionID() + " | Date: " 
-					  + a.getAuctionDate().toString() + " | " + a.getOrgName());
-			auctionStrings[i] = sb.toString();
-			i++;
-		}
-		final JList<String> auctions = new JList<>(auctionStrings);
-		
-		auctions.addListSelectionListener(new ListSelectionListener() {
-
-			@Override
-			public void valueChanged(final ListSelectionEvent theArg) {
-				myCurrentAuction = myCalendar.getAuction(theArg.getLastIndex());
-				updateAuctionItemsList();
+				final JList<Bid> list = (JList<Bid>) theEvent.getSource();
+				mySelectedItem = list.getSelectedValue().getItem();
 			}
 		});
 		
-		return auctions;
+		panel.add(label, BorderLayout.NORTH);
+		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
+		panel.add(myLoadItemButton, BorderLayout.SOUTH);
+
+		return panel;
+	}
+	
+	private DefaultListModel<Bid> createBidsList() {
+		final DefaultListModel<Bid> list = new DefaultListModel<>();
+		for(final Bid b : myBidder.getBids()) {
+			System.out.println(b.toString());
+			list.addElement(b);
+		}
+		return list;
+	}
+	
+	private DefaultListModel<Auction> createAuctionsList() {
+		final DefaultListModel<Auction> list = new DefaultListModel<>();
+		for(final Auction a : myCalendar.getActiveAuctions()) {
+			System.out.println(a.toString());
+			list.addElement(a);
+		}
+		return list;
+	}
+	
+	private JButton createLoadAuctionButton() {
+		final JButton button = new JButton("View auction");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+				myObservable.setChangedTrue();
+				myObservable.notifyObservers(mySelectedAuction);
+			}
+			
+		});
+		return button;	
+	}
+	
+	private JButton createLoadItemButton() {
+		final JButton button = new JButton("View item");
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+				myObservable.setChangedTrue();
+				myObservable.notifyObservers(mySelectedItem);
+			}
+			
+		});
+		return button;	
+	}
+	
+	public ObservableBidderGui getObservableBidderGui() {
+		return myObservable;
 	}
 
-	public class BidBar extends JPanel {
+	public class AuctionJListRenderer extends JLabel implements ListCellRenderer<Auction> {
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1450666832316412151L;
-		private JLabel myLabel;
-		private JFormattedTextField myBidAmount;
-		private JButton myBidButton;
-		
-		public BidBar() {
-			myLabel = new JLabel();
-			myBidAmount = new JFormattedTextField(NumberFormat.getCurrencyInstance());
-			myBidButton = new JButton("Place bid");
-			myBidButton.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent theEvent) { 
-					// place bid
-				}
-			});
+		private static final long serialVersionUID = -63431663198198825L;
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends Auction> theList, Auction theAuction, int theIndex,
+				boolean theIsSelected, boolean theIsInFocus) {
+			this.setText(theAuction.getOrgName() + " | " + theAuction.getAuctionDate());
+			if(theIsSelected) {
+				this.setForeground(theList.getSelectionForeground());
+				this.setBackground(theList.getSelectionBackground());
+			} else {
+				this.setForeground(theList.getForeground());
+				this.setBackground(theList.getBackground());
+			}
+			return null;
+		}	
+	}
+	
+	public class BidJListRenderer extends JLabel implements ListCellRenderer<Bid> {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -425852109094304125L;
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends Bid> theList, Bid theBid, int theIndex,
+				boolean theIsSelected, boolean theIsInFocus) {
+			this.setText(theBid.getItem().getName() + " | " + theBid.getBidAmount());
+			if(theIsSelected) {
+				this.setForeground(theList.getSelectionForeground());
+				this.setBackground(theList.getSelectionBackground());
+			} else {
+				this.setForeground(theList.getForeground());
+				this.setBackground(theList.getBackground());
+			}
+			return null;
+		}	
+	}
+	
+	public class ObservableBidderGui extends Observable {
+		public ObservableBidderGui() {
+			
 		}
 		
-		public void setBidItem() {
-			myLabel.setText(myCurrentItem.getName() + " $");
-			final BigDecimal bid = new BigDecimal(((Number)myBidAmount.getValue()).doubleValue());
-			setBidBarStatus(myBidder.isBidPlaceable(myCurrentAuction, myCurrentItem, bid));
-		}
-		
-		private void setBidBarStatus(final boolean theStatus) {
-			myBidButton.setEnabled(theStatus);
+		public void setChangedTrue() {
+			this.setChanged();
 		}
 	}
 }
