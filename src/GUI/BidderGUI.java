@@ -25,14 +25,11 @@ import auctiondata.Bid;
 import storage.AuctionCalendar;
 import users.Bidder;
 
-public class BidderGUI extends JPanel  {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1755050314040399620L;
-	private final ObservableBidderGui myObservable;
+public class BidderGUI extends Observable  {
+
 	private Auction mySelectedAuction;
 	private AuctionItem mySelectedItem;
+	private final JPanel myPanel;
 	private final JButton myLoadAuctionButton;
 	private final JButton myLoadItemButton;
 	private final Bidder myBidder;
@@ -44,14 +41,14 @@ public class BidderGUI extends JPanel  {
 	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar) {	
 		myCalendar = theCalendar;
 		myBidder = theBidder;
-		myObservable = new ObservableBidderGui();
 		mySelectedAuction = null;
 		mySelectedItem = null;
 		myLoadAuctionButton = createLoadAuctionButton();
 		myLoadItemButton = createLoadItemButton();
-		this.setLayout(new GridLayout(1, 2));
-		this.add(createAuctionsPanel());
-		this.add(createBidsPanel());
+		myPanel = new JPanel();
+		myPanel.setLayout(new GridLayout(1, 2));
+		myPanel.add(createAuctionsPanel());
+		myPanel.add(createBidsPanel());
 		System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
 		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
@@ -126,8 +123,8 @@ public class BidderGUI extends JPanel  {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				myObservable.setChangedTrue();
-				myObservable.notifyObservers(mySelectedAuction);
+				setChanged();
+				notifyObservers(mySelectedAuction);
 			}
 			
 		});
@@ -139,16 +136,16 @@ public class BidderGUI extends JPanel  {
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				myObservable.setChangedTrue();
-				myObservable.notifyObservers(mySelectedItem);
+				setChanged();
+				notifyObservers(mySelectedItem);
 			}
 			
 		});
 		return button;	
 	}
 	
-	public ObservableBidderGui getObservableBidderGui() {
-		return myObservable;
+	public JPanel getPanel() {
+		return myPanel;
 	}
 
 	public class AuctionJListRenderer extends JLabel implements ListCellRenderer<Auction> {
@@ -192,15 +189,5 @@ public class BidderGUI extends JPanel  {
 			}
 			return null;
 		}	
-	}
-	
-	public class ObservableBidderGui extends Observable {
-		public ObservableBidderGui() {
-			
-		}
-		
-		public void setChangedTrue() {
-			this.setChanged();
-		}
 	}
 }
