@@ -376,14 +376,17 @@ public class DataHandler extends Observable{
     //~~Observer Notifying~~//
 
     private void notifyUpdateBids(Bid theBid) {
+    	this.setChanged();
         notifyObservers(theBid);
     }
 
     private void notifyUpdateAuctions(Auction theAuction){
+    	this.setChanged();
         notifyObservers(theAuction);
     }
 
     private void notifyUpdateItem(AuctionItem theItem){
+    	this.setChanged();
         notifyObservers(theItem);
     }
 
