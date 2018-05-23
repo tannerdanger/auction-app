@@ -203,8 +203,8 @@ public class BidderGUI extends Observable implements Observer {
 	}
 
 	@Override
-	public void update(final Observable theObserver, final Object theObject) {
-		if(theObserver instanceof DataHandler) {
+	public void update(final Observable theObservable, final Object theObject) {
+		if(theObservable instanceof DataHandler) {
 			if(theObject instanceof Bid) {
 				myBidsList = createBidsJList(createBidsListModel());
 			} else if (theObject instanceof Auction) {
