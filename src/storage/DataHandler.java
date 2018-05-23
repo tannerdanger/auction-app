@@ -6,8 +6,7 @@ import users.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * A class that allows the program to handle data through serialization and creating
@@ -16,7 +15,7 @@ import java.util.Comparator;
  * @version 6 May 2018
  *
  */
-public class DataHandler {
+public class DataHandler extends Observable{
     private static final String USERDB_FILE_NAME = "users.ser";
     private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
 
@@ -36,7 +35,9 @@ public class DataHandler {
             initializeData();
 
         createAdditionalSampleData();
+        //createObservers();
     }
+
 
     // ------------------- DATA CREATING METHODS --------------- //
 
@@ -203,18 +204,35 @@ public class DataHandler {
      * Getter for an auction Calendar
      * @return the auctionCalendar
      */
-    public AuctionCalendar getMyAuctionCalendar() {
+    private AuctionCalendar getMyAuctionCalendar() {
         return myAuctionCalendar;
     }
     /**
      * Getter for a user database.
      * @return the userDB.
      */
-    public UserDB getMyUserDB() {
+    private UserDB getMyUserDB() {
         return myUserDB;
     }
 
     // ------------------- DATA HANDLING METHODS --------------- //
+
+    //~~User Data Handling~~//
+    public Boolean userExists(String email){
+        return myUserDB.userDirectory.containsKey(email);
+    }
+
+    /**
+     * Returns a user associated with an email address.
+     * @param theEmail - an email address key that is associated with a user.
+     * @return the user associated with the email address.
+     */
+    public User getUser(String theEmail){
+        return myUserDB.getUser(theEmail);
+    }
+
+
+    //~~Auctions Data Handling~~//
 
     /**
      * Returns a sorted list of all auctions by organization, sorted chronologically
@@ -222,7 +240,7 @@ public class DataHandler {
      * @return an array of auctions associated with an organization.
      */
     public ArrayList<Auction> getAuctionsByOrg(String theOrg){
-        ArrayList<Auction> tmpList = myAuctionCalendar.getAllAuctions();
+        ArrayList<Auction> tmpList = myAuctionCalendar.getAuctionDataBase();
         ArrayList<Auction> returnList = new ArrayList<>();
 
         for(Auction a : tmpList){
@@ -230,15 +248,33 @@ public class DataHandler {
                 returnList.add(a);
             }
         }
-        returnList.sort((a1, a2) -> {
+        sortAuctions(returnList);
+
+        return returnList;
+    }
+
+    /**
+     * Sorts an array list of auctions chronologically.
+     * @param theAuctions the arraylist of auctions to be sorted.
+     */
+    public void sortAuctions(ArrayList<Auction> theAuctions){
+        theAuctions.sort((a1, a2)->{
             if(a1.getAuctionDate().isBefore(a2.getAuctionDate())){
                 return 1;
             }else{
                 return -1;
             }
         });
+    }
 
-        return returnList;
+    /**
+     * Returns an auction by its auction ID
+     * @param auctionID the ID of the auction being requested
+     * @return an auction associated with the auctionID
+     */
+    public Auction getAuctionByID(int auctionID){
+
+        return myAuctionCalendar.auctionDataBase.get(auctionID);
     }
 
     /**
@@ -247,7 +283,7 @@ public class DataHandler {
      * @return an arraylist of auctions.
      */
     public ArrayList<Auction> getActiveAuctions(){
-        ArrayList<Auction> tmpList = myAuctionCalendar.getAllAuctions();
+        ArrayList<Auction> tmpList = myAuctionCalendar.getAuctionDataBase();
         ArrayList<Auction> returnList = new ArrayList<>();
 
         for(Auction a : tmpList){
@@ -264,11 +300,91 @@ public class DataHandler {
         return returnList;
     }
 
-    public Boolean userExists(String email){
-        return myUserDB.userDirectory.containsKey(email);
+    //~~Auction Item Data Handling ~~//
+
+    public Map<Integer, AuctionItem> getAuctionItemsByAuction(Auction theAuction){
+        return theAuction.getInventorySheet();
     }
 
-    public User getUser(String theEmail){
-        return myUserDB.getUser(theEmail);
+    /**
+     * Returns an auction item by its item ID.
+     * @param theItemID the id of the auction item
+     * @return an auction item.
+     */
+    public AuctionItem getAuctionItem(int theItemID){
+        ArrayList<Auction> activeAuctions = new ArrayList<Auction>();
+        for(Auction a: myAuctionCalendar.auctionDataBase) {
+            if(a.getInventorySheet().containsKey(theItemID))
+                return a.getItem(theItemID);
+        }
+        return null; //returns null if no item is ever found.
     }
+
+    /**
+     * Overloaded method for retrieving an item if the auction and id are available.
+     * @param theItemID the auction item ID
+     * @param theAuction the auction the auction item belongs to
+     * @return the auction item
+     */
+    public AuctionItem getAuctionItem(int theItemID, Auction theAuction){
+        return theAuction.getItem(theItemID);
+    }
+
+    /**
+     * Adds an auction to the calendar, then notifies observers.
+     * @param theAuction
+     */
+    public void addAuction(Auction theAuction){
+        myAuctionCalendar.auctionDataBase.add(theAuction);
+        sortAuctions(myAuctionCalendar.auctionDataBase);
+        notifyUpdateAuctions(theAuction);
+    }
+
+    /**
+     * Adds an auction item to an auction and notifies observers.
+     * @param theAuction an item is being added to.
+     * @param theItem an item being added to the auction.
+     */
+    public void addAuctionItem(Auction theAuction, AuctionItem theItem){
+        theAuction.addInventoryItem(theItem);
+        notifyUpdateItem(theItem);
+    }
+
+    //~~Bids Data Handling~~//
+
+    /**
+     * Adds a new bid to an auction item and notifies observers.
+     * @param theBid being added to an item.
+     * @param theItemID the unique id of the auction item being bid on.
+     */
+    public void placeBid(Bid theBid, int theItemID){
+        getAuctionItem(theItemID).addSealedBid(theBid);
+        notifyUpdateBids(theBid);
+    }
+
+    /**
+     * Returns a list of bids associated with a bidder.
+     * Note: This method may be redundant, but is included in the datahandler to try to consolidate data handling.
+     * @param theBidder
+     * @return
+     */
+    public List<Bid> getBids(Bidder theBidder){
+        return theBidder.getBids();
+    }
+
+
+    //~~Observer Notifying~~//
+
+    private void notifyUpdateBids(Bid theBid) {
+        notifyObservers(theBid);
+    }
+
+    private void notifyUpdateAuctions(Auction theAuction){
+        notifyObservers(theAuction);
+    }
+
+    private void notifyUpdateItem(AuctionItem theItem){
+        notifyObservers(theItem);
+    }
+
 }

@@ -78,9 +78,9 @@ public class LoginPanel extends JPanel{
 		User theUser = myData.getUser(userName);
 		if(null != theUser){
 			if(Bidder.class.equals(theUser.getClass())){
-				BidderGUI bidderGUI = new BidderGUI((Bidder) theUser, myData.getMyAuctionCalendar());
+				//BidderGUI bidderGUI = new BidderGUI((Bidder) theUser, myData.getMyAuctionCalendar());
 				myMainFrame.remove(myMainFrame.currentPanel);
-				myMainFrame.currentPanel = bidderGUI;
+				//myMainFrame.currentPanel = bidderGUI;
 				myMainFrame.add(myMainFrame.currentPanel);
 
 			}
