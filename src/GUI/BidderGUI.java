@@ -40,10 +40,9 @@ public class BidderGUI extends Observable implements Observer {
 	private JList<Bid> myBidsList;
 
 	
-	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar, final DataHandler theDataHandler) {	
+	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar) {	
 		myCalendar = theCalendar;
 		myBidder = theBidder;
-		theDataHandler.addObserver(this);
 		mySelectedAuction = null;
 		mySelectedItem = null;
 		myLoadAuctionButton = createLoadAuctionButton();
