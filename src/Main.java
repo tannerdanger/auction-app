@@ -1,4 +1,5 @@
 import GUI.BidderGUI;
+import GUI.TempGUIFrame;
 import storage.*;
 import users.*;
 
@@ -19,19 +20,21 @@ public class Main {
 
 		DataHandler data = new DataHandler();
 		AuctionCalendar calendar = new AuctionCalendar();
-		UserDB userData = data.getMyUserDB();
-		User theUser = login(userData);
+		//UserDB userData = data.getMyUserDB();
+		//User theUser = login(userData);
 
 
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run(){
 
-				if(Bidder.class.equals(theUser.getClass()))
-					new BidderGUI((Bidder)theUser, calendar);
-				else if(ContactPerson.class.equals(theUser.getClass()))
-					System.out.println("Logging in Contact - (This print for testing only)");
-					//new ContactPersonGUI((ContactPerson)theUser, calendar);
+				new TempGUIFrame();
+//
+//				if(Bidder.class.equals(theUser.getClass()))
+//					new BidderGUI((Bidder)theUser, calendar);
+//				else if(ContactPerson.class.equals(theUser.getClass()))
+//					System.out.println("Logging in Contact - (This print for testing only)");
+//					//new ContactPersonGUI((ContactPerson)theUser, calendar);
 			}
 		});
 	}
