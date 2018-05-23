@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -23,9 +24,10 @@ import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
 import storage.AuctionCalendar;
+import storage.DataHandler;
 import users.Bidder;
 
-public class BidderGUI extends Observable  {
+public class BidderGUI extends Observable implements Observer {
 
 	private Auction mySelectedAuction;
 	private AuctionItem mySelectedItem;
@@ -38,9 +40,10 @@ public class BidderGUI extends Observable  {
 	private JList<Bid> myBidsList;
 
 	
-	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar) {	
+	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar, final DataHandler theDataHandler) {	
 		myCalendar = theCalendar;
 		myBidder = theBidder;
+		theDataHandler.addObserver(this);
 		mySelectedAuction = null;
 		mySelectedItem = null;
 		myLoadAuctionButton = createLoadAuctionButton();
@@ -59,17 +62,9 @@ public class BidderGUI extends Observable  {
 
 		final JLabel label = new JLabel("Open auctions", SwingConstants.CENTER);
 
-		final DefaultListModel<Auction> auctionsList = createAuctionsList();
-		myAuctionsList = new JList<>(auctionsList);
-		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(final ListSelectionEvent theEvent) {
-				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
-				mySelectedAuction = list.getSelectedValue();
-			}
-		});
-
+		final DefaultListModel<Auction> auctionsList = createAuctionListModel();
+		myAuctionsList = createAuctionJList(auctionsList);
+		
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
 		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
@@ -82,8 +77,17 @@ public class BidderGUI extends Observable  {
 
 		final JLabel label = new JLabel("Your bids", SwingConstants.CENTER);
 		
-		final DefaultListModel<Bid> bidsList = createBidsList();
-		myBidsList = new JList<>(bidsList);
+		final DefaultListModel<Bid> bidsList = createBidsListModel();
+		myBidsList = createBidsJList(bidsList);
+		panel.add(label, BorderLayout.NORTH);
+		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
+		panel.add(myLoadItemButton, BorderLayout.SOUTH);
+
+		return panel;
+	}
+
+	private JList<Bid> createBidsJList(final DefaultListModel<Bid> theList) {
+		JList<Bid> list = new JList<>(theList);
 		myBidsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myBidsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -92,15 +96,10 @@ public class BidderGUI extends Observable  {
 				mySelectedItem = list.getSelectedValue().getItem();
 			}
 		});
-		
-		panel.add(label, BorderLayout.NORTH);
-		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
-		panel.add(myLoadItemButton, BorderLayout.SOUTH);
-
-		return panel;
+		return list;
 	}
 	
-	private DefaultListModel<Bid> createBidsList() {
+	private DefaultListModel<Bid> createBidsListModel() {
 		final DefaultListModel<Bid> list = new DefaultListModel<>();
 		for(final Bid b : myBidder.getBids()) {
 			System.out.println(b.toString());
@@ -109,7 +108,20 @@ public class BidderGUI extends Observable  {
 		return list;
 	}
 	
-	private DefaultListModel<Auction> createAuctionsList() {
+	private JList<Auction> createAuctionJList(final DefaultListModel<Auction> theList) {
+		final JList<Auction> list = new JList<>(theList);
+		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(final ListSelectionEvent theEvent) {
+				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
+				mySelectedAuction = list.getSelectedValue();
+			}
+		});
+		return list;
+	}
+	
+	private DefaultListModel<Auction> createAuctionListModel() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
 		for(final Auction a : myCalendar.getActiveAuctions()) {
 			System.out.println(a.toString());
@@ -189,5 +201,18 @@ public class BidderGUI extends Observable  {
 			}
 			return null;
 		}	
+	}
+
+	@Override
+	public void update(final Observable theObserver, final Object theObject) {
+		if(theObserver instanceof DataHandler) {
+			if(theObject instanceof Bid) {
+				myBidsList = createBidsJList(createBidsListModel());
+			} else if (theObject instanceof Auction) {
+				myAuctionsList = createAuctionJList(createAuctionListModel());
+			} else if(theObject instanceof AuctionItem) {
+				// do nothing
+			}
+		}
 	}
 }
