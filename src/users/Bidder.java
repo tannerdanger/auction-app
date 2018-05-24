@@ -63,7 +63,7 @@ public class Bidder extends User implements Serializable {
     }
 
     public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
-	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount) && Bid.isBidValid(theBidAmount);
+	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount) && Bid.isBidValid(theBidAmount, theItem);
 	  if(result) {
 		  final Bid bid = new Bid(theAuction, theBidAmount, theItem);
 		  myBids.add(bid);
