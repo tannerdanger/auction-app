@@ -16,16 +16,12 @@ import java.util.ArrayList;
 public class Scheduler {
 
 	private static final int MAX_DAYS_OUT = 60;
-	private static final long REQUIRED_YEARS_IN_BETWEEN_AUCTION = 1;
-	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
-	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
-	private static final int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
+
+	private static int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
 	private static final int MAX_DAILY_AUCTION_CAPACITY = 2;
 	private static final int MIN_DAYS_OUT = 14;
-	DataHandler myData;
-
-	public Scheduler(DataHandler theData){
-		myData = theData;
+	
+	private Scheduler(){
 	}
 
 	/**
@@ -40,13 +36,10 @@ public class Scheduler {
 	//I'm not entirely sure, but instead of using AuctionCalender.get....
 	//It will instead need a reference to a calender object we create somewhere
 	//that holds all the auctions.
-	public boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
-
-		//ArrayList<Auction> auctions = myData.getMyAuctionCalendar().getActiveAuctions(); //Old Way
-		ArrayList<Auction> auctions = myData.getActiveAuctions(); //New Way
+	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate, ArrayList<Auction> theAuctions){
 
 		int auctionCount = 0;
-		for (Auction a : auctions) {
+		for (Auction a : theAuctions) {
 			if (a.getAuctionDate().isEqual(auctionRequestDate.toLocalDate()))
 				auctionCount++;
 		}
@@ -67,32 +60,12 @@ public class Scheduler {
 		return MIN_DAYS_OUT;
 	}
 	
-	public static boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final Auction thePriorAuction,
-			final LocalDate theNewAuctionDate) {
-		
-		LocalDate checkRequiredTimePassDate = 
-		thePriorAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
-		).plusMonths(REQUIRED_MONTHS_IN_BETWEEN_AUCTION
-		).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
-		return checkRequiredTimePassDate.isBefore(theNewAuctionDate) 
-				|| checkRequiredTimePassDate.equals(theNewAuctionDate);
+	public void setMaxUpcomingAuctionsLimit(int newNumber) {
+		MAX_UPCOMING_AUCTIONS_LIMIT = newNumber;
+	}
 
-	}
-	
-	public static boolean isThereNoPriorAuction (final Auction thePriorAuction) {
-		boolean flag = false;
-		if (thePriorAuction == null) {
-			flag = true;
-		}
-		return flag;
-	}
-	
-	//I'm not entirely sure, but instead of using AuctionCalender.get....
-	//It will instead need a reference to a calender object we create somewhere
-	//that holds all the auctions.
-	public boolean isMaxUpcomingAuctionsExceeded() {
-		return myData.getActiveAuctions().size()
-				>= MAX_UPCOMING_AUCTIONS_LIMIT;
+	public static boolean isMaxUpcomingAuctionsExceeded(int calendarSize) {
+		return calendarSize >= MAX_UPCOMING_AUCTIONS_LIMIT;
 	}
 	
 	/**
@@ -103,13 +76,12 @@ public class Scheduler {
 	 * @param theNewDate the contact person's suggested date for their new auction
 	 * @return true if we can turn this request into an auction, false otherwise.
 	 */
-	public boolean isAuctionRequestValid(Auction thePriorAuction, LocalDateTime theNewDate) {
+	public static boolean isAuctionRequestValid(LocalDateTime theNewDate, ArrayList<Auction> theAuctions,
+			int theCalendarSize) {
 		
-		boolean flag = isThereNoPriorAuction(thePriorAuction);
-		
+		boolean flag = false;
 		if (!flag) {
-			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(thePriorAuction,
-					theNewDate.toLocalDate()) && !isMaxDailyAuctionsExceeded(theNewDate) && !isMaxUpcomingAuctionsExceeded() &&
+			flag = !isMaxDailyAuctionsExceeded(theNewDate, theAuctions) && !isMaxUpcomingAuctionsExceeded(theCalendarSize) &&
 					isMinDaysOut(theNewDate) && isMaxDaysOutExceeded(theNewDate);
 		}
 		return flag;

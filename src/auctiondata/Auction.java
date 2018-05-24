@@ -13,12 +13,13 @@ import java.util.Map;
 
 import auctiondata.AuctionItem;
 
+
 /**
  * An object representing an auction included in an calendar.
  * @author Wen Shu
  * @version May 4th 2018
  */
-public class Auction implements Serializable {
+public class Auction implements Serializable, Comparable<Auction> {
 	
 	private static final int DEFAULT_INVENTORY_CAPACITY = 10;
 
@@ -36,6 +37,8 @@ public class Auction implements Serializable {
     private int auctionID;
 
 	private Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+	
+	private LocalDateTime auctionLocalDateTime;
 	
 	/**
 	 * A private constructor to prevent the default constructor to create an null auction.
@@ -55,6 +58,7 @@ public class Auction implements Serializable {
 		organizationID = theOranizationID;
 		auctionDate = theAuctionDate.toLocalDate();
 		auctionTime = theAuctionDate.toLocalTime();
+		auctionLocalDateTime = theAuctionDate;
 		if(null != theInventorySheet)
 		    inventorySheet = theInventorySheet;
 
@@ -95,16 +99,6 @@ public class Auction implements Serializable {
 	public void setAuctionDate(LocalDate auctionDate) {
 		this.auctionDate = auctionDate;
 	}
-	
-	public boolean hasBid() {
-		boolean result = false;
-		for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
-			if (result == false) {
-				result = !(entry.getValue().getSealedBids().isEmpty());
-			}
-		}
-		return result;
-	}
 
 
 	public void setAuctionTime(String theHours) {
@@ -122,6 +116,10 @@ public class Auction implements Serializable {
 
 	public LocalTime getAuctionTime() {
 		return auctionTime;
+	}
+	
+	public LocalDateTime getAuctionDateTime() {
+		return auctionLocalDateTime;
 	}
 	
 	public Map<Integer, AuctionItem> getInventorySheet(){
@@ -156,5 +154,20 @@ public class Auction implements Serializable {
     @Override
     public String toString(){
 	    return "| ID: " + String.valueOf(this.auctionID) + " | ORG: " +organizationName+ " | DATE: " + this.auctionDate.toString()+ " |";
+    }
+    
+    public boolean hasBid() {
+    	boolean result = false;
+    	for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
+    		if (result == false) {
+			result = !(entry.getValue().getSealedBids().isEmpty());	
+    		}
+	
+    	}
+    	return result;
+    }
+    @Override
+    public int compareTo(Auction other) {
+    	return auctionLocalDateTime.compareTo(other.getAuctionDateTime());
     }
 }
