@@ -157,14 +157,15 @@ public class Auction implements Serializable, Comparable {
     }
     
     public boolean hasBid() {
-		boolean result = false;
-		for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
-			if (result == false) {
-				result = !(entry.getValue().getSealedBids().isEmpty());
-			}
-		}
-		return result;
-	}
+    	boolean result = false;
+    	for(Map.Entry<Integer, AuctionItem> entry : inventorySheet.entrySet()) {
+    		if (result == false) {
+			result = !(entry.getValue().getSealedBids().isEmpty());	
+    		}
+	
+    	}
+    	return result;
+    }
     
     public int compareTo(Object other) {
     	Auction theOtherAuction = (Auction) other;    	
