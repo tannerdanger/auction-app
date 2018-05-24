@@ -1,12 +1,11 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -25,7 +24,6 @@ import javax.swing.event.ListSelectionListener;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
-import storage.AuctionCalendar;
 import storage.DataHandler;
 import users.Bidder;
 
@@ -53,8 +51,6 @@ public class BidderGUI extends Observable implements Observer {
 		myPanel.setLayout(new GridLayout(1, 2));
 		myPanel.add(createAuctionsPanel());
 		myPanel.add(createBidsPanel());
-		System.out.println("Auction count: " + myData.getActiveAuctions().size());
-		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
 	private JPanel createAuctionsPanel() {
@@ -66,7 +62,8 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Auction> auctionsList = createAuctionListModel();
 		myAuctionsList = new JList<>(auctionsList);
 		setupAuctionJList();
-		
+		myAuctionsList.setCellRenderer(new AuctionJListRenderer());
+
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
 		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
@@ -82,6 +79,7 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Bid> bidsList = createBidsListModel();
 		myBidsList = new JList<>(bidsList);
 		setupBidsJList();
+		myBidsList.setCellRenderer(new BidJListRenderer());
 		
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
@@ -110,8 +108,6 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Bid> list = new DefaultListModel<>();
 
 		for(final Bid b : myBidder.getBids()) {
-
-			System.out.println(b.toString());
 			list.addElement(b);
 		}
 		return list;
@@ -136,7 +132,6 @@ public class BidderGUI extends Observable implements Observer {
 	private DefaultListModel<Auction> createAuctionListModel() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
 		for(final Auction a : myData.getActiveAuctions()) { //<--Tanner's Change
-			System.out.println(a.toString());
 			list.addElement(a);
 		}
 		return list;
@@ -183,15 +178,16 @@ public class BidderGUI extends Observable implements Observer {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Auction> theList, Auction theAuction, int theIndex,
 													  boolean theIsSelected, boolean theIsInFocus) {
-			this.setText(theAuction.getOrgName() + " | " + theAuction.getAuctionDate());
+			this.setText(theAuction.getAuctionDate() + " | " + theAuction.getOrgName());
+			this.setOpaque(true);
 			if(theIsSelected) {
-				this.setForeground(theList.getSelectionForeground());
-				this.setBackground(theList.getSelectionBackground());
+				this.setForeground(Color.BLACK);
+				this.setBackground(new Color(173,216,230));
 			} else {
-				this.setForeground(theList.getForeground());
-				this.setBackground(theList.getBackground());
+				this.setForeground(Color.BLACK);
+				this.setBackground(Color.WHITE);
 			}
-			return null;
+			return this;
 		}	
 	}
 	
@@ -204,16 +200,17 @@ public class BidderGUI extends Observable implements Observer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Bid> theList, Bid theBid, int theIndex,
-				boolean theIsSelected, boolean theIsInFocus) {
-			this.setText(theBid.getItem().getName() + " | " + theBid.getBidAmount());
+													  boolean theIsSelected, boolean theIsInFocus) {
+			this.setText("$" + theBid.getBidAmount() + " | " + theBid.getItem().getName());
+			this.setOpaque(true);
 			if(theIsSelected) {
-				this.setForeground(theList.getSelectionForeground());
-				this.setBackground(theList.getSelectionBackground());
+				this.setForeground(Color.BLACK);
+				this.setBackground(new Color(173,216,230));
 			} else {
-				this.setForeground(theList.getForeground());
-				this.setBackground(theList.getBackground());
+				this.setForeground(Color.BLACK);
+				this.setBackground(Color.WHITE);
 			}
-			return null;
+			return this;
 		}	
 	}
 
