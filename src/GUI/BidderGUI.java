@@ -107,6 +107,11 @@ public class BidderGUI extends Observable implements Observer {
 			public void valueChanged(final ListSelectionEvent theEvent) {
 				final JList<Bid> list = (JList<Bid>) theEvent.getSource();
 				mySelectedItem = list.getSelectedValue().getItem();
+				if(list.isSelectionEmpty())	 {
+					myLoadAuctionButton.setEnabled(false);
+				} else {
+					myLoadAuctionButton.setEnabled(true);
+				}
 			}
 		});
 		return list;
@@ -139,6 +144,11 @@ public class BidderGUI extends Observable implements Observer {
 			public void valueChanged(final ListSelectionEvent theEvent) {
 				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
 				mySelectedAuction = list.getSelectedValue();
+				if(list.isSelectionEmpty())	 {
+					myLoadItemButton.setEnabled(false);
+				} else {
+					myLoadItemButton.setEnabled(true);
+				}
 			}
 		});
 		return list;
@@ -168,6 +178,7 @@ public class BidderGUI extends Observable implements Observer {
 			}
 			
 		});
+		button.setEnabled(false);
 		return button;	
 	}
 	
@@ -181,6 +192,7 @@ public class BidderGUI extends Observable implements Observer {
 			}
 			
 		});
+		button.setEnabled(false);
 		return button;	
 	}
 	
