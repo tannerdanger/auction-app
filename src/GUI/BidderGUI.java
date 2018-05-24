@@ -1,12 +1,11 @@
 package GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,13 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
-import storage.AuctionCalendar;
 import storage.DataHandler;
 import users.Bidder;
 
@@ -66,7 +65,8 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Auction> auctionsList = createAuctionListModel();
 		myAuctionsList = new JList<>(auctionsList);
 		setupAuctionJList();
-		
+		myAuctionsList.setCellRenderer(new AuctionJListRenderer());
+
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
 		panel.add(myLoadAuctionButton, BorderLayout.SOUTH);
@@ -82,6 +82,7 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Bid> bidsList = createBidsListModel();
 		myBidsList = new JList<>(bidsList);
 		setupBidsJList();
+		myBidsList.setCellRenderer(new BidJListRenderer());
 		
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
@@ -149,6 +150,7 @@ public class BidderGUI extends Observable implements Observer {
 			public void actionPerformed(final ActionEvent theEvent) {
 				setChanged();
 				notifyObservers(mySelectedAuction);
+				System.out.println("Time to load the auction " + mySelectedAuction.getOrgName());
 			}
 			
 		});
@@ -163,6 +165,7 @@ public class BidderGUI extends Observable implements Observer {
 			public void actionPerformed(final ActionEvent theEvent) {
 				setChanged();
 				notifyObservers(mySelectedItem);
+				System.out.println("Time to load the item " + mySelectedItem.getName());
 			}
 			
 		});
@@ -185,13 +188,13 @@ public class BidderGUI extends Observable implements Observer {
 													  boolean theIsSelected, boolean theIsInFocus) {
 			this.setText(theAuction.getOrgName() + " | " + theAuction.getAuctionDate());
 			if(theIsSelected) {
-				this.setForeground(theList.getSelectionForeground());
-				this.setBackground(theList.getSelectionBackground());
+				this.setForeground(Color.CYAN);
+				this.setBackground(Color.LIGHT_GRAY);
 			} else {
-				this.setForeground(theList.getForeground());
-				this.setBackground(theList.getBackground());
+				this.setForeground(Color.DARK_GRAY);
+				this.setBackground(Color.WHITE);
 			}
-			return null;
+			return this;
 		}	
 	}
 	
@@ -204,16 +207,16 @@ public class BidderGUI extends Observable implements Observer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Bid> theList, Bid theBid, int theIndex,
-				boolean theIsSelected, boolean theIsInFocus) {
+													  boolean theIsSelected, boolean theIsInFocus) {
 			this.setText(theBid.getItem().getName() + " | " + theBid.getBidAmount());
 			if(theIsSelected) {
-				this.setForeground(theList.getSelectionForeground());
-				this.setBackground(theList.getSelectionBackground());
+				this.setForeground(Color.CYAN);
+				this.setBackground(Color.LIGHT_GRAY);
 			} else {
-				this.setForeground(theList.getForeground());
-				this.setBackground(theList.getBackground());
+				this.setForeground(Color.BLACK);
+				this.setBackground(Color.WHITE);
 			}
-			return null;
+			return this;
 		}	
 	}
 
