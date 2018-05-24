@@ -18,7 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -52,8 +51,6 @@ public class BidderGUI extends Observable implements Observer {
 		myPanel.setLayout(new GridLayout(1, 2));
 		myPanel.add(createAuctionsPanel());
 		myPanel.add(createBidsPanel());
-		System.out.println("Auction count: " + myData.getActiveAuctions().size());
-		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
 	private JPanel createAuctionsPanel() {
@@ -111,8 +108,6 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Bid> list = new DefaultListModel<>();
 
 		for(final Bid b : myBidder.getBids()) {
-
-			System.out.println(b.toString());
 			list.addElement(b);
 		}
 		return list;
@@ -137,7 +132,6 @@ public class BidderGUI extends Observable implements Observer {
 	private DefaultListModel<Auction> createAuctionListModel() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
 		for(final Auction a : myData.getActiveAuctions()) { //<--Tanner's Change
-			System.out.println(a.toString());
 			list.addElement(a);
 		}
 		return list;
@@ -150,7 +144,6 @@ public class BidderGUI extends Observable implements Observer {
 			public void actionPerformed(final ActionEvent theEvent) {
 				setChanged();
 				notifyObservers(mySelectedAuction);
-				System.out.println("Time to load the auction " + mySelectedAuction.getOrgName());
 			}
 			
 		});
@@ -165,7 +158,6 @@ public class BidderGUI extends Observable implements Observer {
 			public void actionPerformed(final ActionEvent theEvent) {
 				setChanged();
 				notifyObservers(mySelectedItem);
-				System.out.println("Time to load the item " + mySelectedItem.getName());
 			}
 			
 		});
