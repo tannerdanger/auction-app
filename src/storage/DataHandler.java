@@ -27,17 +27,19 @@ public class DataHandler extends Observable{
      * Constructs data by serializing or initializing new data as necessary.
      */
     public DataHandler(){
-        if(new File(USERDB_FILE_NAME).exists()
-                && new File(AUCTIONDB_FILE_NAME).exists())
-            deserialize();
-            //Else, initialize with sample data.
-        else
-            initializeData();
-
-        if(null == myAuctionCalendar
-        || null == myAuctionCalendar.auctionDB){
-            initializeData();
-        }
+        ///TODO: Uncomment below when changes are done being made to serialized data classes.
+//        if(new File(USERDB_FILE_NAME).exists()
+//                && new File(AUCTIONDB_FILE_NAME).exists())
+//            deserialize();
+//            //Else, initialize with sample data.
+//        else
+//            initializeData();
+//
+//        if(null == myAuctionCalendar
+//        || null == myAuctionCalendar.auctionDB){
+//            initializeData();
+//        }
+        initializeData();
         createAdditionalSampleData();
         myAuctionCalendar.updateCalendar();
 
