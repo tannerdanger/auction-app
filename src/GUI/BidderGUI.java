@@ -37,14 +37,12 @@ public class BidderGUI extends Observable implements Observer {
 	private final JButton myLoadAuctionButton;
 	private final JButton myLoadItemButton;
 	private final Bidder myBidder;
-	//private final AuctionCalendar myCalendar;
 	private DataHandler myData;
 	private JList<Auction> myAuctionsList;
 	private JList<Bid> myBidsList;
 
 	
 	public BidderGUI(final Bidder theBidder, final DataHandler theData) {
-		//myCalendar = theCalendar;
 		myData = theData;
 		myBidder = theBidder;
 		mySelectedAuction = null;
@@ -84,6 +82,7 @@ public class BidderGUI extends Observable implements Observer {
 		final DefaultListModel<Bid> bidsList = createBidsListModel();
 		myBidsList = new JList<>(bidsList);
 		setupBidsJList();
+		
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
 		panel.add(myLoadItemButton, BorderLayout.SOUTH);
@@ -99,9 +98,9 @@ public class BidderGUI extends Observable implements Observer {
 				final JList<Bid> list = (JList<Bid>) theEvent.getSource();
 				mySelectedItem = list.getSelectedValue().getItem();
 				if(list.isSelectionEmpty())	 {
-					myLoadAuctionButton.setEnabled(false);
+					myLoadItemButton.setEnabled(false);
 				} else {
-					myLoadAuctionButton.setEnabled(true);
+					myLoadItemButton.setEnabled(true);
 				}
 			}
 		});
@@ -126,9 +125,9 @@ public class BidderGUI extends Observable implements Observer {
 				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
 				mySelectedAuction = list.getSelectedValue();
 				if(list.isSelectionEmpty())	 {
-					myLoadItemButton.setEnabled(false);
+					myLoadAuctionButton.setEnabled(false);
 				} else {
-					myLoadItemButton.setEnabled(true);
+					myLoadAuctionButton.setEnabled(true);
 				}
 			}
 		});
@@ -136,12 +135,7 @@ public class BidderGUI extends Observable implements Observer {
 	
 	private DefaultListModel<Auction> createAuctionListModel() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
-
-		//TODO: Tanner change
-		//for(final Auction a : myCalendar.getActiveAuctions()) { <- Charlie Code
 		for(final Auction a : myData.getActiveAuctions()) { //<--Tanner's Change
-		// END CHANGE
-
 			System.out.println(a.toString());
 			list.addElement(a);
 		}
@@ -188,7 +182,7 @@ public class BidderGUI extends Observable implements Observer {
 
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Auction> theList, Auction theAuction, int theIndex,
-				boolean theIsSelected, boolean theIsInFocus) {
+													  boolean theIsSelected, boolean theIsInFocus) {
 			this.setText(theAuction.getOrgName() + " | " + theAuction.getAuctionDate());
 			if(theIsSelected) {
 				this.setForeground(theList.getSelectionForeground());
