@@ -55,9 +55,7 @@ public class BidderGUI extends Observable implements Observer {
 		myPanel.setLayout(new GridLayout(1, 2));
 		myPanel.add(createAuctionsPanel());
 		myPanel.add(createBidsPanel());
-		//System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
 		System.out.println("Auction count: " + myData.getActiveAuctions().size());
-
 		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
@@ -68,7 +66,8 @@ public class BidderGUI extends Observable implements Observer {
 		final JLabel label = new JLabel("Open auctions", SwingConstants.CENTER);
 
 		final DefaultListModel<Auction> auctionsList = createAuctionListModel();
-		myAuctionsList = createAuctionJList(auctionsList);
+		myAuctionsList = new JList<>(auctionsList);
+		setupAuctionJList();
 		
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
@@ -83,7 +82,8 @@ public class BidderGUI extends Observable implements Observer {
 		final JLabel label = new JLabel("Your bids", SwingConstants.CENTER);
 		
 		final DefaultListModel<Bid> bidsList = createBidsListModel();
-		myBidsList = createBidsJList(bidsList);
+		myBidsList = new JList<>(bidsList);
+		setupBidsJList();
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
 		panel.add(myLoadItemButton, BorderLayout.SOUTH);
@@ -91,16 +91,7 @@ public class BidderGUI extends Observable implements Observer {
 		return panel;
 	}
 
-	private JList<Bid> createBidsJList(final DefaultListModel<Bid> theList) {
-		JList<Bid> list = new JList<>(theList);
-
-		//TODO: Tanner change
-		//Added this because I think an error was caused due to this list initially being null? (same with the auction list)
-		//No original code changed in this block.
-		if(null == myBidsList)
-			myBidsList = new JList<>();
-		//END CHANGE
-
+	private void setupBidsJList() {
 		myBidsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myBidsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -114,7 +105,6 @@ public class BidderGUI extends Observable implements Observer {
 				}
 			}
 		});
-		return list;
 	}
 	
 	private DefaultListModel<Bid> createBidsListModel() {
@@ -128,16 +118,7 @@ public class BidderGUI extends Observable implements Observer {
 		return list;
 	}
 	
-	private JList<Auction> createAuctionJList(final DefaultListModel<Auction> theList) {
-		final JList<Auction> list = new JList<>(theList);
-
-		//TODO: Tanner change
-		//Added this because I think an error was caused due to this list initially being null?
-		//No original code changed in this block.
-		if(null==myAuctionsList)
-			myAuctionsList = new JList<>();
-		//END CHANGE
-
+	private void setupAuctionJList() {
 		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -151,7 +132,6 @@ public class BidderGUI extends Observable implements Observer {
 				}
 			}
 		});
-		return list;
 	}
 	
 	private DefaultListModel<Auction> createAuctionListModel() {
@@ -247,9 +227,11 @@ public class BidderGUI extends Observable implements Observer {
 	public void update(final Observable theObservable, final Object theObject) {
 		if(theObservable instanceof DataHandler) {
 			if(theObject instanceof Bid) {
-				myBidsList = createBidsJList(createBidsListModel());
+				myBidsList = new JList<>(createBidsListModel());
+				setupBidsJList();
 			} else if (theObject instanceof Auction) {
-				myAuctionsList = createAuctionJList(createAuctionListModel());
+				myAuctionsList = new JList<>(createAuctionListModel());
+				setupAuctionJList();
 			} else if(theObject instanceof AuctionItem) {
 				// do nothing
 			}
