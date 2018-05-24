@@ -16,6 +16,7 @@ import java.util.Map;
  * @version May 4th 2018
  */
 public class AuctionItem implements Serializable {
+
     private static final long serialVersionUID = 9212387915390331L;
 	private BigDecimal minPrice;
 	
@@ -24,7 +25,8 @@ public class AuctionItem implements Serializable {
 	private final int uniqueID;
 	
 	private Map<String, BigDecimal> sealedBids = new HashMap<String, BigDecimal>();
-	
+
+
 	/**
 	 * A private constructor to prevent the default constructor to create an null auction item.
 	 * User has to provide all item info to create the auction item class object.
