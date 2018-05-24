@@ -186,12 +186,13 @@ public class BidderGUI extends Observable implements Observer {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Auction> theList, Auction theAuction, int theIndex,
 													  boolean theIsSelected, boolean theIsInFocus) {
-			this.setText(theAuction.getOrgName() + " | " + theAuction.getAuctionDate());
+			this.setText(theAuction.getAuctionDate() + " | " + theAuction.getOrgName());
+			this.setOpaque(true);
 			if(theIsSelected) {
-				this.setForeground(Color.CYAN);
-				this.setBackground(Color.LIGHT_GRAY);
+				this.setForeground(Color.BLACK);
+				this.setBackground(new Color(173,216,230));
 			} else {
-				this.setForeground(Color.DARK_GRAY);
+				this.setForeground(Color.BLACK);
 				this.setBackground(Color.WHITE);
 			}
 			return this;
@@ -208,10 +209,11 @@ public class BidderGUI extends Observable implements Observer {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Bid> theList, Bid theBid, int theIndex,
 													  boolean theIsSelected, boolean theIsInFocus) {
-			this.setText(theBid.getItem().getName() + " | " + theBid.getBidAmount());
+			this.setText("$" + theBid.getBidAmount() + " | " + theBid.getItem().getName());
+			this.setOpaque(true);
 			if(theIsSelected) {
-				this.setForeground(Color.CYAN);
-				this.setBackground(Color.LIGHT_GRAY);
+				this.setForeground(Color.BLACK);
+				this.setBackground(new Color(173,216,230));
 			} else {
 				this.setForeground(Color.BLACK);
 				this.setBackground(Color.WHITE);

@@ -40,14 +40,9 @@ public class Bidder extends User implements Serializable {
     } 
 
     public boolean isBidPlaceable(final Auction theAuction, final AuctionItem theItem, final BigDecimal theBidAmount) {
-    	return isBidAmountValid(theItem, theBidAmount) 
-    		   && isDateValid(theAuction.getAuctionDate())
+    	return isDateValid(theAuction.getAuctionDate())
     		   && isBelowMaxBidsPerAuction(theAuction) 
     		   && isBelowMaxTotalBids();
-    }
-
-    public boolean isBidAmountValid(final AuctionItem theItem, final BigDecimal theBidAmount) {
-    	return theBidAmount.doubleValue() > theItem.getMinPrice();
     }
        
     public static boolean isDateValid(LocalDate theAuctionDate) {
@@ -68,7 +63,7 @@ public class Bidder extends User implements Serializable {
     }
 
     public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
-	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount);
+	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount) && Bid.isBidValid(theBidAmount);
 	  if(result) {
 		  final Bid bid = new Bid(theAuction, theBidAmount, theItem);
 		  myBids.add(bid);
