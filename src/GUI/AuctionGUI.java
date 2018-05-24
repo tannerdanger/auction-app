@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import storage.AuctionCalendar;
+import storage.DataHandler;
 
 /**
  *
@@ -28,12 +29,15 @@ public class AuctionGUI extends JPanel{
 	private static final long serialVersionUID = -6663684108079124777L;
 	private final ObservableAuctionGui myObservable;
 	private final JPanel myListPanel;
-	private final AuctionCalendar myCalendar;
+	//private final AuctionCalendar myCalendar;
+	private DataHandler myData;
 	
-	public AuctionGUI(final AuctionCalendar theCalendar) {
+	//public AuctionGUI(final AuctionCalendar theCalendar) {
+	public AuctionGUI(DataHandler theData){
 		myObservable = new ObservableAuctionGui();
 		myListPanel = new JPanel();
-		myCalendar = theCalendar;
+		//myCalendar = theCalendar;
+		myData = myData;
 		this.setLayout(new BorderLayout());
 		setupComponents();
 	}
@@ -58,21 +62,25 @@ public class AuctionGUI extends JPanel{
 	}
 	
 	private void createAllAuctionLabels() {
-		if(myCalendar.getActiveAuctions().size() == 0) {
+		//if(myCalendar.getActiveAuctions().size() == 0) {
+		if(myData.getActiveAuctions().size() == 0) {
 			final JLabel auctionLabel = new JLabel("There are no auctions have been scheduled currently.");
 			myListPanel.add(auctionLabel);
 		} else {
-			for(Auction a : myCalendar.getActiveAuctions()) {
+			//for(Auction a : myCalendar.getActiveAuctions()) {
+			for(Auction a : myData.getActiveAuctions()) {
 				final JLabel auctionLabel = new JLabel("ActiveAuction : " + a.getOrgName());
 				myListPanel.add(auctionLabel);
 			}
 		}
 		
-		if(myCalendar.getPastAuctions().size() == 0) {
+		//if(myCalendar.getPastAuctions().size() == 0) {
+		if(myData.getPastAuctions().size() == 0) {
 			final JLabel auctionLabel = new JLabel("There are no past auctions have been found.");
 			myListPanel.add(auctionLabel);
 		} else {
-			for(Auction a : myCalendar.getPastAuctions()) {
+			//for(Auction a : myCalendar.getPastAuctions()) {
+			for(Auction a : myData.getPastAuctions()) {
 				final JLabel auctionLabel = new JLabel("PastAuction : " + a.getOrgName());
 				myListPanel.add(auctionLabel);
 			}

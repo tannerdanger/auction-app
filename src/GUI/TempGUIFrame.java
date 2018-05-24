@@ -1,9 +1,12 @@
 package GUI;
 
 import storage.DataHandler;
+import users.Bidder;
+import users.ContactPerson;
 import users.User;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Observable;
@@ -12,6 +15,7 @@ import java.util.Observer;
 public class TempGUIFrame extends JFrame implements Observer {
 
 	public JPanel currentPanel;
+	public JPanel basePanel;
 	private DataHandler myData;
 	private User activeUser;
 	public TempGUIFrame(){
@@ -38,16 +42,38 @@ public class TempGUIFrame extends JFrame implements Observer {
 		});
 
 		myData = new DataHandler();
+		basePanel = new JPanel(new BorderLayout());
+
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(basePanel);
+
 
 		LoginPanel login = new LoginPanel(myData, this);
 		currentPanel = login;
+		basePanel.setLayout(new BorderLayout());
+		basePanel.add(currentPanel, BorderLayout.CENTER);
 
-		add(currentPanel);
 		setVisible(true);
 		pack();
+	}
 
+	public void loginBidder(Bidder theBidder){
+		BidderGUI bidderGUI = new BidderGUI(theBidder, myData);
+		changePanel(bidderGUI.getPanel());
 
+	}
+	public void loginContact(ContactPerson theContact){
 
+	}
+	public void loginStaff(){
+
+	}
+
+	public void changePanel(JPanel theNewPanel){
+		basePanel.remove(currentPanel);
+		currentPanel = theNewPanel;
+		basePanel.add(theNewPanel, BorderLayout.CENTER);
+		pack();
 	}
 
 
@@ -66,10 +92,9 @@ public class TempGUIFrame extends JFrame implements Observer {
 	}
 
 	private void logout(){
-		myData.deserialize();
+		myData.serialize();
 		System.out.println("Thank you for using Auction Central!");
 		System.out.println("You have sucessfully logged out. Goodbye! ");
 		System.exit(0);
-
 	}
 }

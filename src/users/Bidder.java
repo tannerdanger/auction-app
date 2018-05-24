@@ -63,7 +63,10 @@ public class Bidder extends User implements Serializable {
     	return myBids.size() < MAX_BIDS_TOTAL;
     }
     
-   
+    public void placeBid(Bid theBid){
+    	myBids.add(theBid);
+    }
+
     public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
 	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount);
 	  if(result) {
@@ -79,5 +82,9 @@ public class Bidder extends User implements Serializable {
     public List<Bid> getBids() {
       return new ArrayList<Bid>(myBids);
   }
+
+    public String getMyID(){
+    	return myID;
+    }
   
 }

@@ -42,7 +42,8 @@ public class Scheduler {
 	//that holds all the auctions.
 	public boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate){
 
-		ArrayList<Auction> auctions = myData.getMyAuctionCalendar().getActiveAuctions();
+		//ArrayList<Auction> auctions = myData.getMyAuctionCalendar().getActiveAuctions(); //Old Way
+		ArrayList<Auction> auctions = myData.getActiveAuctions(); //New Way
 
 		int auctionCount = 0;
 		for (Auction a : auctions) {
@@ -90,7 +91,7 @@ public class Scheduler {
 	//It will instead need a reference to a calender object we create somewhere
 	//that holds all the auctions.
 	public boolean isMaxUpcomingAuctionsExceeded() {
-		return myData.getMyAuctionCalendar().getActiveAuctions().size()
+		return myData.getActiveAuctions().size()
 				>= MAX_UPCOMING_AUCTIONS_LIMIT;
 	}
 	

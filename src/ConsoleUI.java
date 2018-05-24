@@ -32,8 +32,8 @@ class ConsoleUI {
     protected static void start() {
         Scanner scanner = new Scanner(System.in);
         myData = new DataHandler();
-        myUserDB = myData.getMyUserDB();
-        myCalendar = myData.getMyAuctionCalendar();
+       // myUserDB = myData.getMyUserDB();
+        //myCalendar = myData.getMyAuctionCalendar();
         myScheduler = new Scheduler(myData);
  
         System.out.println("Login:");
@@ -213,9 +213,9 @@ class ConsoleUI {
      */
     public static void printActiveAuctions() {
         System.out.println(" Active Auction  \n" +" ---------------\n ");
-        for(Auction a : myCalendar.getActiveAuctions()){
-            printAuction(a);
-        }
+//        for(Auction a : myCalendar.getActiveAuctions()){
+//            printAuction(a);
+//        }
     }
  
     /**
@@ -278,11 +278,11 @@ class ConsoleUI {
         Scanner scan = new Scanner(System.in);
         printBidderAuctions(theBidder);
         System.out.println("Enter Auction ID:");
-        Auction auction = myCalendar.getAuction(scan.nextInt());
+        //Auction auction = myCalendar.getAuction(scan.nextInt());
         for(Bid b : theBidder.getBids()){
-            if(b.getAuction().getauctionID() == auction.getauctionID()) {
+            //f(b.getAuction().getauctionID() == auction.getauctionID()) {
                 printBid(b);
-            }
+            //}
         }
     }
  
@@ -316,7 +316,7 @@ class ConsoleUI {
         Scanner scan = new Scanner(System.in);
         System.out.println("Enter the Auction ID of the auction you would like to view:");
         int response = scan.nextInt();
-        Auction selectedAuction = myData.getMyAuctionCalendar().getAuction(response);
+        Auction selectedAuction = myData.getAuctionByID(response);
         while (null == selectedAuction && response != 0) {
             //TODO: Left off here, parsing to ensure auction item is correct
         }
@@ -399,7 +399,7 @@ class ConsoleUI {
             //  Auction newAuction = new Auction();
             //  newAuction.setAuctionDate(newDate);
             Auction a = theContact.createNewAuction(newDate);
-            myCalendar.addAuction(a);
+            //myCalendar.addAuction(a);
  
  
             //System.out.println("Here is your inventory sheet: ");

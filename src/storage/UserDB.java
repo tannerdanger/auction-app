@@ -1,9 +1,13 @@
 package storage;
  
+import auctiondata.Bid;
+import users.Bidder;
 import users.User;
  
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
  
 /**
@@ -17,14 +21,17 @@ public class UserDB implements Serializable {
  
     //email is key(username), value is the user associated with email address
     public Map<String, User> userDirectory;
+
  
     /**
      * Constructor.
      */
     public UserDB(){
         userDirectory = new HashMap<String, User>();
+
     }
- 
+
+
     /**
      * Returns a user
      * @param emailAddress the email address of the user being returned

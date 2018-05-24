@@ -1,5 +1,7 @@
 package auctiondata;
 
+import users.Bidder;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 

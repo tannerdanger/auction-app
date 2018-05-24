@@ -4,7 +4,7 @@ import auctiondata.*;
 import users.*;
 
 import java.io.*;
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,8 +34,12 @@ public class DataHandler extends Observable{
         else
             initializeData();
 
+        if(null == myAuctionCalendar.auctionDB){
+            initializeData();
+        }
         createAdditionalSampleData();
-        //createObservers();
+        myAuctionCalendar.updateCalendar();
+
     }
 
 
@@ -98,76 +102,112 @@ public class DataHandler extends Observable{
         myAuctionCalendar = new AuctionCalendar();
 
         //create users
-        User contactUser =
+        ContactPerson contactUser =
                 new ContactPerson("Contact", "McContact", "contact@contact.com");
-        ((ContactPerson) contactUser).setMyOrgName("Pat's Pneumonic Penguin Preservation");
+        contactUser.setMyOrgName("Pat's Pneumonic Penguin Preservation");
 
-        ContactPerson contactUser3 = new ContactPerson("Lars", "Rush", "contact3@contact.com");
-        contactUser3.setMyOrgName("Odio Corp.");
+        ContactPerson contactUser2 = new ContactPerson("Lars", "Rush", "contact2@contact.com");
+        contactUser2.setMyOrgName("Odio Corp.");
 
-        ContactPerson contactUser4 = new ContactPerson("Russ", "Walker", "Contact4@contact.com");
-        contactUser4.setMyOrgName("Risus Industries");
+        ContactPerson contactUser3 = new ContactPerson("Russ", "Walker", "Contact3@contact.com");
+        contactUser3.setMyOrgName("Risus Industries");
 
 
-        User bidderUser =
+        Bidder bidderUser =
                 new Bidder("Bidder","McBidder", "bidder@bidder.com");
 
+        Bidder bidderUser2 =
+                new Bidder("Bidly", "Bidderson", "bidder2@bidder.com");
+
+
+        addUser(bidderUser);
+        addUser(bidderUser2);
+        addUser(contactUser);
+        addUser(contactUser2);
+        addUser(contactUser3);
+
         //create auctions
-        Auction auction1 =
-                new Auction(((ContactPerson) contactUser).getMyOrgName(),
-                        ((ContactPerson) contactUser).getMyOrgID(),
-                        LocalDateTime.of(2018, 05, 30, 10, 00),
-                        null);
 
         Auction auction2 = new Auction("#SaveTheDoDo", "#SaveTheDoDo".hashCode(),
                 LocalDateTime.of(2018, 05, 30, 15, 00),
                 null);
 
-        Auction auction3 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2017, 04, 1, 11, 00), null);
-        Auction auction4 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2018, 06, 20, 11, 00), null);
-        Auction auction5 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2016, 03, 2, 11, 00), null);
-        Auction auction6 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2015, 2, 17, 11, 00), null);
-        Auction auction7 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2018, 2, 15, 11, 00), null);
-        Auction auction8 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2017 , 2, 10, 11, 00), null);
-        Auction auction9 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2016, 1, 25, 11, 00), null);
-        Auction auction10 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2014 , 8, 10, 11, 00), null);
-        Auction auction11 = new Auction(contactUser4.getMyOrgName(), contactUser4.getMyOrgName().hashCode(), LocalDateTime.of(2013 , 4, 21, 11, 00), null);
-
+        // Build Auction 1 for contactUser //
+        Auction auction1 = new Auction(contactUser.getMyOrgName(),contactUser.getMyOrgID(), LocalDateTime.of(2018, 05, 30, 10, 00),null);
+        addAuction(auction1);
         AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
-        AuctionItem item2 = new AuctionItem(50.00, "I'm out of clever names");
-        auction4.addInventoryItem(new AuctionItem(62.00, "Veal - Chops, Split, Frenched"));
-        auction4.addInventoryItem(new AuctionItem(	71.00, "Lettuce - Escarole"));
-        auction4.addInventoryItem(new AuctionItem(46.00, "Scampi Tail"));
-        auction4.addInventoryItem(new AuctionItem(76.00, "Tumeric"));
-        auction4.addInventoryItem(new AuctionItem(88.00, "Creamers - 10%"));
-        auction4.addInventoryItem(new AuctionItem(22.00, "Oil - Shortening - All - Purpose"));
+        AuctionItem item2 = new AuctionItem(50.00, "Penguin Flippers");
+        AuctionItem item3 = new AuctionItem(62.00, "Veal - Chops, Split, Frenched");
+        addAuctionItem(auction1, item1);
+        addAuctionItem(auction1, item2);
+        addAuctionItem(auction1, item3);
+        Bid bid1 = new Bid(auction1, BigDecimal.valueOf(75), getAuctionItem(647));
+        placeBid(bidderUser, bid1);
+        Bid bid2 = new Bid(auction1, BigDecimal.valueOf(80), getAuctionItem(647));
+        placeBid(bidderUser2, bid2);
 
-        auction7.addInventoryItem(new AuctionItem(22.00, "Tumeric"));
-        auction7.addInventoryItem(new AuctionItem(35.00, "Nantucket - Orange Mango Cktl"));
-        auction7.addInventoryItem(new AuctionItem(45.00, "Spinach - Spinach Leaf"));
-        auction7.addInventoryItem(new AuctionItem(85.00, "Truffle Cups - White Paper"));
-        auction7.addInventoryItem(new AuctionItem(26.00, "Milk - 1%"));
-        auction7.addInventoryItem(new AuctionItem(30.00, "Sultanas"));
+        // Build auction 8 for contact user //
+        Auction auction8 = new Auction(contactUser.getMyOrgName(), contactUser.getMyOrgName().hashCode(), LocalDateTime.of(2017 , 2, 10, 11, 00), null);
+        addAuction(auction8);
+
+        AuctionItem item4 = new AuctionItem(	71.00, "Lettuce - Escarole");
+        addAuctionItem(auction8, item4);
+        AuctionItem item5 = new AuctionItem(22.00, "Tumeric");
+        addAuctionItem(auction8, item5);
+        AuctionItem item6 = new AuctionItem(35.00, "Nantucket - Orange Mango Cocktail");
+        addAuctionItem(auction8, item6);
+
+        //Build auction 9 for contact user//
+        Auction auction9 = new Auction(contactUser.getMyOrgName(), contactUser.getMyOrgName().hashCode(), LocalDateTime.of(2016, 1, 25, 11, 00), null);
+        addAuction(auction9);
 
 
-        auction1.addInventoryItem(item1);
-        auction1.addInventoryItem(item2);
 
-        ((ContactPerson) contactUser).setMyCurrentAuction(auction1);
-        myAuctionCalendar.addAuction(auction1);
-        myAuctionCalendar.addAuction(auction2);
-        myAuctionCalendar.addAuction(auction3);
-        myAuctionCalendar.addAuction(auction4);
-        myAuctionCalendar.addAuction(auction5);
-        myAuctionCalendar.addAuction(auction6);
-        myAuctionCalendar.addAuction(auction7);
-        myAuctionCalendar.addAuction(auction8);
-        myAuctionCalendar.addAuction(auction9);
-        myAuctionCalendar.addAuction(auction10);
-        myAuctionCalendar.addAuction(auction11);
 
-        myUserDB.addUser(bidderUser);
-        myUserDB.addUser(contactUser);
+        //  Bid 3 = new Bid(auction8, BigDecimal.valueOf(76), getAuctionItem())
+
+        contactUser.setMyCurrentAuction(auction1);
+
+        // Contactuser 2 //
+
+        Auction auction3 = new Auction(contactUser2.getMyOrgName(), contactUser2.getMyOrgName().hashCode(), LocalDateTime.of(2017, 04, 1, 11, 00), null);
+        addAuction(auction3);
+
+        Auction auction4 = new Auction(contactUser2.getMyOrgName(), contactUser2.getMyOrgName().hashCode(), LocalDateTime.of(2018, 06, 20, 11, 00), null);
+        addAuction(auction4);
+        AuctionItem item7 = new AuctionItem(46.00, "Scampi Tail");
+        AuctionItem item8 = new AuctionItem(76.00, "Tumeric");
+        AuctionItem item9 = new AuctionItem(88.00, "Creamers - 10%");
+        AuctionItem item10 = new AuctionItem(22.00, "Oil - Shortening - All - Purpose");
+        addAuctionItem(auction4, item7);
+        addAuctionItem(auction4, item8);
+        addAuctionItem(auction4, item9);
+        addAuctionItem(auction4, item10);
+
+
+        Auction auction5 = new Auction(contactUser2.getMyOrgName(), contactUser2.getMyOrgName().hashCode(), LocalDateTime.of(2016, 03, 2, 11, 00), null);
+        addAuction(auction5);
+        Auction auction6 = new Auction(contactUser2.getMyOrgName(), contactUser2.getMyOrgName().hashCode(), LocalDateTime.of(2015, 2, 17, 11, 00), null);
+        addAuction(auction6);
+
+
+
+        // Contactuser 3//
+        Auction auction7 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2018, 2, 15, 11, 00), null);
+        addAuction(auction7);
+        addAuctionItem(auction7, new AuctionItem(45.00, "Spinach - Spinach Leaf"));
+        addAuctionItem(auction7, new AuctionItem(85.00, "Truffle Cups - White Paper"));
+        addAuctionItem(auction7, new AuctionItem(26.00, "Milk - 1%"));
+        addAuctionItem(auction7, new AuctionItem(30.00, "Sultanas"));
+
+        Auction auction10 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2014 , 8, 10, 11, 00), null);
+        addAuction(auction10);
+        Auction auction11 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2013 , 4, 21, 11, 00), null);
+        addAuction(auction11);
+
+
+        System.out.println("Finished adding sample data");
+
     }
 
     /**
@@ -204,7 +244,7 @@ public class DataHandler extends Observable{
      * Getter for an auction Calendar
      * @return the auctionCalendar
      */
-    private AuctionCalendar getMyAuctionCalendar() {
+    public AuctionCalendar getMyAuctionCalendar() {
         return myAuctionCalendar;
     }
     /**
@@ -231,6 +271,13 @@ public class DataHandler extends Observable{
         return myUserDB.getUser(theEmail);
     }
 
+    private void addUser(User theUser){
+        myUserDB.userDirectory.put(theUser.getEmail(), theUser);
+
+        if(theUser.getClass().equals(Bidder.class))
+            myAuctionCalendar.userBids.put((Bidder)theUser, new ArrayList<Bid>());
+    }
+
 
     //~~Auctions Data Handling~~//
 
@@ -240,10 +287,10 @@ public class DataHandler extends Observable{
      * @return an array of auctions associated with an organization.
      */
     public ArrayList<Auction> getAuctionsByOrg(String theOrg){
-        ArrayList<Auction> tmpList = myAuctionCalendar.getAuctionDataBase();
+
         ArrayList<Auction> returnList = new ArrayList<>();
 
-        for(Auction a : tmpList){
+        for(Auction a : myAuctionCalendar.auctionDB.keySet()){
             if(a.getOrgName().compareTo(theOrg) == 0){
                 returnList.add(a);
             }
@@ -274,7 +321,11 @@ public class DataHandler extends Observable{
      */
     public Auction getAuctionByID(int auctionID){
 
-        return myAuctionCalendar.auctionDataBase.get(auctionID);
+        for(Auction a : myAuctionCalendar.auctionDB.keySet()){
+            if(a.getauctionID()==auctionID)
+                return a;
+        }
+        return null;
     }
 
     /**
@@ -283,27 +334,18 @@ public class DataHandler extends Observable{
      * @return an arraylist of auctions.
      */
     public ArrayList<Auction> getActiveAuctions(){
-        ArrayList<Auction> tmpList = myAuctionCalendar.getAuctionDataBase();
-        ArrayList<Auction> returnList = new ArrayList<>();
+        myAuctionCalendar.updateCalendar();
+        return myAuctionCalendar.activeAuctions;
+    }
 
-        for(Auction a : tmpList){
-            if(a.getAuctionDate().isAfter(LocalDate.now()))
-                returnList.add(a);
-        }
-        returnList.sort((a1, a2) -> {
-            if(a1.getAuctionDate().isBefore(a2.getAuctionDate())){
-                return 1;
-            }else{
-                return -1;
-            }
-        });
-        return returnList;
+    public ArrayList<Auction> getPastAuctions(){
+        return myAuctionCalendar.pastAuctions;
     }
 
     //~~Auction Item Data Handling ~~//
 
-    public Map<Integer, AuctionItem> getAuctionItemsByAuction(Auction theAuction){
-        return theAuction.getInventorySheet();
+    public Set<AuctionItem> getAuctionItemsByAuction(Auction theAuction){
+        return myAuctionCalendar.auctionDB.get(theAuction).keySet();
     }
 
     /**
@@ -312,10 +354,12 @@ public class DataHandler extends Observable{
      * @return an auction item.
      */
     public AuctionItem getAuctionItem(int theItemID){
-        ArrayList<Auction> activeAuctions = new ArrayList<Auction>();
-        for(Auction a: myAuctionCalendar.auctionDataBase) {
-            if(a.getInventorySheet().containsKey(theItemID))
-                return a.getItem(theItemID);
+
+        for (Auction a: myAuctionCalendar.auctionDB.keySet()) {
+            for(AuctionItem i : myAuctionCalendar.auctionDB.get(a).keySet()){
+                if(null != i && i.getUniqueID() == theItemID)
+                    return i;
+            }
         }
         return null; //returns null if no item is ever found.
     }
@@ -327,17 +371,28 @@ public class DataHandler extends Observable{
      * @return the auction item
      */
     public AuctionItem getAuctionItem(int theItemID, Auction theAuction){
-        return theAuction.getItem(theItemID);
+
+        for (AuctionItem i: myAuctionCalendar.auctionDB.get(theAuction).keySet()) {
+
+            if(i.getUniqueID() == theItemID)
+                return i;
+        }
+        return null;
     }
 
     /**
-     * Adds an auction to the calendar, then notifies observers.
-     * @param theAuction
+     * Creates a null Hashset for Items,Bids and adds it to the database
+     * @param theAuction the auction being added as a key to the database.
      */
     public void addAuction(Auction theAuction){
-        myAuctionCalendar.auctionDataBase.add(theAuction);
-        sortAuctions(myAuctionCalendar.auctionDataBase);
-        notifyUpdateAuctions(theAuction);
+
+        HashMap<AuctionItem, ArrayList<Bid>> emptyMap = new HashMap<>();
+
+        myAuctionCalendar.auctionDB.put(theAuction, emptyMap);
+        myAuctionCalendar.updateCalendar();
+
+
+
     }
 
     /**
@@ -346,7 +401,13 @@ public class DataHandler extends Observable{
      * @param theItem an item being added to the auction.
      */
     public void addAuctionItem(Auction theAuction, AuctionItem theItem){
+
+        ArrayList<Bid> emptyBidList = new ArrayList<>();
+        myAuctionCalendar.auctionDB.get(theAuction).put(theItem, emptyBidList);
+
         theAuction.addInventoryItem(theItem);
+
+        myAuctionCalendar.updateCalendar();
         notifyUpdateItem(theItem);
     }
 
@@ -355,10 +416,23 @@ public class DataHandler extends Observable{
     /**
      * Adds a new bid to an auction item and notifies observers.
      * @param theBid being added to an item.
-     * @param theItemID the unique id of the auction item being bid on.
+     * @param theBidder the unique bidder assocaited with this bid
      */
-    public void placeBid(Bid theBid, int theItemID){
-        getAuctionItem(theItemID).addSealedBid(theBid);
+    public void placeBid(Bidder theBidder, Bid theBid){
+        AuctionItem item = theBid.getItem();
+        Auction auction = theBid.getAuction();
+        myAuctionCalendar.auctionDB.get(auction).get(item).add(theBid);
+
+
+        if(!myAuctionCalendar.userBids.isEmpty()
+                && myAuctionCalendar.userBids.get(theBidder).contains(theBid)){
+
+            myAuctionCalendar.userBids.get(theBidder).remove(theBid);
+        }
+
+        myAuctionCalendar.userBids.get(theBidder).add(theBid);
+        theBidder.placeBid(theBid);
+        myAuctionCalendar.updateCalendar();
         notifyUpdateBids(theBid);
     }
 
@@ -376,17 +450,17 @@ public class DataHandler extends Observable{
     //~~Observer Notifying~~//
 
     private void notifyUpdateBids(Bid theBid) {
-    	this.setChanged();
+        this.setChanged();
         notifyObservers(theBid);
     }
 
     private void notifyUpdateAuctions(Auction theAuction){
-    	this.setChanged();
+        this.setChanged();
         notifyObservers(theAuction);
     }
 
     private void notifyUpdateItem(AuctionItem theItem){
-    	this.setChanged();
+        this.setChanged();
         notifyObservers(theItem);
     }
 

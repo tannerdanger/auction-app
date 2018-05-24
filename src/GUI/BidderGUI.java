@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -35,13 +37,15 @@ public class BidderGUI extends Observable implements Observer {
 	private final JButton myLoadAuctionButton;
 	private final JButton myLoadItemButton;
 	private final Bidder myBidder;
-	private final AuctionCalendar myCalendar;
+	//private final AuctionCalendar myCalendar;
+	private DataHandler myData;
 	private JList<Auction> myAuctionsList;
 	private JList<Bid> myBidsList;
 
 	
-	public BidderGUI(final Bidder theBidder, final AuctionCalendar theCalendar) {	
-		myCalendar = theCalendar;
+	public BidderGUI(final Bidder theBidder, final DataHandler theData) {
+		//myCalendar = theCalendar;
+		myData = theData;
 		myBidder = theBidder;
 		mySelectedAuction = null;
 		mySelectedItem = null;
@@ -51,7 +55,9 @@ public class BidderGUI extends Observable implements Observer {
 		myPanel.setLayout(new GridLayout(1, 2));
 		myPanel.add(createAuctionsPanel());
 		myPanel.add(createBidsPanel());
-		System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
+		//System.out.println("Auction count: " + myCalendar.getActiveAuctions().size());
+		System.out.println("Auction count: " + myData.getActiveAuctions().size());
+
 		System.out.println("Bid count: " + myBidder.getBids().size());
 	}
 	
@@ -87,6 +93,14 @@ public class BidderGUI extends Observable implements Observer {
 
 	private JList<Bid> createBidsJList(final DefaultListModel<Bid> theList) {
 		JList<Bid> list = new JList<>(theList);
+
+		//TODO: Tanner change
+		//Added this because I think an error was caused due to this list initially being null? (same with the auction list)
+		//No original code changed in this block.
+		if(null == myBidsList)
+			myBidsList = new JList<>();
+		//END CHANGE
+
 		myBidsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myBidsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -100,7 +114,9 @@ public class BidderGUI extends Observable implements Observer {
 	
 	private DefaultListModel<Bid> createBidsListModel() {
 		final DefaultListModel<Bid> list = new DefaultListModel<>();
+
 		for(final Bid b : myBidder.getBids()) {
+
 			System.out.println(b.toString());
 			list.addElement(b);
 		}
@@ -109,6 +125,14 @@ public class BidderGUI extends Observable implements Observer {
 	
 	private JList<Auction> createAuctionJList(final DefaultListModel<Auction> theList) {
 		final JList<Auction> list = new JList<>(theList);
+
+		//TODO: Tanner change
+		//Added this because I think an error was caused due to this list initially being null?
+		//No original code changed in this block.
+		if(null==myAuctionsList)
+			myAuctionsList = new JList<>();
+		//END CHANGE
+
 		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
 			@Override
@@ -122,7 +146,12 @@ public class BidderGUI extends Observable implements Observer {
 	
 	private DefaultListModel<Auction> createAuctionListModel() {
 		final DefaultListModel<Auction> list = new DefaultListModel<>();
-		for(final Auction a : myCalendar.getActiveAuctions()) {
+
+		//TODO: Tanner change
+		//for(final Auction a : myCalendar.getActiveAuctions()) { <- Charlie Code
+		for(final Auction a : myData.getActiveAuctions()) { //<--Tanner's Change
+		// END CHANGE
+
 			System.out.println(a.toString());
 			list.addElement(a);
 		}
