@@ -70,7 +70,19 @@ public class AuctionCalendar implements Serializable {
 		});
 	}
 
-
+/*
+    public ArrayList<Auction> getAuctionsBetweenTwoDates(LocalDateTime earlierDate, LocalDateTime laterDate) {
+    	//updateCalendar();
+    	ArrayList<Auction> auctionsToDisplay = new ArrayList<Auction>();
+    	
+    	for (Auction a: allAuctions) {
+    		if (a.getAuctionDateTime().isAfter(earlierDate) || a.getAuctionDateTime().isEqual(earlierDate)
+    			&& a.getAuctionDateTime().isBefore(laterDate) || a.getAuctionDateTime().isEqual(laterDate)) {
+    			auctionsToDisplay.add(a);
+    		}
+    	}
+    	return auctionsToDisplay;
+    }*/
 
 //	/**
 //	 * Adds an auction to the calendar.
