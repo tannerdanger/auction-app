@@ -6,6 +6,7 @@ import auctiondata.Scheduler;
 import storage.DataHandler;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 /**
@@ -19,7 +20,10 @@ public class ContactPerson extends User {
 	 */
 	private static final long serialVersionUID = -710092057770182337L;
 	private ArrayList<Auction> mySubmittedAuctions;
-
+	private static final long REQUIRED_YEARS_IN_BETWEEN_AUCTION = 1;
+	private static final long REQUIRED_MONTHS_IN_BETWEEN_AUCTION = 0;
+	private static final long REQUIRED_DAYS_IN_BETWEEN_AUCTION = 0;
+	
 	private String myOrgName;
 	private int myOrgID;
 
@@ -38,19 +42,7 @@ public class ContactPerson extends User {
 		mySubmittedAuctions = new ArrayList<Auction>();
 	}
 
-	/*
-	 * Goes through the process of submitting an auction request.
-	 * Asks user for the date of the new auction.
-	 * Checks the validity of this date.
-	 * If valid, it lets the Contact Person know and then creates this auction and sets it to
-	 * 		the Contact Person's current auction.
-	 * 		Side note, this does not yet check for current auction as I'm not sure yet sure how we will
-	 * 		deal with transitioning current auctions to prior auctions yet.
-	 */
-	public void submitAuctionRequest(DataHandler theData) {
-		
-		
-	}
+
 	public void displaySubmittedAuctions() {
 		for(Auction a : mySubmittedAuctions){
 			System.out.println(a.toString());
@@ -68,18 +60,55 @@ public class ContactPerson extends User {
 		return result;
 	}
 
-	public Auction createNewAuction(LocalDateTime theDate) {
-		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
-		setMyCurrentAuction(newAuction);
-	    mySubmittedAuctions.add(newAuction);
-		return newAuction;
+	public void auctionSuccesfullyCreated(Auction theAuction) {
+		setMyCurrentAuction(theAuction);
+	    mySubmittedAuctions.add(theAuction);
 	}
+	
+	public Auction createNewAuction(LocalDateTime theDate) {
+		
+		if (isValidAuction(theDate)) {
+			Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
+			return newAuction;
+		}
+		return null;
+	}	
 
 	public void setMyOrgName(String myOrgName) {
 		this.myOrgName = myOrgName;
 		this.myOrgID = myOrgName.hashCode();
 	}
 
+	public boolean isValidAuction(LocalDateTime theDate) {
+		boolean flag = isThereNoPriorAuction();
+		if (!flag) {
+			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(theDate.toLocalDate());
+		}
+		return flag;
+	}
+	
+	public boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final LocalDate theNewAuctionDate) {
+		
+		boolean flag = false;
+		if (!isThereNoPriorAuction()) {
+			LocalDate checkRequiredTimePassDate = 
+					myCurrentAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
+					).plusMonths(REQUIRED_MONTHS_IN_BETWEEN_AUCTION
+					).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
+			flag = checkRequiredTimePassDate.isBefore(theNewAuctionDate) 
+				|| checkRequiredTimePassDate.equals(theNewAuctionDate);
+		}
+		return flag;
+
+	}
+	public boolean isThereNoPriorAuction () {
+		boolean flag = false;
+		if (myCurrentAuction == null) {
+			flag = true;
+		}
+		return flag;
+	}
+	
     public int getMyOrgID() {
         return myOrgID;
     }
