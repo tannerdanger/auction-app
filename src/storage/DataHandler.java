@@ -65,6 +65,14 @@ public class DataHandler extends Observable{
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             myUserDB = (UserDB)objectIn.readObject();
             objectIn.close();
+            
+            // ADDED BY CHARLIE
+            fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
+            objectIn = new ObjectInputStream(fileIn);
+            myAuctionCalendar = (AuctionCalendar)objectIn.readObject();
+            objectIn.close();
+            // END ADDED BY CHARLIE
+            
         } catch (IOException e) {
             System.out.println("IOException user "
                     + "deserialization is caught. Initializing Sample Data.");
@@ -76,6 +84,7 @@ public class DataHandler extends Observable{
             initializeData();
             badData = true;
         }
+        
         if(!badData) {
             try {
                 FileInputStream fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);

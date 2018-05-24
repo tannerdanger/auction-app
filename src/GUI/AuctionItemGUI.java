@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,29 +18,29 @@ import auctiondata.AuctionItem;
 /**
  *
  */
-public class AuctionItemGUI extends JPanel {
+public class AuctionItemGUI extends Observable implements Observer{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 693948431228885474L;
-	private final ObservableAuctionItemGui myObservable;
 	private Auction myAuction;
 	private final JPanel myListPanel;
+	private final JPanel myAuctionItemPanel;
 	
 	public AuctionItemGUI(final Auction theAuction) {
-		myObservable = new ObservableAuctionItemGui();
 		myAuction = theAuction;
 		myListPanel = new JPanel();
 		myListPanel.setLayout(new GridLayout(0,1));
-		this.setLayout(new BorderLayout());
+		myAuctionItemPanel = new JPanel();
+		myAuctionItemPanel.setLayout(new BorderLayout());
 		setupComponents();
 	}
 	
 	private void setupComponents() {
 		createLabels();
-		this.add(myListPanel, BorderLayout.CENTER);
-		this.add(createBackButton(), BorderLayout.NORTH);
+		myAuctionItemPanel.add(myListPanel, BorderLayout.CENTER);
+		myAuctionItemPanel.add(createBackButton(), BorderLayout.NORTH);
 	}
 	
 	private JButton createBackButton() {
@@ -59,15 +60,11 @@ public class AuctionItemGUI extends JPanel {
 			final JLabel itemLabel = new JLabel(ai.getName());
 			myListPanel.add(itemLabel);
 		}
-	}	
-	
-	public class ObservableAuctionItemGui extends Observable {
-		public ObservableAuctionItemGui() {
-			
-		}
-		
-		public void setChangedTrue() {
-			this.setChanged();
-		}
 	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
+	}	
 }
