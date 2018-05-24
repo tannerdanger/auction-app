@@ -34,7 +34,8 @@ public class DataHandler extends Observable{
         else
             initializeData();
 
-        if(null == myAuctionCalendar.auctionDB){
+        if(null == myAuctionCalendar
+        || null == myAuctionCalendar.auctionDB){
             initializeData();
         }
         createAdditionalSampleData();
