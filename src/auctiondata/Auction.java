@@ -19,7 +19,7 @@ import auctiondata.AuctionItem;
  * @author Wen Shu
  * @version May 4th 2018
  */
-public class Auction implements Serializable, Comparable {
+public class Auction implements Serializable, Comparable<Auction> {
 	
 	private static final int DEFAULT_INVENTORY_CAPACITY = 10;
 
@@ -166,9 +166,8 @@ public class Auction implements Serializable, Comparable {
     	}
     	return result;
     }
-    
-    public int compareTo(Object other) {
-    	Auction theOtherAuction = (Auction) other;    	
-    	return auctionLocalDateTime.compareTo(theOtherAuction.getAuctionDateTime());
+    @Override
+    public int compareTo(Auction other) {
+    	return auctionLocalDateTime.compareTo(other.getAuctionDateTime());
     }
 }
