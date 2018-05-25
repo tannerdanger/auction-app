@@ -5,11 +5,24 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import auctiondata.Auction;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.util.Pair;
+import javafx.scene.*;
 import storage.AuctionCalendar;
 import storage.DataHandler;
 
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class StaffGUI extends JPanel {
 
@@ -22,6 +35,7 @@ public class StaffGUI extends JPanel {
 	private JButton updateTotalNumBtn;
 	private JButton updateMaxDayBtn;
 	private JButton btnStartDate;
+
 	private JButton btnEndDate;
 	private JButton btnViewAll;
 
@@ -100,7 +114,11 @@ public class StaffGUI extends JPanel {
 		updateMaxDayBtn.setVisible(true);
 
 		btnStartDate.addActionListener(e -> {
+			//promptDate();
+			//DateSelector.main("");
 
+			LocalDate[] dates = MultiDateSelector.init();
+			updateCalendarDates(dates);
 		});
 		btnEndDate.addActionListener(e -> {
 
@@ -133,6 +151,54 @@ public class StaffGUI extends JPanel {
 		});
 	}
 
+	private LocalDate promptDate() {
+
+
+
+//		List<String> monthChoices = new ArrayList<>();
+//		monthChoices.add("Jan");
+//		monthChoices.add("Feb");
+//		monthChoices.add("Mar");
+//		monthChoices.add("Apr");
+//		monthChoices.add("May");
+//		monthChoices.add("Jun");
+//		monthChoices.add("Jul");
+//		monthChoices.add("Aug");
+//		monthChoices.add("Sep");
+//		monthChoices.add("Oct");
+//		monthChoices.add("");
+//		monthChoices.add("Dec");
+
+//		String[] months = {"Jan", "Feb", "Mar","Apr","May",
+//				"Jun","Jul","Aug","Sep", "Oct", "Nov", "Dec"};
+//
+//		String[] days = new String[31];
+//		for(int i = 0; i < 31; i++){
+//			days[i] = String.valueOf(i+1);
+//		}
+//
+//		String[] years = new String[20];
+//		for(int i = 0; i < 20; i++){
+//			years[i] = String.valueOf(2000+i);
+//		}
+//
+//		JComboBox monthCombo = new JComboBox(months);
+//		JComboBox dayCombo = new JComboBox(days);
+//		JComboBox yearCombo = new JComboBox(years);
+
+		return LocalDate.now();
+	}
+
+	private void updateCalendarDates(LocalDate[] theDates) {
+		LocalDate startDate = theDates[0];
+		LocalDate endDate = theDates[1];
+
+		System.out.println("Update Calendar Vals");
+		System.out.println(startDate);
+		System.out.println(endDate);
+		myAuctionsList = new JList<>(createAuctionListModel());
+	}
+
 	/**
 	 * Creates the top panel that goes in the north borderlayout of the base panel
 	 */
@@ -148,10 +214,6 @@ public class StaffGUI extends JPanel {
 		//Font font = new Font("Helvetica", Font.BOLD, 18);
 		numOfAuctionsLabel.setFont(new Font("Helvetica", Font.BOLD, 64));
 		numOfAuctionsLabel.setForeground(Color.RED);
-
-//		//Create progress bar below display auction count
-//		JPanel progressbarPanel = new JPanel();
-//		auctionsProgBar = new JProgressBar();
 
 		//Create active auction panel (center)
 		JPanel activeAuctionPanel = new JPanel(new GridLayout(2,0));
@@ -189,6 +251,7 @@ public class StaffGUI extends JPanel {
 		//Create the panel that goes in the middle of the bottom panel
 		JPanel midBotPanel = new JPanel(new GridLayout(2,0));
 		JLabel textField = new JLabel("-- Auction Data --", SwingConstants.CENTER);
+		textField.setFont(new Font("Helvetica", Font.BOLD, 24));
 		JPanel buttonPanel = new JPanel(new GridLayout(1,5));
 
 
@@ -267,4 +330,6 @@ public class StaffGUI extends JPanel {
 			return this;
 		}
 	}
+
+
 }
