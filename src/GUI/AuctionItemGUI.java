@@ -12,6 +12,8 @@ import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 
@@ -27,10 +29,12 @@ public class AuctionItemGUI extends Observable implements Observer{
 	private Auction myAuction;
 	private final JPanel myListPanel;
 	private final JPanel myAuctionItemPanel;
+	private final JPanel myBottomPanel;
 	
 	public AuctionItemGUI(final Auction theAuction) {
 		myAuction = theAuction;
 		myListPanel = new JPanel();
+		myBottomPanel = new JPanel();
 		myListPanel.setLayout(new GridLayout(0,1));
 		myAuctionItemPanel = new JPanel();
 		myAuctionItemPanel.setLayout(new BorderLayout());
@@ -38,9 +42,13 @@ public class AuctionItemGUI extends Observable implements Observer{
 	}
 	
 	private void setupComponents() {
-		createLabels();
+		createButtons();
+		JLabel title = new JLabel("Auction Items", SwingConstants.CENTER);
 		myAuctionItemPanel.add(myListPanel, BorderLayout.CENTER);
-		myAuctionItemPanel.add(createBackButton(), BorderLayout.NORTH);
+		myAuctionItemPanel.add(title, BorderLayout.NORTH);
+		myBottomPanel.add(createBackButton());
+		myAuctionItemPanel.add(myBottomPanel, BorderLayout.SOUTH);
+		
 	}
 	
 	private JButton createBackButton() {
@@ -49,22 +57,31 @@ public class AuctionItemGUI extends Observable implements Observer{
 			
 			@Override
 			public void actionPerformed(final ActionEvent theEvent) {
-				
+				setChanged();
+				notifyObservers();
 			}
 		});
 		return backButton;
 	}
 	
-	private void createLabels() {
+	private void createButtons() {
 		for(AuctionItem ai : myAuction.getInventorySheet().values()) {
-			final JLabel itemLabel = new JLabel(ai.getName());
-			myListPanel.add(itemLabel);
+			final JButton itemButton = new JButton(ai.getName());
+			itemButton.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(final ActionEvent theEvent) {
+					setChanged();
+					notifyObservers();
+				}
+				
+			});
+			myListPanel.add(itemButton);
 		}
 	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		// TODO Auto-generated method stub
 		
 	}	
 }
