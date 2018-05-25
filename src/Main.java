@@ -1,5 +1,4 @@
-import GUI.BidderGUI;
-import GUI.TempGUIFrame;
+import GUI.GUIFrame;
 import storage.*;
 import users.*;
 
@@ -28,7 +27,7 @@ public class Main {
 			@Override
 			public void run(){
 
-				new TempGUIFrame();
+				new GUIFrame();
 //
 //				if(Bidder.class.equals(theUser.getClass()))
 //					new BidderGUI((Bidder)theUser, calendar);

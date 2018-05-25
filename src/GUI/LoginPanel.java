@@ -1,7 +1,9 @@
 package GUI;
 
 import storage.DataHandler;
+import users.AuctionStaff;
 import users.Bidder;
+import users.ContactPerson;
 import users.User;
 
 import javax.swing.*;
@@ -13,10 +15,10 @@ import java.awt.event.ActionListener;
 public class LoginPanel extends JPanel{
 	JTextField usernameField;
 	JButton myLoginButton;
-	TempGUIFrame myMainFrame;
+	GUIFrame myMainFrame;
 	DataHandler myData;
 
-	public LoginPanel(DataHandler theData, TempGUIFrame tempGUIFrame){
+	public LoginPanel(DataHandler theData, GUIFrame tempGUIFrame){
 		myMainFrame = tempGUIFrame;
 		myData = theData;
 		buildPanel(theData);
@@ -79,6 +81,10 @@ public class LoginPanel extends JPanel{
 		if(null != theUser){
 			if(Bidder.class.equals(theUser.getClass())){
 				myMainFrame.loginBidder((Bidder) theUser);
+			}else if(ContactPerson.class.equals(theUser.getClass())){
+				myMainFrame.loginContact((ContactPerson) theUser);
+			}else if(AuctionStaff.class.equals(theUser.getClass())){
+				myMainFrame.loginStaff((AuctionStaff) theUser);
 			}
 		}
 

@@ -114,6 +114,9 @@ public class DataHandler extends Observable{
         myAuctionCalendar = new AuctionCalendar();
 
         //create users
+        AuctionStaff staffUser = new AuctionStaff("James", "GuyantPeach", "staff@staff.com");
+        addUser(staffUser);
+
         ContactPerson contactUser =
                 new ContactPerson("Contact", "McContact", "contact@contact.com");
         contactUser.setMyOrgName("Pat's Pneumonic Penguin Preservation");
@@ -422,6 +425,26 @@ public class DataHandler extends Observable{
         myAuctionCalendar.updateCalendar();
         notifyUpdateItem(theItem);
     }
+
+    public Auction getNextAuction(){
+        myAuctionCalendar.updateCalendar();
+        return myAuctionCalendar.activeAuctions.get(0);
+    }
+
+    public String getContactForOrg(String theOrgName){
+        String retStr = "No Contact info Found";
+        for (User u : myUserDB.userDirectory.values()){
+
+            if(ContactPerson.class.equals(u.getClass())) {
+                ContactPerson c = (ContactPerson)u;
+                if (c.getMyOrgName().compareTo(theOrgName) == 0) {
+                    retStr = c.getEmail();
+                }
+            }
+        }
+        return retStr;
+    }
+
 
     //~~Bids Data Handling~~//
 

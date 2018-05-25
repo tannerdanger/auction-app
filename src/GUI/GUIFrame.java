@@ -1,6 +1,7 @@
 package GUI;
 
 import storage.DataHandler;
+import users.AuctionStaff;
 import users.Bidder;
 import users.ContactPerson;
 import users.User;
@@ -12,13 +13,13 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
-public class TempGUIFrame extends JFrame implements Observer {
+public class GUIFrame extends JFrame implements Observer {
 
 	public JPanel currentPanel;
 	public JPanel basePanel;
 	private DataHandler myData;
 	private User activeUser;
-	public TempGUIFrame(){
+	public GUIFrame(){
 
 		//Sets logout/default close operations
 		addWindowListener(new WindowAdapter() {
@@ -63,10 +64,11 @@ public class TempGUIFrame extends JFrame implements Observer {
 
 	}
 	public void loginContact(ContactPerson theContact){
-
+		//ContactGUI contactGUI = new ContactGUI();
 	}
-	public void loginStaff(){
-
+	public void loginStaff(AuctionStaff theStaff){
+		StaffGUI staffGUI = new StaffGUI(myData, myData.getMyAuctionCalendar());
+		changePanel(staffGUI);
 	}
 
 	public void changePanel(JPanel theNewPanel){
