@@ -29,13 +29,11 @@ public class PlaceBidGUI extends Observable implements Observer{
 	
 	private JPanel myBidPanel;
 	private AuctionItem mySelectedItem;
-	private Auction myAuction;
 	private Bidder bidder;
 	
-	public PlaceBidGUI(AuctionItem theItem, Bidder theBidder, Auction theAuction) {
+	public PlaceBidGUI(AuctionItem theItem, Bidder theBidder) {
 		myBidPanel = new JPanel();
 		mySelectedItem = theItem;
-		myAuction = theAuction;
 		bidder = theBidder;
 		setupComponents();
 	}
@@ -48,9 +46,7 @@ public class PlaceBidGUI extends Observable implements Observer{
 
 	private void createDetailPanel() {
 		JPanel detailPanel = new JPanel();
-		JLabel auctionLabel = new JLabel(myAuction.getOrgName(), SwingConstants.CENTER);
 		JLabel itemLabel = new JLabel("ID: " + mySelectedItem.getUniqueID() + " | Name: " + mySelectedItem.getName() + " | Price: " + mySelectedItem.getMinPrice(), SwingConstants.CENTER);
-		detailPanel.add(auctionLabel);
 		detailPanel.add(itemLabel);
 		myBidPanel.add(detailPanel, BorderLayout.CENTER);
 	}
@@ -63,7 +59,7 @@ public class PlaceBidGUI extends Observable implements Observer{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String inputAmount = JOptionPane.showInputDialog("How much do you want to bid on this item?");
-				Bid bidAmount = new Bid(myAuction, new BigDecimal(inputAmount), mySelectedItem);
+				Bid bidAmount = new Bid(mySelectedItem, new BigDecimal(inputAmount));
 				bidder.placeBid(bidAmount);
 			}
 		});
@@ -80,6 +76,10 @@ public class PlaceBidGUI extends Observable implements Observer{
 		 
 		 bottomPanel.add(backButton);
 		 myBidPanel.add(bottomPanel, BorderLayout.SOUTH);
+	}
+	
+	public JPanel getPanel() {
+		return myBidPanel;
 	}
 
 	@Override

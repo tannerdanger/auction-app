@@ -79,6 +79,10 @@ public class AuctionItemGUI extends Observable implements Observer{
 			myListPanel.add(itemButton);
 		}
 	}
+	
+	public JPanel getPanel() {
+		return myAuctionItemPanel;
+	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {

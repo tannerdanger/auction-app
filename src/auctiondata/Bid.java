@@ -24,6 +24,11 @@ public class Bid implements Serializable {
 		item = theItem;
 	}
 	
+	public Bid(final AuctionItem theItem, final BigDecimal theBidAmount) {
+		sealedBidAmount = theBidAmount;
+		item = theItem;
+	}
+	
 	public static boolean isBidValid(final BigDecimal theBidAmount, final AuctionItem theItem) {
 		return theBidAmount.doubleValue() >= theItem.getMinPrice();
 	}
