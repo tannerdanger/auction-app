@@ -101,19 +101,19 @@ public class GUIFrame extends JFrame implements Observer {
 	public void update(Observable o, Object arg) {
 		if(o instanceof BidderGUI) {
 			if(arg instanceof Auction) {
-				final AuctionItemGUI gui = new AuctionItemGUI((Auction) arg);
+				final AuctionGUI gui = new AuctionGUI((Auction) arg);
 				changePanel(gui.getPanel());
 				gui.addObserver(this);
 			} else if (arg instanceof AuctionItem) {
-				final PlaceBidGUI gui = new PlaceBidGUI((AuctionItem) arg, (Bidder) activeUser);
+				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser);
 				changePanel(gui.getPanel());
 				gui.addObserver(this);
 			}
 		} else if(o instanceof ContactGUI) {
 			
-		} else if(o instanceof AuctionItemGUI) {
+		} else if(o instanceof AuctionGUI) {
 			changePanel(bidderPanel);
-		} else if(o instanceof PlaceBidGUI) {
+		} else if(o instanceof AuctionItemGUI) {
 			changePanel(bidderPanel);
 		}
 	}

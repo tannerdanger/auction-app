@@ -25,13 +25,13 @@ import users.Bidder;
  * @author wen
  *
  */
-public class PlaceBidGUI extends Observable implements Observer{
+public class AuctionItemGUI extends Observable implements Observer{
 	
 	private JPanel myBidPanel;
 	private AuctionItem mySelectedItem;
 	private Bidder bidder;
 	
-	public PlaceBidGUI(AuctionItem theItem, Bidder theBidder) {
+	public AuctionItemGUI(AuctionItem theItem, Bidder theBidder) {
 		myBidPanel = new JPanel();
 		mySelectedItem = theItem;
 		bidder = theBidder;
