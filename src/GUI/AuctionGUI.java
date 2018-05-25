@@ -20,7 +20,7 @@ import auctiondata.AuctionItem;
 /**
  *
  */
-public class AuctionGUI extends Observable implements Observer{
+public class AuctionGUI extends Observable {
 
 	/**
 	 * 
@@ -83,9 +83,4 @@ public class AuctionGUI extends Observable implements Observer{
 	public JPanel getPanel() {
 		return myAuctionItemPanel;
 	}
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		
-	}	
 }

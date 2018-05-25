@@ -150,9 +150,9 @@ public class DataHandler extends Observable{
         // Build Auction 1 for contactUser //
         Auction auction1 = new Auction(contactUser.getMyOrgName(),contactUser.getMyOrgID(), LocalDateTime.of(2018, 05, 30, 10, 00),null);
         addAuction(auction1);
-        AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers");
-        AuctionItem item2 = new AuctionItem(50.00, "Penguin Flippers");
-        AuctionItem item3 = new AuctionItem(62.00, "Veal - Chops, Split, Frenched");
+        AuctionItem item1 = new AuctionItem(20.00, "Penguin Pre-Breathers", auction1);
+        AuctionItem item2 = new AuctionItem(50.00, "Penguin Flippers", auction1);
+        AuctionItem item3 = new AuctionItem(62.00, "Veal - Chops, Split, Frenched", auction1);
         addAuctionItem(auction1, item1);
         addAuctionItem(auction1, item2);
         addAuctionItem(auction1, item3);
@@ -165,11 +165,11 @@ public class DataHandler extends Observable{
         Auction auction8 = new Auction(contactUser.getMyOrgName(), contactUser.getMyOrgName().hashCode(), LocalDateTime.of(2017 , 2, 10, 11, 00), null);
         addAuction(auction8);
 
-        AuctionItem item4 = new AuctionItem(	71.00, "Lettuce - Escarole");
+        AuctionItem item4 = new AuctionItem(	71.00, "Lettuce - Escarole", auction8);
         addAuctionItem(auction8, item4);
-        AuctionItem item5 = new AuctionItem(22.00, "Tumeric");
+        AuctionItem item5 = new AuctionItem(22.00, "Tumeric", auction8);
         addAuctionItem(auction8, item5);
-        AuctionItem item6 = new AuctionItem(35.00, "Nantucket - Orange Mango Cocktail");
+        AuctionItem item6 = new AuctionItem(35.00, "Nantucket - Orange Mango Cocktail", auction8);
         addAuctionItem(auction8, item6);
 
         //Build auction 9 for contact user//
@@ -190,10 +190,10 @@ public class DataHandler extends Observable{
 
         Auction auction4 = new Auction(contactUser2.getMyOrgName(), contactUser2.getMyOrgName().hashCode(), LocalDateTime.of(2018, 06, 20, 11, 00), null);
         addAuction(auction4);
-        AuctionItem item7 = new AuctionItem(46.00, "Scampi Tail");
-        AuctionItem item8 = new AuctionItem(76.00, "Tumeric");
-        AuctionItem item9 = new AuctionItem(88.00, "Creamers - 10%");
-        AuctionItem item10 = new AuctionItem(22.00, "Oil - Shortening - All - Purpose");
+        AuctionItem item7 = new AuctionItem(46.00, "Scampi Tail", auction4);
+        AuctionItem item8 = new AuctionItem(76.00, "Tumeric", auction4);
+        AuctionItem item9 = new AuctionItem(88.00, "Creamers - 10%", auction4);
+        AuctionItem item10 = new AuctionItem(22.00, "Oil - Shortening - All - Purpose", auction4);
         addAuctionItem(auction4, item7);
         addAuctionItem(auction4, item8);
         addAuctionItem(auction4, item9);
@@ -210,10 +210,10 @@ public class DataHandler extends Observable{
         // Contactuser 3//
         Auction auction7 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2018, 2, 15, 11, 00), null);
         addAuction(auction7);
-        addAuctionItem(auction7, new AuctionItem(45.00, "Spinach - Spinach Leaf"));
-        addAuctionItem(auction7, new AuctionItem(85.00, "Truffle Cups - White Paper"));
-        addAuctionItem(auction7, new AuctionItem(26.00, "Milk - 1%"));
-        addAuctionItem(auction7, new AuctionItem(30.00, "Sultanas"));
+        addAuctionItem(auction7, new AuctionItem(45.00, "Spinach - Spinach Leaf", auction7));
+        addAuctionItem(auction7, new AuctionItem(85.00, "Truffle Cups - White Paper", auction7));
+        addAuctionItem(auction7, new AuctionItem(26.00, "Milk - 1%", auction7));
+        addAuctionItem(auction7, new AuctionItem(30.00, "Sultanas", auction7));
 
         Auction auction10 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2014 , 8, 10, 11, 00), null);
         addAuction(auction10);

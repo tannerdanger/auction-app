@@ -25,17 +25,20 @@ import users.Bidder;
  * @author wen
  *
  */
-public class AuctionItemGUI extends Observable implements Observer{
+public class AuctionItemGUI extends Observable {
 	
 	private JPanel myBidPanel;
 	private AuctionItem mySelectedItem;
 	private Bidder bidder;
+	private JButton myBidButton;
 	
 	public AuctionItemGUI(AuctionItem theItem, Bidder theBidder) {
 		myBidPanel = new JPanel();
 		mySelectedItem = theItem;
 		bidder = theBidder;
 		setupComponents();
+//		boolean result = theBidder.isBidPlaceable(theItem.getAuction(), theItem, new BigDecimal("0"));
+//		myBidButton.setEnabled(result);
 	}
 
 	private void setupComponents() {
@@ -46,15 +49,17 @@ public class AuctionItemGUI extends Observable implements Observer{
 
 	private void createDetailPanel() {
 		JPanel detailPanel = new JPanel();
-		JLabel itemLabel = new JLabel("ID: " + mySelectedItem.getUniqueID() + " | Name: " + mySelectedItem.getName() + " | Price: " + mySelectedItem.getMinPrice(), SwingConstants.CENTER);
+		JLabel itemLabel = new JLabel("ID: " + mySelectedItem.getUniqueID() + " | Name: " 
+									  + mySelectedItem.getName() + " | Price: " 
+									  + mySelectedItem.getMinPrice(), SwingConstants.CENTER);
 		detailPanel.add(itemLabel);
 		myBidPanel.add(detailPanel, BorderLayout.CENTER);
 	}
 
 	private void createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
-		JButton bidButton = new JButton("place bid");
-		bidButton.addActionListener(new ActionListener() {
+		myBidButton = new JButton("place bid");
+		myBidButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -67,7 +72,7 @@ public class AuctionItemGUI extends Observable implements Observer{
 				}
 			}
 		});
-		 bottomPanel.add(bidButton);
+		 bottomPanel.add(myBidButton);
 		 JButton backButton = new JButton("Back");
 		 backButton.addActionListener(new ActionListener() {
 
@@ -85,11 +90,4 @@ public class AuctionItemGUI extends Observable implements Observer{
 	public JPanel getPanel() {
 		return myBidPanel;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 }

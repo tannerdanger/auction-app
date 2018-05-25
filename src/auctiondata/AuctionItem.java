@@ -24,6 +24,8 @@ public class AuctionItem implements Serializable {
 	
 	private final int uniqueID;
 	
+	private Auction myAuction;
+	
 	private Map<String, BigDecimal> sealedBids = new HashMap<String, BigDecimal>();
 
 
@@ -35,14 +37,20 @@ public class AuctionItem implements Serializable {
 		uniqueID = -1;
 		minPrice = null;
 		name = null;
+		myAuction = null;
 	}
 	
-	public AuctionItem(final double theMinPrice, String theName) {
+	public AuctionItem(final double theMinPrice, String theName, final Auction theAuction) {
 		minPrice = new BigDecimal(theMinPrice);
 		name = theName;
 		uniqueID = createID();
+		myAuction = theAuction;
 	}
 
+	public Auction getAuction() {
+		return myAuction;
+	}
+	
 	private int createID() {
 		int id = Math.abs(name.hashCode() + minPrice.hashCode());
 
