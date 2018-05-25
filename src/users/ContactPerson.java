@@ -66,14 +66,11 @@ public class ContactPerson extends User {
 	}
 	
 	public Auction createNewAuction(LocalDateTime theDate) {
-		
-		if (isValidAuction(theDate)) {
-			Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
-			return newAuction;
-		}
-		return null;
+		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
+		auctionSuccesfullyCreated(Auction newAuction) {
+		return newAuction;
 	}	
-
+	
 	public void setMyOrgName(String myOrgName) {
 		this.myOrgName = myOrgName;
 		this.myOrgID = myOrgName.hashCode();
