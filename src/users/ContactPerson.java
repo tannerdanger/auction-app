@@ -71,7 +71,7 @@ public class ContactPerson extends User {
 	
 	public Auction createNewAuction(LocalDateTime theDate) {
 		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
-		auctionSuccesfullyCreated(Auction newAuction) {
+		auctionSuccesfullyCreated(newAuction);
 		return newAuction;
 	}	
 	

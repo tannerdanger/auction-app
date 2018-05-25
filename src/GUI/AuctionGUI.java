@@ -72,7 +72,7 @@ public class AuctionGUI extends Observable implements Observer{
 				@Override
 				public void actionPerformed(final ActionEvent theEvent) {
 					setChanged();
-					notifyObservers();
+					notifyObservers(ai);
 				}
 				
 			});

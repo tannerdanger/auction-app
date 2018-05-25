@@ -60,7 +60,11 @@ public class AuctionItemGUI extends Observable implements Observer{
 			public void actionPerformed(ActionEvent e) {
 				String inputAmount = JOptionPane.showInputDialog("How much do you want to bid on this item?");
 				Bid bidAmount = new Bid(mySelectedItem, new BigDecimal(inputAmount));
-				bidder.placeBid(bidAmount);
+				int confirmValue = JOptionPane.showConfirmDialog(null,  "Do you want place a bid for " +
+																 inputAmount + "?");
+				if(confirmValue == 1) {
+					bidder.placeBid(bidAmount);
+				}
 			}
 		});
 		 bottomPanel.add(bidButton);
