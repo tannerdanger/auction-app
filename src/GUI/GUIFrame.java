@@ -64,7 +64,8 @@ public class GUIFrame extends JFrame implements Observer {
 
 	}
 	public void loginContact(ContactPerson theContact){
-		//ContactGUI contactGUI = new ContactGUI();
+		ContactGUI contactGUI = new ContactGUI(theContact, myData);
+		changePanel(contactGUI.getPanel());
 	}
 	public void loginStaff(AuctionStaff theStaff){
 		StaffGUI staffGUI = new StaffGUI(myData, myData.getMyAuctionCalendar());
