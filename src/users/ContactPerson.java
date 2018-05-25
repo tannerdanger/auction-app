@@ -48,6 +48,10 @@ public class ContactPerson extends User {
 			System.out.println(a.toString());
 		}
 	}
+	public ArrayList<Auction> getAllSubmittedAuctions() {
+		return mySubmittedAuctions;	
+	}
+	
 	public boolean addInventoryItem(String name, BigDecimal minBid) {
 		boolean result = false;
 
