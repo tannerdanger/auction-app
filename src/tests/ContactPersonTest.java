@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package tests;
 
@@ -31,8 +31,8 @@ public class ContactPersonTest {
 	AuctionItem item8;
 	AuctionItem item9;
 	AuctionItem item10;
-	
-	
+
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -40,25 +40,25 @@ public class ContactPersonTest {
 	public void setUp() throws Exception {
 		contact = new ContactPerson("wen", "shu", "shuwen@contact.com");
 		auction = new Auction("UWTacoma", 12345, LocalDateTime.of(2018, 5, 30, 11, 59), null);
-		item1 = new AuctionItem(1, "pencil");
+		item1 = new AuctionItem(1, "pencil", auction);
 		auction.addInventoryItem(item1);
-		item2 = new AuctionItem(2, "marker");
+		item2 = new AuctionItem(2, "marker", auction);
 		auction.addInventoryItem(item2);
-		item3 = new AuctionItem(5, "fresh sandwitch");
+		item3 = new AuctionItem(5, "fresh sandwitch", auction);
 		auction.addInventoryItem(item3);
-		item4 = new AuctionItem(999.99, "race bicycle");
+		item4 = new AuctionItem(999.99, "race bicycle", auction);
 		auction.addInventoryItem(item4);
-		item5 = new AuctionItem(99.99, "24-inch monitor");
+		item5 = new AuctionItem(99.99, "24-inch monitor", auction);
 		auction.addInventoryItem(item5);
-		item6 = new AuctionItem(199.99, "40-inch TV");
+		item6 = new AuctionItem(199.99, "40-inch TV", auction);
 		auction.addInventoryItem(item6);
-		item7 = new AuctionItem(50, "home run baseball");
+		item7 = new AuctionItem(50, "home run baseball", auction);
 		auction.addInventoryItem(item7);
-		item8 = new AuctionItem(10, "sunglasses");
+		item8 = new AuctionItem(10, "sunglasses", auction);
 		auction.addInventoryItem(item8);
-		item9 = new AuctionItem(69.99, "iphone 4");
+		item9 = new AuctionItem(69.99, "iphone 4", auction);
 		auction.addInventoryItem(item9);
-		item10 = new AuctionItem(599.99, "iphone 8");
+		item10 = new AuctionItem(599.99, "iphone 8", auction);
 		auction.addInventoryItem(item10);
 	}
 
@@ -69,22 +69,22 @@ public class ContactPersonTest {
 		auction.removeInventoryItem(item3.getUniqueID());
 		auction.removeInventoryItem(item4.getUniqueID());
 		auction.removeInventoryItem(item5.getUniqueID());
-		
-		AuctionItem item11 = new AuctionItem(799.99, "iphone x");
+
+		AuctionItem item11 = new AuctionItem(799.99, "iphone x", auction);
 		assertTrue(auction.addInventoryItem(item11));
 	}
-	
+
 	@Test
 	public void addInventoryItem_OneLessThanMaxNumberOfItemForSale_True() {
 		auction.removeInventoryItem(item1.getUniqueID());
-		
-		AuctionItem item11 = new AuctionItem(799.99, "iphone x");
+
+		AuctionItem item11 = new AuctionItem(799.99, "iphone x", auction);
 		assertTrue(auction.addInventoryItem(item11));
 	}
-	
+
 	@Test
 	public void addInventoryItem_OneMoreThanMaxNumberOfItemForSale_True() {
-		AuctionItem item11 = new AuctionItem(799.99, "iphone x");
+		AuctionItem item11 = new AuctionItem(799.99, "iphone x", auction);
 		assertFalse(auction.addInventoryItem(item11));
 	}
 

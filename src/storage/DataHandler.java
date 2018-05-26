@@ -1,5 +1,6 @@
 package storage;
 
+import GUI.ErrorPopup;
 import auctiondata.*;
 import users.*;
 
@@ -67,14 +68,14 @@ public class DataHandler extends Observable{
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             myUserDB = (UserDB)objectIn.readObject();
             objectIn.close();
-            
+
             // ADDED BY CHARLIE
             fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
             objectIn = new ObjectInputStream(fileIn);
             myAuctionCalendar = (AuctionCalendar)objectIn.readObject();
             objectIn.close();
             // END ADDED BY CHARLIE
-            
+
         } catch (IOException e) {
             System.out.println("IOException user "
                     + "deserialization is caught. Initializing Sample Data.");
@@ -86,7 +87,7 @@ public class DataHandler extends Observable{
             initializeData();
             badData = true;
         }
-        
+
         if(!badData) {
             try {
                 FileInputStream fileIn = new FileInputStream(AUCTIONDB_FILE_NAME);
@@ -110,9 +111,8 @@ public class DataHandler extends Observable{
      */
     public void initializeData(){
 
-        myUserDB = new UserDB();
         myAuctionCalendar = new AuctionCalendar();
-
+        myUserDB = new UserDB();
         //create users
         AuctionStaff staffUser = new AuctionStaff("James", "GuyantPeach", "staff@staff.com");
         addUser(staffUser);
@@ -219,6 +219,13 @@ public class DataHandler extends Observable{
         addAuction(auction10);
         Auction auction11 = new Auction(contactUser3.getMyOrgName(), contactUser3.getMyOrgName().hashCode(), LocalDateTime.of(2013 , 4, 21, 11, 00), null);
         addAuction(auction11);
+
+        //randomly scheduled future auctions
+        addAuction(new Auction("United Path", 222,LocalDateTime.of(2018, 6, 15, 10,00), null));
+        addAuction(new Auction("EvergreenPeace", 333,LocalDateTime.of(2018, 6, 15, 14,00), null));
+        addAuction(new Auction("Orange Cross",444,LocalDateTime.of(2018, 6, 18, 10,00), null));
+        addAuction(new Auction("Shell Corporation",555,LocalDateTime.of(2018, 6, 18, 14,00), null));
+        addAuction(new Auction("Umbrella Corp.", 111,LocalDateTime.of(2018, 6, 25, 10,00), null));
 
 
         System.out.println("Finished adding sample data");
@@ -359,6 +366,35 @@ public class DataHandler extends Observable{
 
     //~~Auction Item Data Handling ~~//
 
+    /**
+     * Allows a contact to delete an auction by it's auction ID
+     * @param theAuctionID a unique ID identifying the auction
+     */
+    public void deleteAuction(int theAuctionID){
+        deleteAuction(getAuctionByID(theAuctionID));
+    }
+
+    /**
+     * Allows a contact to delete an auction by a reference to the auction
+     * @param theAuction an auction to delete from the database
+     */
+    public void deleteAuction(Auction theAuction){
+        //Verify that the auction
+        Set<AuctionItem> itemSet = myAuctionCalendar.auctionDB.get(theAuction).keySet();
+        for(AuctionItem item : itemSet){
+            if(null == item.getSealedBids()
+                    || item.getSealedBids().isEmpty()){
+                myUserDB.userDirectory.remove(theAuction);
+            }else if(item.getSealedBids().size() > 0){
+                new ErrorPopup("Remove Auction Error","Cant remove Auction because it contains active bids");
+            }
+        }
+    }
+
+    private void verifyNoBids(AuctionItem theItem) {
+        theItem.getSealedBids();
+    }
+
     public Set<AuctionItem> getAuctionItemsByAuction(Auction theAuction){
         return myAuctionCalendar.auctionDB.get(theAuction).keySet();
     }
@@ -403,12 +439,42 @@ public class DataHandler extends Observable{
 
         HashMap<AuctionItem, ArrayList<Bid>> emptyMap = new HashMap<>();
 
+        //Adds auction to database with empty auction item list
         myAuctionCalendar.auctionDB.put(theAuction, emptyMap);
+        //Updates Calendar
+        myAuctionCalendar.updateCalendar();
+        //Gets the contact person associated with auction
+        ContactPerson c = getContactUserForOrg(theAuction.getOrgName());
+        //sets the current auction for that contact
+        if(!(null==c)) {
+            c.setMyCurrentAuction(theAuction);
+        }
+
+        notifyUpdateAuctions(theAuction);
+    }
+
+    /**
+     * Overloaded method that allows for faster adding of auctions if a reference
+     * to the contact user is available.
+     *
+     * @param theAuction the auction being added as a key to the database.
+     * @param theContact the contact user assocaited with this auction
+     */
+    public void addAuction(Auction theAuction, ContactPerson theContact){
+
+        HashMap<AuctionItem, ArrayList<Bid>> emptyMap = new HashMap<>();
+
+        //Adds auction to database with empty auction item list
+        myAuctionCalendar.auctionDB.put(theAuction, emptyMap);
+        //Updates Calendar
         myAuctionCalendar.updateCalendar();
 
+        //sets the current auction for that contact
+        theContact.setMyCurrentAuction(theAuction);
 
-
+        notifyUpdateAuctions(theAuction);
     }
+
 
     /**
      * Adds an auction item to an auction and notifies observers.
@@ -419,9 +485,7 @@ public class DataHandler extends Observable{
 
         ArrayList<Bid> emptyBidList = new ArrayList<>();
         myAuctionCalendar.auctionDB.get(theAuction).put(theItem, emptyBidList);
-
         theAuction.addInventoryItem(theItem);
-
         myAuctionCalendar.updateCalendar();
         notifyUpdateItem(theItem);
     }
@@ -443,6 +507,21 @@ public class DataHandler extends Observable{
             }
         }
         return retStr;
+    }
+
+    public ContactPerson getContactUserForOrg(String theOrgName){
+
+
+        for (User u : myUserDB.userDirectory.values()){
+
+            if(ContactPerson.class.equals(u.getClass())) {
+                ContactPerson c = (ContactPerson)u;
+                if (c.getMyOrgName().compareTo(theOrgName) == 0) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -469,6 +548,7 @@ public class DataHandler extends Observable{
         theBidder.placeBid(theBid);
         myAuctionCalendar.updateCalendar();
         notifyUpdateBids(theBid);
+
     }
 
     /**
@@ -485,18 +565,20 @@ public class DataHandler extends Observable{
     //~~Observer Notifying~~//
 
     private void notifyUpdateBids(Bid theBid) {
+        serialize();
         this.setChanged();
         notifyObservers(theBid);
     }
 
     private void notifyUpdateAuctions(Auction theAuction){
+        serialize();
         this.setChanged();
         notifyObservers(theAuction);
     }
 
     private void notifyUpdateItem(AuctionItem theItem){
+        serialize();
         this.setChanged();
         notifyObservers(theItem);
     }
-
 }

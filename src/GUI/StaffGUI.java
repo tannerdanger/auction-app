@@ -11,27 +11,23 @@ import storage.DataHandler;
 
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Optional;
 
 public class StaffGUI extends JPanel implements Observer {
 
 	private AuctionCalendar myCalendar;
 	private DataHandler myData;
 
-	private JTextField txtUpdateMaxNumber;
-	private JTextField txtNextAuction;
 
 	private JButton updateTotalNumBtn;
 	private JButton updateMaxDayBtn;
-	private JButton btnStartDate;
+	private JButton setAuctionDateDisplayRangeButton;
 
-	private JButton btnEndDate;
 	private JButton btnViewAll;
 
 	private JList<Auction> myAuctionsList;
@@ -67,9 +63,12 @@ public class StaffGUI extends JPanel implements Observer {
 	private void updateNextAuctionPane() {
 		StringBuilder sb = new StringBuilder();
 		Auction nextAuction = myData.getNextAuction();
-		sb.append("Date: " +nextAuction.getAuctionDate().toString() + "  ID:" + nextAuction.getauctionID());
+		sb.append("----Next Auction Data ----");
+
+		sb.append("\nDate: " +nextAuction.getAuctionDate().toString() + "  ID:" + nextAuction.getauctionID());
 		sb.append("\nOrg: "+nextAuction.getOrgName()+"   Contact:  "+ myData.getContactForOrg(nextAuction.getOrgName()));
 		nextAuctionDetailsPane.setText(sb.toString());
+		nextAuctionDetailsPane.setAlignmentX(SwingConstants.CENTER);
 	}
 
 	private void updateNumOfAuctionsPane() {
@@ -99,31 +98,19 @@ public class StaffGUI extends JPanel implements Observer {
 	}
 
 	private void buildButtons() {
-		btnStartDate = new JButton("Start Date");
-		btnEndDate = new JButton("End Date");
+		setAuctionDateDisplayRangeButton = new JButton("Auction Display Date Range");
 		btnViewAll = new JButton("View All");
 		updateTotalNumBtn = new JButton("Update Total Cap");
 		updateMaxDayBtn = new JButton("Update Day Cap");
 
-		btnStartDate.setVisible(true);
-		btnEndDate.setVisible(true);
+		setAuctionDateDisplayRangeButton.setVisible(true);
 		btnViewAll.setVisible(true);
 		updateTotalNumBtn.setVisible(true);
 		updateMaxDayBtn.setVisible(true);
 
-		btnStartDate.addActionListener(e -> {
-			//promptDate();
-			//DateSelector.main("");
-			new MultiDateSelector().init(2, this);
+		setAuctionDateDisplayRangeButton.addActionListener(e -> {
 
-
-			//wait for return date
-
-
-			//updateCalendarDates(dates);
-
-		});
-		btnEndDate.addActionListener(e -> {
+			new MultiDateSelector().init(this);
 
 		});
 
@@ -177,45 +164,6 @@ public class StaffGUI extends JPanel implements Observer {
 
 	}
 
-	private LocalDate promptDate() {
-
-
-
-//		List<String> monthChoices = new ArrayList<>();
-//		monthChoices.add("Jan");
-//		monthChoices.add("Feb");
-//		monthChoices.add("Mar");
-//		monthChoices.add("Apr");
-//		monthChoices.add("May");
-//		monthChoices.add("Jun");
-//		monthChoices.add("Jul");
-//		monthChoices.add("Aug");
-//		monthChoices.add("Sep");
-//		monthChoices.add("Oct");
-//		monthChoices.add("");
-//		monthChoices.add("Dec");
-
-//		String[] months = {"Jan", "Feb", "Mar","Apr","May",
-//				"Jun","Jul","Aug","Sep", "Oct", "Nov", "Dec"};
-//
-//		String[] days = new String[31];
-//		for(int i = 0; i < 31; i++){
-//			days[i] = String.valueOf(i+1);
-//		}
-//
-//		String[] years = new String[20];
-//		for(int i = 0; i < 20; i++){
-//			years[i] = String.valueOf(2000+i);
-//		}
-//
-//		JComboBox monthCombo = new JComboBox(months);
-//		JComboBox dayCombo = new JComboBox(days);
-//		JComboBox yearCombo = new JComboBox(years);
-
-		return LocalDate.now();
-	}
-
-
 
 	/**
 	 * Creates the top panel that goes in the north borderlayout of the base panel
@@ -223,7 +171,7 @@ public class StaffGUI extends JPanel implements Observer {
 	private void buildTopPanel() {
 
 		//Create Panel
-		JPanel topPanel = new JPanel(new GridLayout(1,3));
+		JPanel topPanel = new JPanel(new GridLayout(1,2));
 		add(topPanel, BorderLayout.NORTH);
 
 		//Create panel to display auction count (left side)
@@ -234,10 +182,10 @@ public class StaffGUI extends JPanel implements Observer {
 		numOfAuctionsLabel.setForeground(Color.RED);
 
 		//Create active auction panel (center)
-		JPanel activeAuctionPanel = new JPanel(new GridLayout(2,0));
-		JTextField textPane = new JTextField();
-		textPane.setText("-- Next Auction --");
-		textPane.setHorizontalAlignment(SwingConstants.CENTER);
+		JPanel activeAuctionPanel = new JPanel(new GridLayout(1,0));
+		//JTextField textPane = new JTextField();
+		//textPane.setText("-- Next Auction --");
+		//textPane.setHorizontalAlignment(SwingConstants.CENTER);
 		nextAuctionDetailsPane = new JTextPane();
 
 		//Create panel to display update buttons (right)
@@ -247,10 +195,9 @@ public class StaffGUI extends JPanel implements Observer {
 
 		//Add panels to proper place
 		scheduledAuctionNumPanel.add(numOfAuctionsLabel);
-		//scheduledAuctionNumPanel.add(progressbarPanel);
-		//progressbarPanel.add(auctionsProgBar);
 
-		activeAuctionPanel.add(textPane);
+
+		//activeAuctionPanel.add(textPane);
 		activeAuctionPanel.add(nextAuctionDetailsPane);
 
 		updateCapacityPanel.add(capPanelLabel);
@@ -274,8 +221,8 @@ public class StaffGUI extends JPanel implements Observer {
 
 
 		buttonPanel.add(new JPanel()); //buffer panel
-		buttonPanel.add(btnStartDate);
-		buttonPanel.add(btnEndDate);
+		buttonPanel.add(setAuctionDateDisplayRangeButton);
+
 		buttonPanel.add(btnViewAll);
 		buttonPanel.add(new JPanel()); //buffer panel
 
@@ -310,11 +257,7 @@ public class StaffGUI extends JPanel implements Observer {
 			public void valueChanged(ListSelectionEvent theEvent) {
 				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
 				mySelectedAuction = list.getSelectedValue();
-//				if(list.isSelectionEmpty())	 {
-//					myLoadAuctionButton.setEnabled(false);
-//				} else {
-//					myLoadAuctionButton.setEnabled(true);
-//				}
+
 			}
 		});
 

@@ -57,22 +57,29 @@ public class ContactPerson extends User {
 
 
 		if(null != name && minBid != null) {
-			myCurrentAuction.addInventoryItem(new AuctionItem(minBid.doubleValue(), name));
+			myCurrentAuction.addInventoryItem(new AuctionItem(minBid.doubleValue(), name, myCurrentAuction));
 			myCurrentAuction.printInventorySheet();
 			result = true;
 		}
 		return result;
 	}
 
-	public void auctionSuccesfullyCreated(Auction theAuction) {
-		setMyCurrentAuction(theAuction);
-	    mySubmittedAuctions.add(theAuction);
-	}
-	
+//	public void auctionSuccesfullyCreated(Auction theAuction) {
+//
+//		setMyCurrentAuction(theAuction);
+//
+//	    mySubmittedAuctions.add(theAuction);
+//	}
+
+	//TODO: This is the method that the gui calls Make sure the auction request goes through the scheduler
 	public Auction createNewAuction(LocalDateTime theDate) {
-		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
-		auctionSuccesfullyCreated(newAuction);
-		return newAuction;
+		//Here, do scheduler verification steps
+		if(theDate == theDate/* scheduler verification passes (replace theDate == thedate)*/) {
+			Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
+			return newAuction;
+		}
+		else
+			return null;
 	}	
 	
 	public void setMyOrgName(String myOrgName) {

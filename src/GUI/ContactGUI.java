@@ -9,26 +9,17 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
@@ -93,26 +84,22 @@ public class ContactGUI extends Observable implements Observer {
 		panel.add(myNewAuctionButton, BorderLayout.SOUTH);
 		return panel;
 	}
-	
-	
-	
 
-
-	
-	
 	
 	private JButton createActiveAuctionButton() {
 		final JButton button = new JButton("View Active Auction");
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent theEvent) {
-				
-				setChanged();
-				notifyObservers(mySelectedAuction);
-			}
-			
+
+		button.addActionListener(e ->{
+			new MultiDateSelector().init(this);
 		});
+
 		return button;	
+	}
+
+	public void recieveDate(LocalDate[] theDate){
+		if(null != theDate[0]) {
+			submitAuctionRequest(theDate[0]);
+		}
 	}
 	
 	private JButton createNewAuctionRequestButton() {
@@ -136,7 +123,10 @@ public class ContactGUI extends Observable implements Observer {
 	public void submitAuctionRequest(LocalDate theDate){
 		LocalDateTime submitDate = theDate.atStartOfDay();
 
-		myContactPerson.createNewAuction(submitDate);
+		Auction newAuction = myContactPerson.createNewAuction(submitDate);
+		if(!(null == newAuction)){
+			myData.addAuction(newAuction);
+		}
 	}
 
 	@Override

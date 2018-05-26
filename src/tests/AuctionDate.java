@@ -33,8 +33,9 @@ public class AuctionDate {
     @Before
     public void setUp() throws Exception {
         bidder = new Bidder("wen", "shu", "bidder_wen@bidder.com");
-        item = new AuctionItem(MIN_PRICE, "answers for TCSS 360 final");
+
         auction = new Auction("UWTacoma", AUCTIONID, LocalDateTime.of(2018, 05, 25, 12, 00), null);
+	    item = new AuctionItem(MIN_PRICE, "answers for TCSS 360 final", auction);
         auction.addInventoryItem(item);
     }
 

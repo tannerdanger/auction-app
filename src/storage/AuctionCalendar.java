@@ -65,7 +65,8 @@ public class AuctionCalendar implements Serializable {
 
 	protected void sortAuctions(ArrayList<Auction> theAuctions){
 		theAuctions.sort((a1, a2)->{
-			if(a1.getAuctionDate().isBefore(a2.getAuctionDate())){
+			if(a1.getAuctionDate().isBefore(a2.getAuctionDate())
+					|| a1.getAuctionDate().isEqual(a2.getAuctionDate())){
 				return 1;
 			}else{
 				return -1;

@@ -66,8 +66,8 @@ public class Auction implements Serializable, Comparable<Auction> {
 	}
 	
 	public boolean addInventoryItem(final AuctionItem theItem) {
-        boolean result = false;
-        if(inventorySheet.size() < DEFAULT_INVENTORY_CAPACITY) {
+        boolean result = isInventoryFull();
+        if(result) {
             inventorySheet.put(theItem.getUniqueID(), theItem);
             result = true;
         }

@@ -15,47 +15,69 @@ import javafx.scene.layout.GridPane;
 
 import javax.swing.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Observable;
 
 public class MultiDateSelector extends Observable {
 
 	private LocalDate[] selectedDates;
-	StaffGUI myClass;
+	StaffGUI myStaff;
+	ContactGUI myContact;
 	JFrame myFrame;
+	private String activeClassName;
+	Object myClass;
+	Class myClassType;
 
 
 
-	public void init(int datesNum, StaffGUI theClass) {
-		myClass = theClass;
+	public void init(Object theClass) {
+
 
 		// This method is invoked on Swing thread
 		selectedDates = new LocalDate[2];
-		myFrame = new JFrame("FX");
+		myFrame = new JFrame("Date Chooser");
 		final JFXPanel fxPanel = new JFXPanel();
 		myFrame.add(fxPanel);
 		myFrame.setVisible(true);
 		myFrame.setResizable(false);
-		myFrame.setSize(350,250);
 
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				initFX(fxPanel);
-			}
-		});
+
+
+		if(theClass instanceof StaffGUI) {
+			myFrame.setSize(350,175);
+			myStaff = (StaffGUI)theClass;
+			final Scene scene = createDoubleDateScene();
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					initFX(scene, fxPanel);
+				}
+			});
+		}
+		else if(theClass.getClass().equals(ContactGUI.class)) {
+			myFrame.setSize(350,150);
+			myContact = (ContactGUI)theClass;
+			final Scene scene = createSingleDateScene();
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					initFX(scene, fxPanel);
+				}
+			});
+		}
+
 
 	}
 
 
 
-	private void initFX(JFXPanel fxPanel) {
+	private void initFX(Scene theScene, JFXPanel fxPanel) {
 		// This method is invoked on JavaFX thread
-		Scene scene = createScene();
-		fxPanel.setScene(scene);
+		fxPanel.setScene(theScene);
 	}
 
-	private Scene createScene() {
+	private Scene createDoubleDateScene() {
 		DatePicker start = new DatePicker();
 		DatePicker end = new DatePicker();
 
@@ -75,7 +97,7 @@ public class MultiDateSelector extends Observable {
 		Button submitButton = new Button("Submit");
 		grid.setHgap(10);
 		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setPadding(new Insets(20, 10, 0, 35));
 
 		grid.add(new Label("Start Date:"), 0, 0);
 		grid.add(start, 1, 0);
@@ -84,8 +106,42 @@ public class MultiDateSelector extends Observable {
 		grid.add(submitButton, 1,2,2,2);
 
 		submitButton.setOnAction(event -> {
-			System.out.println("Test");
-			myClass.recieveDate(selectedDates);
+
+			myStaff.recieveDate(selectedDates);
+			myFrame.setVisible(false);
+
+		});
+
+
+		Scene scene = new Scene(grid);
+
+		return scene;
+	}
+
+	private Scene createSingleDateScene() {
+		DatePicker start = new DatePicker();
+
+		start.setShowWeekNumbers(true);
+
+		start.setOnAction(event -> {
+			System.out.println("Selected date: " + start.getValue());
+			selectedDates[0]=start.getValue();
+		} );
+
+
+		GridPane grid = new GridPane();
+		Button submitButton = new Button("Submit");
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 10, 0, 35));
+
+		grid.add(new Label("Auction Date:"), 0, 0);
+		grid.add(start, 1, 0);
+		grid.add(submitButton, 1,1,2,2);
+
+		submitButton.setOnAction(event -> {
+
+			myContact.recieveDate(selectedDates);
 			Platform.exit();
 			myFrame.dispose();
 		});
@@ -96,12 +152,5 @@ public class MultiDateSelector extends Observable {
 		return scene;
 	}
 
-//	public static void main(String[] args) {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			@Override
-//			public void run() {
-//				initAndShowGUI();
-//			}
-//		});
-//	}
+
 }

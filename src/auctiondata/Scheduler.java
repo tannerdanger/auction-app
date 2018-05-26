@@ -1,5 +1,6 @@
 package auctiondata;
 
+import GUI.ErrorPopup;
 import storage.*;
 
 import java.time.LocalDate;
@@ -38,12 +39,21 @@ public class Scheduler {
 	//that holds all the auctions.
 	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate, ArrayList<Auction> theAuctions){
 
+
 		int auctionCount = 0;
 		for (Auction a : theAuctions) {
 			if (a.getAuctionDate().isEqual(auctionRequestDate.toLocalDate()))
 				auctionCount++;
 		}
+
+		if(auctionCount >= MAX_DAILY_AUCTION_CAPACITY){
+			new ErrorPopup("Error adding auction",
+					"Too many auctions scheduled for " +auctionRequestDate.toLocalDate() +
+							"\n please select another date and try again.");
+		}
+
 		return auctionCount >= MAX_DAILY_AUCTION_CAPACITY;
+
 	}
 
 	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
