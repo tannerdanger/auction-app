@@ -1,11 +1,14 @@
 package GUI;
 
 import javafx.application.Platform;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -13,18 +16,27 @@ import javafx.scene.layout.GridPane;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Observable;
 
-public class MultiDateSelector extends JFXPanel {
+public class MultiDateSelector extends Observable {
 
-	private static LocalDate[] selectedDates;
+	private LocalDate[] selectedDates;
+	StaffGUI myClass;
+	JFrame myFrame;
 
-	public static LocalDate[] init() {
+
+
+	public void init(int datesNum, StaffGUI theClass) {
+		myClass = theClass;
+
 		// This method is invoked on Swing thread
 		selectedDates = new LocalDate[2];
-		JFrame frame = new JFrame("FX");
+		myFrame = new JFrame("FX");
 		final JFXPanel fxPanel = new JFXPanel();
-		frame.add(fxPanel);
-		frame.setVisible(true);
+		myFrame.add(fxPanel);
+		myFrame.setVisible(true);
+		myFrame.setResizable(false);
+		myFrame.setSize(350,250);
 
 		Platform.runLater(new Runnable() {
 			@Override
@@ -33,18 +45,17 @@ public class MultiDateSelector extends JFXPanel {
 			}
 		});
 
-		return selectedDates;
 	}
 
 
 
-	private static void initFX(JFXPanel fxPanel) {
+	private void initFX(JFXPanel fxPanel) {
 		// This method is invoked on JavaFX thread
 		Scene scene = createScene();
 		fxPanel.setScene(scene);
 	}
 
-	private static Scene createScene() {
+	private Scene createScene() {
 		DatePicker start = new DatePicker();
 		DatePicker end = new DatePicker();
 
@@ -61,6 +72,7 @@ public class MultiDateSelector extends JFXPanel {
 		} );
 
 		GridPane grid = new GridPane();
+		Button submitButton = new Button("Submit");
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 150, 10, 10));
@@ -69,12 +81,19 @@ public class MultiDateSelector extends JFXPanel {
 		grid.add(start, 1, 0);
 		grid.add(new Label("End Date:"), 0, 1);
 		grid.add(end, 1, 1);
+		grid.add(submitButton, 1,2,2,2);
+
+		submitButton.setOnAction(event -> {
+			System.out.println("Test");
+			myClass.recieveDate(selectedDates);
+			Platform.exit();
+			myFrame.dispose();
+		});
+
 
 		Scene scene = new Scene(grid);
 
 		return scene;
-
-
 	}
 
 //	public static void main(String[] args) {

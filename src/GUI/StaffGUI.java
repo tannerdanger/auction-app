@@ -5,15 +5,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import auctiondata.Auction;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.geometry.Insets;
-import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.util.Pair;
-import javafx.scene.*;
+
 import storage.AuctionCalendar;
 import storage.DataHandler;
 
@@ -21,10 +13,13 @@ import storage.DataHandler;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Optional;
 
-public class StaffGUI extends JPanel {
+public class StaffGUI extends JPanel implements Observer {
 
 	private AuctionCalendar myCalendar;
 	private DataHandler myData;
@@ -40,6 +35,8 @@ public class StaffGUI extends JPanel {
 	private JButton btnViewAll;
 
 	private JList<Auction> myAuctionsList;
+	private JScrollPane myListPane;
+	private JPanel mainBotPanel;
 
 
 	/** A textpane that displays number of scheduled auctions */
@@ -51,6 +48,7 @@ public class StaffGUI extends JPanel {
 
 	/** A progress bar showing how close to max auctions we are */
 	private JProgressBar auctionsProgBar;
+	private Auction mySelectedAuction;
 
 	public StaffGUI(DataHandler theData, AuctionCalendar theCalendar){
 
@@ -116,9 +114,14 @@ public class StaffGUI extends JPanel {
 		btnStartDate.addActionListener(e -> {
 			//promptDate();
 			//DateSelector.main("");
+			new MultiDateSelector().init(2, this);
 
-			LocalDate[] dates = MultiDateSelector.init();
-			updateCalendarDates(dates);
+
+			//wait for return date
+
+
+			//updateCalendarDates(dates);
+
 		});
 		btnEndDate.addActionListener(e -> {
 
@@ -149,6 +152,26 @@ public class StaffGUI extends JPanel {
 				updateAll();
 			}
 		});
+	}
+
+	public void recieveDate(LocalDate[] theDates){
+		System.out.println("The dates: "+theDates[0]+"\n"+theDates[1]);
+		LocalDate startDate = theDates[0];
+		LocalDate endDate = theDates[1];
+
+		System.out.println("Update Calendar Vals");
+		System.out.println(startDate);
+		System.out.println(endDate);
+		mainBotPanel.remove(myListPane);
+		myAuctionsList = new JList<>(createAuctionListModel(startDate, endDate));
+		setupAuctionJList();
+		myListPane = new JScrollPane(myAuctionsList);
+		mainBotPanel.add(myListPane, BorderLayout.CENTER);
+		repaint();
+		myListPane.repaint();
+		myListPane.validate();
+		validate();
+
 	}
 
 	private LocalDate promptDate() {
@@ -189,15 +212,7 @@ public class StaffGUI extends JPanel {
 		return LocalDate.now();
 	}
 
-	private void updateCalendarDates(LocalDate[] theDates) {
-		LocalDate startDate = theDates[0];
-		LocalDate endDate = theDates[1];
 
-		System.out.println("Update Calendar Vals");
-		System.out.println(startDate);
-		System.out.println(endDate);
-		myAuctionsList = new JList<>(createAuctionListModel());
-	}
 
 	/**
 	 * Creates the top panel that goes in the north borderlayout of the base panel
@@ -262,13 +277,15 @@ public class StaffGUI extends JPanel {
 		buttonPanel.add(new JPanel()); //buffer panel
 
 
-		JPanel mainBotPanel = new JPanel(new BorderLayout());
+		mainBotPanel = new JPanel(new BorderLayout());
 		
 		DefaultListModel<Auction> auctionList = createAuctionListModel();
 		myAuctionsList = new JList<>(auctionList);
 		setupAuctionJList();
 		myAuctionsList.setCellRenderer(new AuctionJListRenderer());
-		mainBotPanel.add(new JScrollPane(myAuctionsList), BorderLayout.CENTER);
+		myListPane = new JScrollPane(myAuctionsList);
+
+		mainBotPanel.add(myListPane , BorderLayout.CENTER);
 
 		add(botPanel, BorderLayout.SOUTH);
 		midBotPanel.add(textField);
@@ -285,18 +302,20 @@ public class StaffGUI extends JPanel {
 		myAuctionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		//below commented out unless it is determined that a staffer needs to see auction data specifically
 
-//		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
-//			@Override
-//			public void valueChanged(ListSelectionEvent theEvent) {
-//				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
-//				mySelectedAuction = list.getSelectedValue();
+		myAuctionsList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent theEvent) {
+				final JList<Auction> list = (JList<Auction>) theEvent.getSource();
+				mySelectedAuction = list.getSelectedValue();
 //				if(list.isSelectionEmpty())	 {
 //					myLoadAuctionButton.setEnabled(false);
 //				} else {
 //					myLoadAuctionButton.setEnabled(true);
 //				}
-//			}
-//		});
+			}
+		});
+
+
 	}
 
 	private DefaultListModel<Auction> createAuctionListModel() {
@@ -307,6 +326,33 @@ public class StaffGUI extends JPanel {
 		return list;
 	}
 
+	private DefaultListModel<Auction> createAuctionListModel(LocalDate theStart, LocalDate theEnd) {
+		final DefaultListModel<Auction> list = new DefaultListModel<>();
+		ArrayList<Auction> dates = myCalendar.getAuctionsBetweenDates(theStart, theEnd);
+		for(final Auction a : dates) { //<--Tanner's Change
+			list.addElement(a);
+		}
+		return list;
+	}
+
+
+
+	/**
+	 * This method is called whenever the observed object is changed. An
+	 * application calls an <tt>Observable</tt> object's
+	 * <code>notifyObservers</code> method to have all the object's
+	 * observers notified of the change.
+	 *
+	 * @param o   the observable object.
+	 * @param arg an argument passed to the <code>notifyObservers</code>
+	 */
+	@Override
+	public void update(Observable o, Object arg) {
+		System.out.println("Update");
+		LocalDate[] date = (LocalDate[])arg;
+		if(o instanceof MultiDateSelector)
+			System.out.println(date[0]);
+	}
 
 
 	public class AuctionJListRenderer extends JLabel implements ListCellRenderer<Auction> {

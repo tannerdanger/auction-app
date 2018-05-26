@@ -9,6 +9,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -128,6 +132,11 @@ public class ContactGUI extends Observable implements Observer {
 	}
 
 
+	public void submitAuctionRequest(LocalDate theDate){
+		LocalDateTime submitDate = theDate.atStartOfDay();
+
+		myContactPerson.createNewAuction(submitDate);
+	}
 
 	@Override
 	public void update(final Observable theObservable, final Object theObject) {
