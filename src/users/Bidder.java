@@ -43,7 +43,16 @@ public class Bidder extends User implements Serializable {
     	return isDateValid(theAuction.getAuctionDate())
     		   && isBelowMaxBidsPerAuction(theAuction) 
     		   && isBelowMaxTotalBids()
-    		   && Bid.isBidValid(theBidAmount, theItem);
+    		   && isItemNotBidOnByMe(theItem);
+    }
+    
+    public boolean isItemNotBidOnByMe(final AuctionItem theItem) {
+    	for(final Bid b : myBids) {
+    		if(b.getItem().equals(theItem)) {
+    			return false;
+    		}
+    	}
+    	return true;
     }
        
     public static boolean isDateValid(LocalDate theAuctionDate) {

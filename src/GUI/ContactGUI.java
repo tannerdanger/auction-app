@@ -62,7 +62,8 @@ public class ContactGUI extends Observable implements Observer {
 		myPanel.setLayout(new BorderLayout());
 		myPanel.setMinimumSize(new Dimension(720, 720));
 		myContainer = new Container();
-		final JLabel label = new JLabel("Welcome" + myContactPerson.getMyOrgName(), SwingConstants.CENTER);
+		final JLabel label = new JLabel("Welcome" + myContactPerson.getFirstName() 
+						+ " " + myContactPerson.getLastName(), SwingConstants.CENTER);
 		myPanel.add(label, BorderLayout.NORTH);
 		myPanel.add(createCenterPanel(), BorderLayout.CENTER);
 		myPanel.add(createButtonsPanel(), BorderLayout.SOUTH);

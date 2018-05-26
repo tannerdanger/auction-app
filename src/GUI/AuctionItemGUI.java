@@ -1,87 +1,93 @@
-/*
+/**
  * 
  */
 package GUI;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
+import auctiondata.Bid;
+import users.Bidder;
 
 /**
+ * @author wen
  *
  */
-public class AuctionItemGUI extends Observable implements Observer{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 693948431228885474L;
-	private Auction myAuction;
-	private final JPanel myListPanel;
-	private final JPanel myAuctionItemPanel;
-	private final JPanel myBottomPanel;
+public class AuctionItemGUI extends Observable {
 	
-	public AuctionItemGUI(final Auction theAuction) {
-		myAuction = theAuction;
-		myListPanel = new JPanel();
-		myBottomPanel = new JPanel();
-		myListPanel.setLayout(new GridLayout(0,1));
-		myAuctionItemPanel = new JPanel();
-		myAuctionItemPanel.setLayout(new BorderLayout());
+	private JPanel myBidPanel;
+	private AuctionItem mySelectedItem;
+	private Bidder bidder;
+	private JButton myBidButton;
+	
+	public AuctionItemGUI(AuctionItem theItem, Bidder theBidder) {
+		myBidPanel = new JPanel();
+		mySelectedItem = theItem;
+		bidder = theBidder;
 		setupComponents();
+//		boolean result = theBidder.isBidPlaceable(theItem.getAuction(), theItem, new BigDecimal("0"));
+//		myBidButton.setEnabled(result);
 	}
-	
+
 	private void setupComponents() {
-		createButtons();
-		JLabel title = new JLabel("Auction Items", SwingConstants.CENTER);
-		myAuctionItemPanel.add(myListPanel, BorderLayout.CENTER);
-		myAuctionItemPanel.add(title, BorderLayout.NORTH);
-		myBottomPanel.add(createBackButton());
-		myAuctionItemPanel.add(myBottomPanel, BorderLayout.SOUTH);
-		
+		myBidPanel.setLayout(new BorderLayout());
+		createBottomPanel();
+		createDetailPanel();
 	}
-	
-	private JButton createBackButton() {
-		final JButton backButton = new JButton("Back");
-		backButton.addActionListener(new ActionListener() {
-			
+
+	private void createDetailPanel() {
+		JPanel detailPanel = new JPanel();
+		JLabel itemLabel = new JLabel("ID: " + mySelectedItem.getUniqueID() + " | Name: " 
+									  + mySelectedItem.getName() + " | Price: " 
+									  + mySelectedItem.getMinPrice(), SwingConstants.CENTER);
+		detailPanel.add(itemLabel);
+		myBidPanel.add(detailPanel, BorderLayout.CENTER);
+	}
+
+	private void createBottomPanel() {
+		JPanel bottomPanel = new JPanel();
+		myBidButton = new JButton("place bid");
+		myBidButton.addActionListener(new ActionListener() {
+
 			@Override
-			public void actionPerformed(final ActionEvent theEvent) {
+			public void actionPerformed(ActionEvent e) {
+				String inputAmount = JOptionPane.showInputDialog("How much do you want to bid on this item?");
+				Bid bidAmount = new Bid(mySelectedItem, new BigDecimal(inputAmount));
+				int confirmValue = JOptionPane.showConfirmDialog(null,  "Do you want place a bid for " +
+																 inputAmount + "?");
+				if(confirmValue == 1) {
+					bidder.placeBid(bidAmount);
+				}
+			}
+		});
+		 bottomPanel.add(myBidButton);
+		 JButton backButton = new JButton("Back");
+		 backButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				setChanged();
 				notifyObservers();
 			}
-		});
-		return backButton;
+		 });
+		 
+		 bottomPanel.add(backButton);
+		 myBidPanel.add(bottomPanel, BorderLayout.SOUTH);
 	}
 	
-	private void createButtons() {
-		for(AuctionItem ai : myAuction.getInventorySheet().values()) {
-			final JButton itemButton = new JButton(ai.getName());
-			itemButton.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent theEvent) {
-					setChanged();
-					notifyObservers();
-				}
-				
-			});
-			myListPanel.add(itemButton);
-		}
+	public JPanel getPanel() {
+		return myBidPanel;
 	}
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		
-	}	
 }

@@ -7,6 +7,10 @@ import users.ContactPerson;
 import users.User;
 
 import javax.swing.*;
+
+import auctiondata.Auction;
+import auctiondata.AuctionItem;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -17,6 +21,7 @@ public class GUIFrame extends JFrame implements Observer {
 
 	public JPanel currentPanel;
 	public JPanel basePanel;
+	public JPanel bidderPanel;
 	private DataHandler myData;
 	private User activeUser;
 	public GUIFrame(){
@@ -60,11 +65,14 @@ public class GUIFrame extends JFrame implements Observer {
 
 	public void loginBidder(Bidder theBidder){
 		BidderGUI bidderGUI = new BidderGUI(theBidder, myData);
+		bidderGUI.addObserver(this);
 		changePanel(bidderGUI.getPanel());
+		bidderPanel = bidderGUI.getPanel();
 
 	}
 	public void loginContact(ContactPerson theContact){
 		ContactGUI contactGUI = new ContactGUI(theContact, myData);
+		contactGUI.addObserver(this);
 		changePanel(contactGUI.getPanel());
 	}
 	public void loginStaff(AuctionStaff theStaff){
@@ -91,7 +99,29 @@ public class GUIFrame extends JFrame implements Observer {
 	 */
 	@Override
 	public void update(Observable o, Object arg) {
-
+		if(o instanceof BidderGUI) {
+			if(arg instanceof Auction) {
+				final AuctionGUI gui = new AuctionGUI((Auction) arg);
+				changePanel(gui.getPanel());
+				gui.addObserver(this);
+			} else if (arg instanceof AuctionItem) {
+				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser);
+				changePanel(gui.getPanel());
+				gui.addObserver(this);
+			}
+		} else if(o instanceof ContactGUI) {
+			
+		} else if(o instanceof AuctionGUI) {
+			if(arg instanceof AuctionItem) {
+				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser);
+				changePanel(gui.getPanel());
+				gui.addObserver(this);
+			} else {
+				changePanel(bidderPanel);
+			}
+		} else if(o instanceof AuctionItemGUI) {
+			changePanel(bidderPanel);
+		}
 	}
 
 	private void logout(){
