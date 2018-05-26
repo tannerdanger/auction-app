@@ -128,7 +128,10 @@ public class StaffGUI extends JPanel implements Observer {
 		});
 
 		btnViewAll.addActionListener(e -> {
-
+			LocalDate[] dates = new LocalDate[2];
+			dates[0] = LocalDate.now().minusYears(100);
+			dates[1] = LocalDate.now().plusYears(100);
+			recieveDate(dates);
 		});
 
 		updateTotalNumBtn.addActionListener(e ->{
