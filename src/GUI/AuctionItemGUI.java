@@ -61,7 +61,8 @@ public class AuctionItemGUI extends Observable {
 
 	private void createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
-		myBidButton = new JButton("place bid");
+		myBidButton = new JButton("Place bid");
+		myBidButton.setEnabled(isBidButtonEnabled());
 		myBidButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -93,6 +94,34 @@ public class AuctionItemGUI extends Observable {
 		 
 		 bottomPanel.add(backButton);
 		 myBidPanel.add(bottomPanel, BorderLayout.SOUTH);
+	}
+	
+	private boolean isBidButtonEnabled() {
+		final StringBuilder sb = new StringBuilder();
+		final Auction a = mySelectedItem.getAuction();
+		boolean result = true;
+		myBidButton.setEnabled(bidder.isBidPlaceable(mySelectedItem.getAuction(), mySelectedItem, new BigDecimal("0")));
+
+		if(!Bidder.isDateValid(a.getAuctionDate())) {
+			result = false;
+			sb.append("It is too late to bid on this item.\n");
+		}
+		if(!bidder.isBelowMaxBidsPerAuction(a)) {
+			result = false;
+			sb.append("You have too many bids in this auction.\n");
+		}
+		if(!bidder.isBelowMaxTotalBids()) {
+			result = false;
+			sb.append("You have too many total bids.\n");
+		}
+		if(!bidder.isItemNotBidOnByMe(mySelectedItem)) {
+			result = false;
+			sb.append("You have already bid on this item");
+		}
+		if(!result) {
+			myBidButton.setToolTipText(sb.toString());
+		}
+		return result;
 	}
 	
 	public JPanel getPanel() {
