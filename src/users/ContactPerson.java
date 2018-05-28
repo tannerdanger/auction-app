@@ -1,5 +1,6 @@
 package users;
 
+import GUI.ErrorPopup;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Scheduler;

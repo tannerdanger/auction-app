@@ -5,41 +5,37 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
-import auctiondata.Bid;
 import storage.DataHandler;
-import users.Bidder;
 import users.ContactPerson;
 
 public class ContactGUI extends Observable implements Observer {
 
 	private Auction myActiveAuction;
 	private Auction mySelectedAuction;
-	private AuctionItem mySelectedItem;
+	private ArrayList<Auction> myAllAuctions;
+
 	private final JPanel myPanel;
 	private final JPanel myMainCenterPanel;
 	private final JPanel myActiveAuctionsPanel;
@@ -48,6 +44,7 @@ public class ContactGUI extends Observable implements Observer {
 
 	private final JPanel myViewAllItemsPanel;
 	private final JPanel myAddNewAuctionItemPanel;
+	private String myNewItemName;
 
 	private final CardLayout myCardLayout;
 	private final JButton myActiveAuctionButton;
@@ -57,29 +54,30 @@ public class ContactGUI extends Observable implements Observer {
 	private final JButton myHomeButton = new JButton("Home");
 	private final JButton myAuctionHistoryButton = new JButton("View Auction History");
 	private final JButton myNewAuctionRequestButton = new JButton("Submit New Auction Request");
+	private final JButton mySubmitButton = new JButton("Submit");
 
 
 	public ContactGUI(final ContactPerson theContactPerson, final DataHandler theData) {
 		myData = theData;
 		myContactPerson = theContactPerson;
+		myAllAuctions = myData.getAuctionsByOrg(myContactPerson.getMyOrgName());
 		myActiveAuctionButton = createActiveAuctionButton();
 		myNewAuctionButton = createNewAuctionRequestButton();
 		myActiveAuction = myContactPerson.getCurrentAuction();
 		mySelectedAuction = null;
-		mySelectedItem = null;
 		myPanel = new JPanel();
 		myMainCenterPanel = new JPanel();
 		myActiveAuctionsPanel = createActiveAuctionsPanel();
 		myAuctionsHistoryPanel = createAuctionHistoryPanel();
 		mySubmitAuctionPanel = createAuctionSubmitPanel();
 
-		myViewAllItemsPanel = createViewAllItemsPanel();
-		myAddNewAuctionItemPanel = createAddNewAuctionItemPanel();
+		myViewAllItemsPanel = createViewAllItemsPanel()
+		;       myAddNewAuctionItemPanel = createAddNewAuctionItemPanel();
 
 		myCardLayout = new CardLayout();
 		myPanel.setLayout(new BorderLayout());
 		myPanel.setMinimumSize(new Dimension(720, 720));
-		final JLabel label = new JLabel("Welcome " + myContactPerson.getFirstName() + " "+ myContactPerson.getLastName(), SwingConstants.CENTER);
+		final JLabel label = new JLabel("Welcome" + myContactPerson.getFirstName(), SwingConstants.CENTER);
 		myPanel.add(label, BorderLayout.NORTH);
 		myPanel.add(createHomeButton(), BorderLayout.EAST);
 		myPanel.add(createCenterPanel(), BorderLayout.CENTER);
@@ -164,10 +162,9 @@ public class ContactGUI extends Observable implements Observer {
 		lblHistoryAuctions.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblHistoryAuctions, BorderLayout.NORTH);
 
-		// acess submitted auctions and display on gui
-		myContactPerson.displaySubmittedAuctions();
-
-
+		Object[] abc = myAllAuctions.toArray();
+		JList<Object> list = new JList<Object>(abc);
+		panel.add(list);
 		panel.setBackground(Color.PINK);
 		return panel;
 
@@ -175,17 +172,15 @@ public class ContactGUI extends Observable implements Observer {
 
 	private JPanel createViewAllItemsPanel() {
 		final JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout(0, 0));
+		JLabel allItemsLabel = new JLabel("Items Available in Auction");
+		allItemsLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		panel.add(allItemsLabel, BorderLayout.NORTH);
 		panel.setBackground(Color.YELLOW);
-		if(null != myContactPerson.getCurrentAuction()) {
-			Map myMap = myActiveAuction.getInventorySheet();
-			System.out.println(myMap);
-		}
-
-
-		String[] data = {"one", "two", "three", "four"};
-		JList<String> list = new JList<String>(data);
-
-		panel.add(list);
+		Set<AuctionItem> auctionItems = myData.getAuctionItemsByAuction(myActiveAuction);
+		Object[] itemsArray = auctionItems.toArray();
+		JList<Object> list = new JList<Object>(itemsArray);
+		panel.add(list, BorderLayout.CENTER);
 
 		return panel;
 	}
@@ -193,12 +188,85 @@ public class ContactGUI extends Observable implements Observer {
 	private JPanel createAddNewAuctionItemPanel() {
 		final JPanel panel = new JPanel();
 
+		panel.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_1 = new JPanel();
+		panel.add(panel_1, BorderLayout.CENTER);
+		GridBagLayout gbl_panel_1 = new GridBagLayout();
+		gbl_panel_1.columnWidths = new int[]{0, 0, 0};
+		gbl_panel_1.rowHeights = new int[]{0, 0, 0, 0, 0};
+		gbl_panel_1.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel_1.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_1.setLayout(gbl_panel_1);
+
+		JLabel lblAuctionItemDetails = new JLabel("Auction Item Details");
+		GridBagConstraints gbc_lblAuctionItemDetails = new GridBagConstraints();
+		gbc_lblAuctionItemDetails.insets = new Insets(0, 0, 5, 0);
+		gbc_lblAuctionItemDetails.gridx = 1;
+		gbc_lblAuctionItemDetails.gridy = 0;
+		panel_1.add(lblAuctionItemDetails, gbc_lblAuctionItemDetails);
+
+		JLabel lblItemName = new JLabel("Item Name");
+		GridBagConstraints gbc_lblItemName = new GridBagConstraints();
+		gbc_lblItemName.anchor = GridBagConstraints.EAST;
+		gbc_lblItemName.insets = new Insets(0, 0, 5, 5);
+		gbc_lblItemName.gridx = 0;
+		gbc_lblItemName.gridy = 1;
+		panel_1.add(lblItemName, gbc_lblItemName);
+
+		JTextField itemName = new JTextField();
+		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
+		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_2.gridx = 1;
+		gbc_textField_2.gridy = 1;
+		panel_1.add(itemName, gbc_textField_2);
+		itemName.setColumns(10);
+
+		JLabel lblNewLabel = new JLabel("Minimum Bid");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridy = 2;
+		panel_1.add(lblNewLabel, gbc_lblNewLabel);
+
+		JTextField minimumBid = new JTextField();
+		GridBagConstraints gbc_textField_3 = new GridBagConstraints();
+		gbc_textField_3.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_3.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField_3.gridx = 1;
+		gbc_textField_3.gridy = 2;
+		panel_1.add(minimumBid, gbc_textField_3);
+		minimumBid.setColumns(10);
+
+
+		GridBagConstraints gbc_mySubmitButton = new GridBagConstraints();
+		gbc_mySubmitButton.gridx = 1;
+		gbc_mySubmitButton.gridy = 3;
+		panel_1.add(mySubmitButton, gbc_mySubmitButton);
+
+		mySubmitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+
+				JOptionPane.showMessageDialog(null, "Your Item \"" +itemName.getText() + "\" with minimum bid of $" + minimumBid.getText() + " Has Been Saved!");
+				System.out.println(minimumBid.getText());
+				itemName.setText("");
+				minimumBid.setText("");
+			}
+
+		});
+
 		panel.setBackground(Color.CYAN);
 		return panel;
 	}
 
+
+	// needs work
 	private JPanel createAuctionSubmitPanel() {
 		final JPanel panel = new JPanel();
+
 
 		panel.setBackground(Color.BLUE);
 		return panel;
@@ -234,15 +302,18 @@ public class ContactGUI extends Observable implements Observer {
 	}
 
 	private JButton createNewAuctionRequestButton() {
+		myNewAuctionRequestButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent theEvent) {
+				//LocalDate date = MultiDateSelector.init(1);
+				//myContactPerson.createNewAuction(date);
+				myCardLayout.show(myMainCenterPanel, "#3submit");
+				myAuctionHistoryButton.setEnabled(true);
+				setChanged();
+				notifyObservers(mySelectedAuction);
+			}
 
-		myNewAuctionRequestButton.addActionListener(e -> {
-			new MultiDateSelector().init(this);
-			myCardLayout.show(myMainCenterPanel, "#3submit");
-			myAuctionHistoryButton.setEnabled(true);
-			setChanged();
-			notifyObservers(mySelectedAuction);
 		});
-
 		return myNewAuctionRequestButton;
 	}
 
