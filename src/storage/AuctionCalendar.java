@@ -44,6 +44,11 @@ public class AuctionCalendar implements Serializable {
 		sortAuctions(activeAuctions);
 		sortAuctions(pastAuctions);
 	}
+	public ArrayList<Auction> getActiveAuctions() {
+		updateCalendar();
+		return activeAuctions;
+	}
+		
 
 	/**
 	 * Checks the DB to see what auctions have yet to take place, and creates an array
