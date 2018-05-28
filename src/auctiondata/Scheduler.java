@@ -31,6 +31,11 @@ public class Scheduler {
 	 * @return true if date is valid
 	 */
 	public static boolean isMinDaysOut(LocalDateTime theAuctionDate){
+		if ((theAuctionDate.isAfter(LocalDateTime.now().plusDays(MIN_DAYS_OUT - 1)))) {
+			new ErrorPopup("Error adding auction",
+					"Suggested auction date of " + theAuctionDate.toLocalDate() +
+							"is not at least 14 days into the future.\n please select another date and try again.");
+		}
 		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(MIN_DAYS_OUT - 1));
 	}
 
@@ -57,7 +62,11 @@ public class Scheduler {
 	}
 
 	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
-
+		if (!(theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1)))) {
+			new ErrorPopup("Error adding auction",
+					"Suggested auction date of " + theAuctionDate.toLocalDate() +
+							"is not within 60 days into the future.\n please select another date and try again.");
+		}
 		//Auction is scheduled for less than 60 days from now
 		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
 	}
