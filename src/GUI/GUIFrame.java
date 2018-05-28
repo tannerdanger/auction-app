@@ -64,6 +64,7 @@ public class GUIFrame extends JFrame implements Observer {
 	}
 
 	public void loginBidder(Bidder theBidder){
+		activeUser = theBidder;
 		BidderGUI bidderGUI = new BidderGUI(theBidder, myData);
 		bidderGUI.addObserver(this);
 		changePanel(bidderGUI.getPanel());
@@ -71,11 +72,13 @@ public class GUIFrame extends JFrame implements Observer {
 
 	}
 	public void loginContact(ContactPerson theContact){
+		activeUser = theContact;
 		ContactGUI contactGUI = new ContactGUI(theContact, myData);
 		contactGUI.addObserver(this);
 		changePanel(contactGUI.getPanel());
 	}
 	public void loginStaff(AuctionStaff theStaff){
+		activeUser = theStaff;
 		StaffGUI staffGUI = new StaffGUI(myData, myData.getMyAuctionCalendar());
 		changePanel(staffGUI);
 	}
@@ -101,11 +104,11 @@ public class GUIFrame extends JFrame implements Observer {
 	public void update(Observable o, Object arg) {
 		if(o instanceof BidderGUI) {
 			if(arg instanceof Auction) {
-				final AuctionGUI gui = new AuctionGUI((Auction) arg);
+				AuctionGUI gui = new AuctionGUI((Auction) arg, myData);
 				changePanel(gui.getPanel());
 				gui.addObserver(this);
 			} else if (arg instanceof AuctionItem) {
-				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser);
+				AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser, myData);
 				changePanel(gui.getPanel());
 				gui.addObserver(this);
 			}
@@ -113,14 +116,19 @@ public class GUIFrame extends JFrame implements Observer {
 			
 		} else if(o instanceof AuctionGUI) {
 			if(arg instanceof AuctionItem) {
-				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser);
+				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser, myData);
 				changePanel(gui.getPanel());
 				gui.addObserver(this);
 			} else {
-				changePanel(bidderPanel);
+				BidderGUI bidderGUI = new BidderGUI((Bidder) activeUser, myData);
+				bidderGUI.addObserver(this);
+				changePanel(bidderGUI.getPanel());
 			}
 		} else if(o instanceof AuctionItemGUI) {
-			changePanel(bidderPanel);
+			BidderGUI bidderGUI = new BidderGUI((Bidder) activeUser, myData);
+			bidderGUI.addObserver(this);
+			changePanel(bidderGUI.getPanel());
+
 		}
 	}
 

@@ -540,8 +540,7 @@ public class DataHandler extends Observable{
     public void placeBid(Bidder theBidder, Bid theBid){
         AuctionItem item = theBid.getItem();
         Auction auction = theBid.getAuction();
-        myAuctionCalendar.auctionDB.get(auction).get(item).add(theBid);
-
+        myAuctionCalendar.auctionDB.get(auction).get(item).add(theBid); //Add to DB
 
         if(!myAuctionCalendar.userBids.isEmpty()
                 && myAuctionCalendar.userBids.get(theBidder).contains(theBid)){

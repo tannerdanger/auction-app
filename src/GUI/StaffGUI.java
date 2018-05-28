@@ -5,15 +5,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import auctiondata.Auction;
-
 import storage.AuctionCalendar;
 import storage.DataHandler;
 
-
 import java.awt.*;
-
 import java.time.LocalDate;
-
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -149,17 +145,12 @@ public class StaffGUI extends JPanel implements Observer {
 		LocalDate startDate = theDates[0];
 		LocalDate endDate = theDates[1];
 
-		System.out.println("Update Calendar Vals");
-		System.out.println(startDate);
-		System.out.println(endDate);
+
 		mainBotPanel.remove(myListPane);
 		myAuctionsList = new JList<>(createAuctionListModel(startDate, endDate));
-		setupAuctionJList();
+		//setupAuctionJList();
 		myListPane = new JScrollPane(myAuctionsList);
 		mainBotPanel.add(myListPane, BorderLayout.CENTER);
-		repaint();
-		myListPane.repaint();
-		myListPane.validate();
 		validate();
 
 	}
@@ -177,15 +168,13 @@ public class StaffGUI extends JPanel implements Observer {
 		//Create panel to display auction count (left side)
 		JPanel scheduledAuctionNumPanel = new JPanel(new GridLayout(1, 0, 0, 0));
 		numOfAuctionsLabel = new JLabel(String.valueOf(myData.getActiveAuctions().size()) + "/" + myCalendar.getMAX_UPCOMING_AUCTIONS());
-		//Font font = new Font("Helvetica", Font.BOLD, 18);
+
 		numOfAuctionsLabel.setFont(new Font("Helvetica", Font.BOLD, 64));
 		numOfAuctionsLabel.setForeground(Color.RED);
 
 		//Create active auction panel (center)
 		JPanel activeAuctionPanel = new JPanel(new GridLayout(1,0));
-		//JTextField textPane = new JTextField();
-		//textPane.setText("-- Next Auction --");
-		//textPane.setHorizontalAlignment(SwingConstants.CENTER);
+
 		nextAuctionDetailsPane = new JTextPane();
 
 		//Create panel to display update buttons (right)

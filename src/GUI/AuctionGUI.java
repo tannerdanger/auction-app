@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ import javax.swing.SwingConstants;
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
+import storage.DataHandler;
 
 /**
  *
@@ -30,14 +32,16 @@ public class AuctionGUI extends Observable {
 	private final JPanel myListPanel;
 	private final JPanel myAuctionItemPanel;
 	private final JPanel myBottomPanel;
+	private Set<AuctionItem> auctionItems;
 	
-	public AuctionGUI(final Auction theAuction) {
+	public AuctionGUI(final Auction theAuction, DataHandler myData) {
 		myAuction = theAuction;
 		myListPanel = new JPanel();
 		myBottomPanel = new JPanel();
 		myListPanel.setLayout(new GridLayout(0,1));
 		myAuctionItemPanel = new JPanel();
 		myAuctionItemPanel.setLayout(new BorderLayout());
+		auctionItems = myData.getAuctionItemsByAuction(theAuction);
 		setupComponents();
 	}
 	
@@ -65,7 +69,9 @@ public class AuctionGUI extends Observable {
 	}
 	
 	private void createButtons() {
-		for(AuctionItem ai : myAuction.getInventorySheet().values()) {
+
+		//for(AuctionItem ai : myAuction.getInventorySheet().values()) {
+		for(AuctionItem ai : auctionItems) {
 			final JButton itemButton = new JButton(ai.getName());
 			itemButton.addActionListener(new ActionListener() {
 

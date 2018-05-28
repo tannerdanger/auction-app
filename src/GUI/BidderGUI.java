@@ -76,7 +76,7 @@ public class BidderGUI extends Observable implements Observer {
 
 		final JLabel label = new JLabel("Your bids", SwingConstants.CENTER);
 		
-		final DefaultListModel<Bid> bidsList = createBidsListModel();
+		DefaultListModel<Bid> bidsList = createBidsListModel();
 		myBidsList = new JList<>(bidsList);
 		setupBidsJList();
 		myBidsList.setCellRenderer(new BidJListRenderer());
@@ -84,6 +84,7 @@ public class BidderGUI extends Observable implements Observer {
 		panel.add(label, BorderLayout.NORTH);
 		panel.add(new JScrollPane(myBidsList), BorderLayout.CENTER);
 		panel.add(myLoadItemButton, BorderLayout.SOUTH);
+
 
 		return panel;
 	}
@@ -214,6 +215,15 @@ public class BidderGUI extends Observable implements Observer {
 		}	
 	}
 
+
+	public void updateUI(){
+//		final DefaultListModel<Bid> bidsList = createBidsListModel();
+//		myBidsList = new JList<>(bidsList);
+//		setupBidsJList();
+//		myBidsList.setCellRenderer(new BidJListRenderer());
+		createBidsPanel().validate();
+	}
+
 	@Override
 	public void update(final Observable theObservable, final Object theObject) {
 		if(theObservable instanceof DataHandler) {
@@ -225,6 +235,8 @@ public class BidderGUI extends Observable implements Observer {
 				setupAuctionJList();
 			} else if(theObject instanceof AuctionItem) {
 				// do nothing
+			} else if(theObservable instanceof DataHandler){
+				updateUI();
 			}
 		}
 	}

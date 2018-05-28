@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import GUI.ErrorPopup;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Bid;
@@ -48,7 +49,9 @@ public class Bidder extends User implements Serializable {
     
     public boolean isItemNotBidOnByMe(final AuctionItem theItem) {
     	for(final Bid b : myBids) {
-    		if(b.getItem().equals(theItem)) {
+    		if(b.getItem().equals(theItem))
+    		{
+    			new ErrorPopup("Error Placing Bid","You already have an existing bid on this item");
     			return false;
     		}
     	}
@@ -56,28 +59,50 @@ public class Bidder extends User implements Serializable {
     }
        
     public static boolean isDateValid(LocalDate theAuctionDate) {
-        return LocalDate.now().isBefore(theAuctionDate);
+    	Boolean result = LocalDate.now().isBefore(theAuctionDate);
+        if(!result){
+        	new ErrorPopup("Error Placing Bid", "Invalid Date");
+        }
+        return result;
     }
 
     public boolean isBelowMaxBidsPerAuction(final Auction theAuction) {
-    	return myBidsPerAuction.containsKey(theAuction)
-    		   && MAX_BIDS_PER_AUCTION < myBidsPerAuction.get(theAuction);
+    	boolean result = true;
+
+    	if(myBidsPerAuction.containsKey(theAuction)
+			    && MAX_BIDS_PER_AUCTION < myBidsPerAuction.get(theAuction))
+
+    		result = false;
+
+    	if(!result){
+    		new ErrorPopup("Error Placing Bid", "This Auction has too many bids!");
+	    }
+	    return result;
     }
     
     public boolean isBelowMaxTotalBids() {
-    	return myBids.size() < MAX_BIDS_TOTAL;
+    	Boolean result = myBids.size() < MAX_BIDS_TOTAL;
+    	if(!result)
+    		new ErrorPopup("Error Placing Bid","You are at maximum bid capacity");
+    	return result;
     }
     
     public void placeBid(Bid theBid){
+    	AuctionItem Item = theBid.getItem();
+    	BigDecimal amount = BigDecimal.valueOf(theBid.getBidAmount());
     	myBids.add(theBid);
+	    Item.addSealedBids(myID, amount);
+	    myBidsPerAuction.putIfAbsent(theBid.getAuction(), 0);
+	    myBidsPerAuction.put(theBid.getAuction(), myBidsPerAuction.get(theBid.getAuction())+1);
     }
 
     public boolean placeBid(final Auction theAuction, final BigDecimal theBidAmount, final AuctionItem theItem) {
 	  final boolean result = isBidPlaceable(theAuction, theItem, theBidAmount);
 	  if(result) {
 		  final Bid bid = new Bid(theAuction, theBidAmount, theItem);
+
 		  myBids.add(bid);
-		  theItem.addSealedBids(myID, theBidAmount);
+		 // theItem.addSealedBids(myID, theBidAmount);
 		  myBidsPerAuction.putIfAbsent(theAuction, 0);
 		  myBidsPerAuction.put(theAuction, myBidsPerAuction.get(theAuction) + 1);
 	  }
