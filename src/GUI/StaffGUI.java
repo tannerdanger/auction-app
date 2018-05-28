@@ -106,7 +106,7 @@ public class StaffGUI extends JPanel implements Observer {
 
 		setAuctionDateDisplayRangeButton.addActionListener(e -> {
 
-			new MultiDateSelector().init(this);
+			new MultiDateSelector(this);
 
 		});
 

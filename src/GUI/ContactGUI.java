@@ -177,9 +177,18 @@ public class ContactGUI extends Observable implements Observer {
 		allItemsLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
 		panel.add(allItemsLabel, BorderLayout.NORTH);
 		panel.setBackground(Color.YELLOW);
-		Set<AuctionItem> auctionItems = myData.getAuctionItemsByAuction(myActiveAuction);
-		Object[] itemsArray = auctionItems.toArray();
-		JList<Object> list = new JList<Object>(itemsArray);
+		Object[] itemsArray = null;
+		//TODO: Error handling... this returns void and crashes if no current auctions exist
+		//Note: The below method doesn't work
+		if(null != myContactPerson.getCurrentAuction()) {
+			Set<AuctionItem> auctionItems = myData.getAuctionItemsByAuction(myActiveAuction);
+			itemsArray = auctionItems.toArray();
+
+		}else {
+			itemsArray = new Object[1];
+			itemsArray[0] = new JLabel("No auctions scheduled");
+		}
+		JList <Object> list = new JList<Object>(itemsArray);
 		panel.add(list, BorderLayout.CENTER);
 
 		return panel;
@@ -302,20 +311,19 @@ public class ContactGUI extends Observable implements Observer {
 	}
 
 	private JButton createNewAuctionRequestButton() {
-		myNewAuctionRequestButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent theEvent) {
-				//LocalDate date = MultiDateSelector.init(1);
-				//myContactPerson.createNewAuction(date);
-				myCardLayout.show(myMainCenterPanel, "#3submit");
-				myAuctionHistoryButton.setEnabled(true);
-				setChanged();
-				notifyObservers(mySelectedAuction);
-			}
+		myNewAuctionRequestButton.setEnabled(null == myContactPerson.getCurrentAuction()
+				|| myContactPerson.getCurrentAuction().getAuctionDate().isBefore(LocalDate.now()));
 
-		});
+		if(!myNewAuctionRequestButton.isEnabled()){
+			myNewAuctionRequestButton.setToolTipText("Cannot submit an auction while you currently have an active auction");
+		}
+		myNewAuctionRequestButton.addActionListener(e ->{
+
+		new MultiDateSelector(this);
+	});
+
 		return myNewAuctionRequestButton;
-	}
+}
 
 	private JButton createHomeButton() {
 		myHomeButton.addActionListener(new ActionListener() {

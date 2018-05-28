@@ -29,7 +29,7 @@ public class MultiDateSelector extends Observable {
 
 
 
-	public void init(Object theClass) {
+	public MultiDateSelector(Object theClass) {
 
 
 		// This method is invoked on Swing thread
