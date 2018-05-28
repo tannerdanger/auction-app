@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import GUI.ErrorPopup;
 /**
  * Contact person class, saves relevent information to a Contact
  * @author Gurchetan Singh, David Perez
