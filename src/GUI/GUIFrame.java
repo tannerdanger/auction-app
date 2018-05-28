@@ -24,8 +24,12 @@ public class GUIFrame extends JFrame implements Observer {
 	public JPanel bidderPanel;
 	private DataHandler myData;
 	private User activeUser;
+	GUIToolBar myToolBar;
 	public GUIFrame(){
 
+		setName("TCSS 305 Tetris");
+
+		setLocationRelativeTo(null);
 		//Sets logout/default close operations
 		addWindowListener(new WindowAdapter() {
 			/**
@@ -36,16 +40,14 @@ public class GUIFrame extends JFrame implements Observer {
 			 */
 			@Override
 			public void windowClosing(WindowEvent e) {
-				int confirm = JOptionPane.showOptionDialog(
-						null, "Are you sure you want to exit Auction Central?",
-						"Exit Confirmation", JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE, null, null, null);
-				if(confirm == 0){
-					JOptionPane.showMessageDialog(null, "Thank you for using Auction Central. \n GoodBye!");
-					logout();
-				}
+		;
+					quitProgram();
+
 			}
 		});
+
+		myToolBar = new GUIToolBar(this);
+		setJMenuBar(myToolBar);
 
 		myData = new DataHandler();
 		basePanel = new JPanel(new BorderLayout());
@@ -113,7 +115,7 @@ public class GUIFrame extends JFrame implements Observer {
 				gui.addObserver(this);
 			}
 		} else if(o instanceof ContactGUI) {
-			
+
 		} else if(o instanceof AuctionGUI) {
 			if(arg instanceof AuctionItem) {
 				final AuctionItemGUI gui = new AuctionItemGUI((AuctionItem) arg, (Bidder) activeUser, myData);
@@ -132,10 +134,36 @@ public class GUIFrame extends JFrame implements Observer {
 		}
 	}
 
+	protected void logoutPrompt(){
+		int confirm = JOptionPane.showOptionDialog(
+				null, "Are you sure you want to logout of Auction Central?",
+				"Exit Confirmation", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, null, null);
+		if(confirm == 0){
+			JOptionPane.showMessageDialog(null, "Thank you for using Auction Central. \n GoodBye!");
+			logout();
+		}
+
+	}
+
 	private void logout(){
 		myData.serialize();
-		System.out.println("Thank you for using Auction Central!");
-		System.out.println("You have sucessfully logged out. Goodbye! ");
-		System.exit(0);
+		activeUser = null;
+		LoginPanel login = new LoginPanel(myData, this);
+		changePanel(login);
 	}
+
+	protected void quitProgram(){
+		int confirm = JOptionPane.showOptionDialog(
+				null, "Are you sure you want to quit Auction Central?",
+				"Exit Confirmation", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, null, null);
+		if(confirm == 0){
+			JOptionPane.showMessageDialog(null, "Thank you for using Auction Central. \n GoodBye!");
+			myData.serialize();
+			System.exit(0);
+		}
+
+	}
+
 }
