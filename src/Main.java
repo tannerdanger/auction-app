@@ -17,8 +17,8 @@ public class Main {
 
 	private static void runAuctionCentral() {
 
-		DataHandler data = new DataHandler();
-		AuctionCalendar calendar = new AuctionCalendar();
+//		DataHandler data = new DataHandler();
+//		AuctionCalendar calendar = new AuctionCalendar();
 		//UserDB userData = data.getMyUserDB();
 		//User theUser = login(userData);
 
