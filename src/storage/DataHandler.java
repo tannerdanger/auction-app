@@ -118,7 +118,7 @@ public class DataHandler extends Observable{
         addUser(staffUser);
 
         ContactPerson contactUser =
-                new ContactPerson("Contact", "McContact", "contact@contact.com");
+                new ContactPerson("James", "McContact", "contact@contact.com");
         contactUser.setMyOrgName("Pat's Pneumonic Penguin Preservation");
 
         ContactPerson contactUser2 = new ContactPerson("Lars", "Rush", "contact2@contact.com");
@@ -126,6 +126,11 @@ public class DataHandler extends Observable{
 
         ContactPerson contactUser3 = new ContactPerson("Russ", "Walker", "Contact3@contact.com");
         contactUser3.setMyOrgName("Risus Industries");
+
+        ContactPerson noContact = new ContactPerson("Migel", "Garcia", "noauction@contact.com");
+        noContact.setMyOrgName("The Human Fund");
+
+        myUserDB.addUser(noContact);
 
 
         Bidder bidderUser =

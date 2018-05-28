@@ -176,8 +176,11 @@ public class ContactGUI extends Observable implements Observer {
 	private JPanel createViewAllItemsPanel() {
 		final JPanel panel = new JPanel();
 		panel.setBackground(Color.YELLOW);
-		Map myMap = myActiveAuction.getInventorySheet();
-		System.out.println(myMap);
+		if(null != myContactPerson.getCurrentAuction()) {
+			Map myMap = myActiveAuction.getInventorySheet();
+			System.out.println(myMap);
+		}
+
 
 		String[] data = {"one", "two", "three", "four"};
 		JList<String> list = new JList<String>(data);
@@ -266,8 +269,8 @@ public class ContactGUI extends Observable implements Observer {
 
 	@Override
 	public void update(final Observable theObservable, final Object theObject) {
-		if(theObservable instanceof DataHandler) {
-
+		if(theObservable instanceof DataHandler && theObject instanceof Auction) {
+			createActiveAuctionsPanel();
 		}
 	}
 
