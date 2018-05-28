@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -73,12 +74,18 @@ public class AuctionGUI extends Observable {
 	}
 	
 	private void createLabels() {
+		ArrayList<Bid> temp = new ArrayList<Bid>();
 		for(Bid b : bidder.getBids()) {
 			if(b.getAuction().equals(myAuction)) {
+				temp.add(b);
 				JLabel bidLabel = new JLabel("  ItemID: " + b.getItem().getUniqueID() + " | Item Name: " + b.getItem().getName()
 						+ " | Your Bid Amount: " + b.getBidAmount() + "  ", SwingConstants.CENTER);
 				myBidPanel.add(bidLabel);
 			}
+		}
+		if(temp.isEmpty()) {
+			JLabel emptyLabel = new JLabel("  You didn't bid on any items for this auction yet.  ", SwingConstants.CENTER);
+			myBidPanel.add(emptyLabel);
 		}
 	}
 
@@ -96,7 +103,6 @@ public class AuctionGUI extends Observable {
 	}
 	
 	private void createButtons() {
-
 		//for(AuctionItem ai : myAuction.getInventorySheet().values()) {
 		for(AuctionItem ai : auctionItems) {
 			final JButton itemButton = new JButton(ai.getName());
@@ -110,6 +116,10 @@ public class AuctionGUI extends Observable {
 				
 			});
 			myListPanel.add(itemButton);
+		}
+		if(myAuction.getInventorySheet().isEmpty()) {
+			JLabel emptyLabel = new JLabel("  This auction contains no items yet, please waiting for the update.  ", SwingConstants.CENTER);
+			myListPanel.add(emptyLabel);
 		}
 	}
 	
