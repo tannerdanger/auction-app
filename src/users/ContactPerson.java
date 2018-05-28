@@ -97,7 +97,7 @@ public class ContactPerson extends User {
 	
 	public boolean isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(final LocalDate theNewAuctionDate) {
 		
-		boolean flag = false;
+		boolean flag = true;
 		if (!isThereNoPriorAuction()) {
 			LocalDate checkRequiredTimePassDate = 
 					myCurrentAuction.getAuctionDate().plusYears(REQUIRED_YEARS_IN_BETWEEN_AUCTION
@@ -105,6 +105,13 @@ public class ContactPerson extends User {
 					).plusDays(REQUIRED_DAYS_IN_BETWEEN_AUCTION);
 			flag = checkRequiredTimePassDate.isBefore(theNewAuctionDate) 
 				|| checkRequiredTimePassDate.equals(theNewAuctionDate);
+		}
+		if (!flag) {
+			new ErrorPopup("Error submitting auction",
+					"has not been the required number of " + REQUIRED_YEARS_IN_BETWEEN_AUCTION  + " year(s) " 
+					+ "since your last auction of date of + " + myCurrentAuction.toString() 
+					+ "\n please select another date and try again.");
+			
 		}
 		return flag;
 
