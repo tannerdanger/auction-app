@@ -51,7 +51,7 @@ public class Bidder extends User implements Serializable {
     	for(final Bid b : myBids) {
     		if(b.getItem().equals(theItem))
     		{
-    			new ErrorPopup("Error Placing Bid","You already have an existing bid on this item");
+//    				new ErrorPopup("Error Placing Bid","You already have an existing bid on this item");
     			return false;
     		}
     	}
@@ -61,7 +61,7 @@ public class Bidder extends User implements Serializable {
     public static boolean isDateValid(LocalDate theAuctionDate) {
     	Boolean result = LocalDate.now().isBefore(theAuctionDate);
         if(!result){
-        	new ErrorPopup("Error Placing Bid", "Invalid Date");
+//        	new ErrorPopup("Error Placing Bid", "Invalid Date");
         }
         return result;
     }
@@ -75,15 +75,15 @@ public class Bidder extends User implements Serializable {
     		result = false;
 
     	if(!result){
-    		new ErrorPopup("Error Placing Bid", "This Auction has too many bids!");
+//    		new ErrorPopup("Error Placing Bid", "This Auction has too many bids!");
 	    }
 	    return result;
     }
     
     public boolean isBelowMaxTotalBids() {
     	Boolean result = myBids.size() < MAX_BIDS_TOTAL;
-    	if(!result)
-    		new ErrorPopup("Error Placing Bid","You are at maximum bid capacity");
+//    	if(!result)
+//    		new ErrorPopup("Error Placing Bid","You are at maximum bid capacity");
     	return result;
     }
     
