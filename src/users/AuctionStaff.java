@@ -36,8 +36,19 @@ public class AuctionStaff extends User implements Serializable {
 
 	}
 
-	public void cancelAuction(String response, DataHandler theData) {
-		int auctionID = Integer.parseInt(response);
-		theData.cancelAuction(auctionID);
-	}
+	public void cancelAuction (String response) {
+    	int index = 0;
+    	int auctionID = Integer.parseInt(response);
+    	for(Auction a: myCalendar.getActiveAuctions()){
+            if(a.getauctionID() == auctionID) {
+                break;
+            }
+            index++;
+        }
+    	if (!(myCalendar.getActiveAuctions().get(index).hasBid())) {
+    		myCalendar.getAuctionDB().remove(myCalendar.getActiveAuctions().get(index));
+    		myCalendar.getActiveAuctions().remove(index);
+    		
+    	}
+    }
 }
