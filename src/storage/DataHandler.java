@@ -464,7 +464,6 @@ public class DataHandler extends Observable{
     }
 
     public Set<AuctionItem> getAuctionItemsByAuction(Auction theAuction){
-    	System.out.println(theAuction.getInventorySheet().values());
     	Set<AuctionItem> theSet = new HashSet<AuctionItem>(theAuction.getInventorySheet().values());
         return theSet;
     }
