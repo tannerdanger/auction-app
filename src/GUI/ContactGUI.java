@@ -67,14 +67,16 @@ public class ContactGUI extends Observable implements Observer {
 		mySelectedAuction = null;
 		myPanel = new JPanel();
 		myMainCenterPanel = new JPanel();
+		mySubmitAuctionPanel = new JPanel();
+		
 		myActiveAuctionsPanel = createActiveAuctionsPanel();
 		myAuctionsHistoryPanel = createAuctionHistoryPanel();
-		mySubmitAuctionPanel = null;
 
 		myViewAllItemsPanel = createViewAllItemsPanel();       
 		myAddNewAuctionItemPanel = createAddNewAuctionItemPanel();
 
 		myCardLayout = new CardLayout();
+		
 		myPanel.setLayout(new BorderLayout());
 		myPanel.setMinimumSize(new Dimension(720, 720));
 		final JLabel label = new JLabel("Welcome" + myContactPerson.getFirstName(), SwingConstants.CENTER);
@@ -83,10 +85,6 @@ public class ContactGUI extends Observable implements Observer {
 		myPanel.add(createCenterPanel(), BorderLayout.CENTER);
 		myPanel.add(createButtonsPanel(), BorderLayout.SOUTH);
 		myPanel.setVisible(true);
-
-
-
-
 	}
 
 	private JPanel createCenterPanel() {
