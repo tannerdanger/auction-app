@@ -2,6 +2,7 @@ package users;
 
 
 import storage.AuctionCalendar;
+import storage.DataHandler;
 
 import javax.swing.*;
 import java.io.Serializable;
@@ -33,5 +34,10 @@ public class AuctionStaff extends User implements Serializable {
 		int newMax = Integer.parseInt(response);
 		myCalendar.setMAX_UPCOMING_AUCTIONS(newMax);
 
+	}
+
+	public void cancelAuction(String response, DataHandler theData) {
+		int auctionID = Integer.parseInt(response);
+		theData.cancelAuction(auctionID);
 	}
 }

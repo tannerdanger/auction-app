@@ -106,6 +106,41 @@ public class DataHandler extends Observable{
         }
     }
 
+	/**
+	 * Serializes the data to be used in the future.
+	 */
+	public void serialize(){
+		File dbFile = new File(USERDB_FILE_NAME);
+		File calFile = new File(AUCTIONDB_FILE_NAME);
+		if(dbFile.exists()){
+			dbFile.delete();
+		}
+		if(calFile.exists()){
+			dbFile.delete();
+		}
+
+		try{
+			FileOutputStream fileOut = new FileOutputStream(USERDB_FILE_NAME);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(myUserDB);
+			fileOut.close();
+			objectOut.close();
+		}catch (IOException e){
+			System.out.println("IOException Serializing User DB");
+		}
+
+		//Serialize Auctions
+		try{
+			FileOutputStream fileOut = new FileOutputStream(AUCTIONDB_FILE_NAME);
+			ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+			objectOut.writeObject(myAuctionCalendar);
+			fileOut.close();
+			objectOut.close();
+		}catch (IOException e){
+			System.out.println("IOException Serializing Auction DB");
+		}
+	}
+
     /**
      * Initializes new data in case serialization fails.
      */
@@ -292,36 +327,7 @@ public class DataHandler extends Observable{
 
     }
 
-    /**
-     * Serializes the data to be used in the future.
-     */
-    public void serialize(){
 
-//Delete old files
-        //new File(USERDB_FILE_NAME).delete();
-        //new File(AUCTIONDB_FILE_NAME).delete();
-        //Serialize users
-        try{
-            FileOutputStream fileOut = new FileOutputStream(USERDB_FILE_NAME);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(myUserDB);
-            fileOut.close();
-            objectOut.close();
-        }catch (IOException e){
-            System.out.println("IOException Serializing User DB");
-        }
-
-        //Serialize Auctions
-        try{
-            FileOutputStream fileOut = new FileOutputStream(AUCTIONDB_FILE_NAME);
-            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(myAuctionCalendar);
-            fileOut.close();
-            objectOut.close();
-        }catch (IOException e){
-            System.out.println("IOException Serializing Auction DB");
-        }
-    }
     /**
      * Getter for an auction Calendar
      * @return the auctionCalendar

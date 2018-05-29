@@ -26,6 +26,7 @@ public class StaffGUI extends JPanel implements Observer {
 	private JButton setAuctionDateDisplayRangeButton;
 
 	private JButton btnViewAll;
+	private JButton btnDeleteAuction;
 
 	private JList<Auction> myAuctionsList;
 	private JScrollPane myListPane;
@@ -87,8 +88,6 @@ public class StaffGUI extends JPanel implements Observer {
 		JPanel leftBuffer = new JPanel();
 		JPanel rightBuffer = new JPanel();
 		//TODO: Make this work to add a buffer on each side of the panel
-		//leftBuffer.setMinimumSize(new Dimension(50,0));
-		//rightBuffer.setSize(50,0);
 		add(leftBuffer, BorderLayout.WEST);
 		add(rightBuffer, BorderLayout.EAST);
 
@@ -100,11 +99,13 @@ public class StaffGUI extends JPanel implements Observer {
 		btnViewAll = new JButton("View All");
 		updateTotalNumBtn = new JButton("Update Total Cap");
 		updateMaxDayBtn = new JButton("Update Day Cap");
+		btnDeleteAuction = new JButton("Cancel an Action");
 
 		setAuctionDateDisplayRangeButton.setVisible(true);
 		btnViewAll.setVisible(true);
 		updateTotalNumBtn.setVisible(true);
 		updateMaxDayBtn.setVisible(true);
+		btnDeleteAuction.setVisible(true);
 
 		setAuctionDateDisplayRangeButton.addActionListener(e -> {
 
@@ -139,13 +140,32 @@ public class StaffGUI extends JPanel implements Observer {
 				updateAll();
 			}
 		});
+
+		btnDeleteAuction.addActionListener(e -> {
+			String response = JOptionPane.showInputDialog(null,
+					"Please enter the ID of the auction you would like to cancel");
+
+			if(!(null==response) && !("".compareTo(response)==0)){
+				myStaff.cancelAuction(response, myData);
+				updateAll();
+				mainBotPanel.remove(myListPane);
+
+				//setupAuctionJList();
+				mainBotPanel.remove(myListPane);
+				myAuctionsList = new JList<>(createAuctionListModel());
+				//setupAuctionJList();
+				myListPane = new JScrollPane(myAuctionsList);
+				mainBotPanel.add(myListPane, BorderLayout.CENTER);
+				validate();
+
+			}
+		});
 	}
 
 	public void recieveDate(LocalDate[] theDates){
 		System.out.println("The dates: "+theDates[0]+"\n"+theDates[1]);
 		LocalDate startDate = theDates[0];
 		LocalDate endDate = theDates[1];
-
 
 		mainBotPanel.remove(myListPane);
 		myAuctionsList = new JList<>(createAuctionListModel(startDate, endDate));
@@ -214,7 +234,9 @@ public class StaffGUI extends JPanel implements Observer {
 		buttonPanel.add(setAuctionDateDisplayRangeButton);
 
 		buttonPanel.add(btnViewAll);
+		buttonPanel.add(btnDeleteAuction);
 		buttonPanel.add(new JPanel()); //buffer panel
+
 
 
 		mainBotPanel = new JPanel(new BorderLayout());
@@ -300,7 +322,7 @@ public class StaffGUI extends JPanel implements Observer {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends Auction> theList, Auction theAuction, int theIndex,
 		                                              boolean theIsSelected, boolean theIsInFocus) {
-			this.setText(theAuction.getAuctionDate() + " | " + theAuction.getOrgName());
+			this.setText("  ID:" + theAuction.getauctionID() + " | DATE:  " + theAuction.getAuctionDate() + " | ORG: " + theAuction.getOrgName());
 			this.setOpaque(true);
 			if(theIsSelected) {
 				this.setForeground(Color.BLACK);
