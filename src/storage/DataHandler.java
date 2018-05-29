@@ -21,8 +21,8 @@ public class DataHandler extends Observable{
     private static final String AUCTIONDB_FILE_NAME = "calendar.ser";
 
 
-    AuctionCalendar myAuctionCalendar;
-    UserDB myUserDB;
+    private AuctionCalendar myAuctionCalendar;
+    private UserDB myUserDB;
 
     /**
      * Constructs data by serializing or initializing new data as necessary.
@@ -109,7 +109,7 @@ public class DataHandler extends Observable{
     /**
      * Initializes new data in case serialization fails.
      */
-    public void initializeData(){
+    private void initializeData(){
 
         myAuctionCalendar = new AuctionCalendar();
         myUserDB = new UserDB();
@@ -361,9 +361,11 @@ public class DataHandler extends Observable{
      * @return an arraylist of auctions.
      */
     public ArrayList<Auction> getActiveAuctions(){
-        myAuctionCalendar.updateCalendar();
+        //myAuctionCalendar.updateCalendar();
         return myAuctionCalendar.activeAuctions;
     }
+
+
 
     public ArrayList<Auction> getPastAuctions(){
         return myAuctionCalendar.pastAuctions;
@@ -535,7 +537,7 @@ public class DataHandler extends Observable{
     /**
      * Adds a new bid to an auction item and notifies observers.
      * @param theBid being added to an item.
-     * @param theBidder the unique bidder assocaited with this bid
+     * @param theBidder the unique bidder associated with this bid
      */
     public void placeBid(Bidder theBidder, Bid theBid){
         AuctionItem item = theBid.getItem();

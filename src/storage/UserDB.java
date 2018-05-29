@@ -1,13 +1,10 @@
 package storage;
  
-import auctiondata.Bid;
-import users.Bidder;
+
 import users.User;
  
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
  
 /**

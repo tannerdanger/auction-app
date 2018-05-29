@@ -1,27 +1,29 @@
 package GUI;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
+import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-public class GUIToolBar extends JMenuBar{
+/**
+ * Creates a toolbar for the Auction Central program.
+ * Used to allow users to logout or exit the program.
+ */
+class GUIToolBar extends JMenuBar{
 
-	public JMenu myFileMenu;
-	public GUIFrame myFrame;
+	private GUIFrame myFrame;
 	
 	
 	
-	public GUIToolBar(GUIFrame theFrame) {
+	GUIToolBar(GUIFrame theFrame) {
 		super();
 		myFrame = theFrame;
 		build();
 	}
 
 	private void build() {
-		myFileMenu = new JMenu("Options");
+		JMenu myFileMenu = new JMenu("Options");
+		
 		myFileMenu.setMnemonic(KeyEvent.VK_O);
 		
 		JMenuItem logoutItem = new JMenuItem("Logout");
@@ -44,8 +46,6 @@ public class GUIToolBar extends JMenuBar{
 		myFileMenu.add(exitItem);
 
 		add(myFileMenu);
-		
-		
-		
+
 	}
 }
