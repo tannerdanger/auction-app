@@ -40,10 +40,10 @@ public class ContactGUI extends Observable implements Observer {
 	private final JPanel myMainCenterPanel;
 	private final JPanel myActiveAuctionsPanel;
 	private final JPanel myAuctionsHistoryPanel;
-	private final JPanel mySubmitAuctionPanel;
+	private JPanel mySubmitAuctionPanel;
 
-	private final JPanel myViewAllItemsPanel;
-	private final JPanel myAddNewAuctionItemPanel;
+	private JPanel myViewAllItemsPanel;
+	private JPanel myAddNewAuctionItemPanel;
 	private String myNewItemName;
 
 	private final CardLayout myCardLayout;
@@ -69,10 +69,10 @@ public class ContactGUI extends Observable implements Observer {
 		myMainCenterPanel = new JPanel();
 		myActiveAuctionsPanel = createActiveAuctionsPanel();
 		myAuctionsHistoryPanel = createAuctionHistoryPanel();
-		mySubmitAuctionPanel = createAuctionSubmitPanel();
+		mySubmitAuctionPanel = null;
 
-		myViewAllItemsPanel = createViewAllItemsPanel()
-		;       myAddNewAuctionItemPanel = createAddNewAuctionItemPanel();
+		myViewAllItemsPanel = createViewAllItemsPanel();       
+		myAddNewAuctionItemPanel = createAddNewAuctionItemPanel();
 
 		myCardLayout = new CardLayout();
 		myPanel.setLayout(new BorderLayout());
@@ -198,6 +198,31 @@ public class ContactGUI extends Observable implements Observer {
 
 		return panel;
 	}
+	private JPanel createViewAllItemsPanel1(AuctionItem theItem) {
+		final JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout(0, 0));
+		JLabel allItemsLabel = new JLabel("Items Available in Auction");
+		allItemsLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+		panel.add(allItemsLabel, BorderLayout.NORTH);
+		panel.setBackground(Color.YELLOW);
+		Object[] itemsArray = null;
+		//TODO: Error handling... this returns void and crashes if no current auctions exist
+		//Note: The below method doesn't work
+		if(null != myContactPerson.getCurrentAuction()) {
+			Set<AuctionItem> auctionItems = myData.getAuctionItemsByAuction(myActiveAuction);
+			auctionItems.add(theItem);
+			itemsArray = auctionItems.toArray();
+			
+
+		}else {
+			itemsArray = new Object[1];
+			itemsArray[0] = new JLabel("No auctions scheduled");
+		}
+		JList <Object> list = new JList<Object>(itemsArray);
+		panel.add(list, BorderLayout.CENTER);
+
+		return panel;
+	}
 
 	private JPanel createAddNewAuctionItemPanel() {
 		final JPanel panel = new JPanel();
@@ -266,6 +291,15 @@ public class ContactGUI extends Observable implements Observer {
 
 				JOptionPane.showMessageDialog(null, "Your Item \"" +itemName.getText() + "\" with minimum bid of $" + minimumBid.getText() + " Has Been Saved!");
 				System.out.println(minimumBid.getText());
+				
+				
+				double bidPrice = Double.parseDouble(minimumBid.getText());
+				String strItemName = itemName.getText();
+				
+				AuctionItem newAuctionItem = new AuctionItem(bidPrice, strItemName, myActiveAuction);
+				myViewAllItemsPanel = createViewAllItemsPanel1(newAuctionItem);   
+				myActiveAuction.addInventoryItem(newAuctionItem);
+				
 				itemName.setText("");
 				minimumBid.setText("");
 			}
@@ -277,10 +311,10 @@ public class ContactGUI extends Observable implements Observer {
 	}
 
 
-	// needs work
 	private JPanel createAuctionSubmitPanel() {
 		final JPanel panel = new JPanel();
-
+		JLabel confirmation = new JLabel("Your new auction request has been submitted!");
+		panel.add(confirmation);
 
 		panel.setBackground(Color.BLUE);
 		return panel;
@@ -325,6 +359,7 @@ public class ContactGUI extends Observable implements Observer {
 		myNewAuctionRequestButton.addActionListener(e ->{
 
 		new MultiDateSelector(this);
+		mySubmitAuctionPanel = createAuctionSubmitPanel();
 	});
 
 		return myNewAuctionRequestButton;
@@ -336,7 +371,7 @@ public class ContactGUI extends Observable implements Observer {
 			public void actionPerformed(final ActionEvent theEvent) {
 				myCardLayout.show(myMainCenterPanel, "#1active");
 				myAuctionHistoryButton.setEnabled(true);
-				myNewAuctionRequestButton.setEnabled(true);
+				//myNewAuctionRequestButton.setEnabled(true);
 				setChanged();
 				notifyObservers(mySelectedAuction);
 			}
@@ -355,6 +390,7 @@ public class ContactGUI extends Observable implements Observer {
 	public void update(final Observable theObservable, final Object theObject) {
 		if(theObservable instanceof DataHandler && theObject instanceof Auction) {
 			createActiveAuctionsPanel();
+			createAddNewAuctionItemPanel();
 		}
 	}
 
