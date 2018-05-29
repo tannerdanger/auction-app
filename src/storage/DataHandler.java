@@ -464,7 +464,9 @@ public class DataHandler extends Observable{
     }
 
     public Set<AuctionItem> getAuctionItemsByAuction(Auction theAuction){
-        return myAuctionCalendar.auctionDB.get(theAuction).keySet();
+    	System.out.println(theAuction.getInventorySheet().values());
+    	Set<AuctionItem> theSet = new HashSet<AuctionItem>(theAuction.getInventorySheet().values());
+        return theSet;
     }
 
     /**
