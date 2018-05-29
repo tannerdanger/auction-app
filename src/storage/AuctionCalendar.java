@@ -151,7 +151,14 @@ public class AuctionCalendar implements Serializable {
 		return MAX_AUCTIONS_DAY;
 	}
 
+	/**
+	 * @throw IllegalArgumentException 
+	 * if user want negative number of capacity on the calendar.
+	 */
 	public void setMAX_AUCTIONS_DAY(int theNewMax) {
+		if(theNewMax < 0) {
+			throw new IllegalArgumentException("Capacity can not be negative.");
+		}
 		if(theNewMax > 0 && theNewMax >= getMaxAuctionsScheduledInADay())
 			this.MAX_AUCTIONS_DAY = theNewMax;
 	}

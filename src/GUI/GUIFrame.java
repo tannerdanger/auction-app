@@ -17,25 +17,20 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
-/**
- * Creates the frame for the auction central program.
- * @Author Tanner Brown
- * @Version 26 May 2018
- */
 public class GUIFrame extends JFrame implements Observer {
 
-	private JPanel currentPanel;
-	private JPanel basePanel;
-	private JPanel bidderPanel;
+	public JPanel currentPanel;
+	public JPanel basePanel;
+	public JPanel bidderPanel;
 	private DataHandler myData;
 	private User activeUser;
-
+	GUIToolBar myToolBar;
 	public GUIFrame(){
 
 		setName("TCSS 305 Tetris");
-		setLocationRelativeTo(null);
 
-		//Properly logs out if user hits the 'x' on the frame.
+		setLocationRelativeTo(null);
+		//Sets logout/default close operations
 		addWindowListener(new WindowAdapter() {
 			/**
 			 * Invoked when a window is in the process of being closed.
@@ -45,11 +40,13 @@ public class GUIFrame extends JFrame implements Observer {
 			 */
 			@Override
 			public void windowClosing(WindowEvent e) {
+		;
 					quitProgram();
+
 			}
 		});
 
-		GUIToolBar myToolBar = new GUIToolBar(this);
+		myToolBar = new GUIToolBar(this);
 		setJMenuBar(myToolBar);
 
 		myData = new DataHandler();
@@ -104,7 +101,7 @@ public class GUIFrame extends JFrame implements Observer {
 	 */
 	public void loginStaff(AuctionStaff theStaff){
 		activeUser = theStaff;
-		StaffGUI staffGUI = new StaffGUI(theStaff, myData, myData.getMyAuctionCalendar());
+		StaffGUI staffGUI = new StaffGUI((AuctionStaff) activeUser, myData, myData.getMyAuctionCalendar());
 		changePanel(staffGUI);
 	}
 
@@ -161,9 +158,6 @@ public class GUIFrame extends JFrame implements Observer {
 		}
 	}
 
-	/**
-	 * Prompts the user to ensure they want to log out.
-	 */
 	protected void logoutPrompt(){
 		int confirm = JOptionPane.showOptionDialog(
 				null, "Are you sure you want to logout of Auction Central?",
@@ -199,5 +193,7 @@ public class GUIFrame extends JFrame implements Observer {
 			myData.serialize();
 			System.exit(0);
 		}
+
 	}
+
 }
