@@ -70,14 +70,21 @@ public class AuctionItemGUI extends Observable {
 				String inputAmount = JOptionPane.showInputDialog("How much do you want to bid on this item?");
 
 				//Tanner added auction, so there is a reference to the auction, just in case
-				Bid bidAmount = new Bid(mySelectedItem.getAuction(), new BigDecimal(inputAmount), mySelectedItem);
-				int confirmValue = JOptionPane.showConfirmDialog(null,  "Do you want place a bid for " +
-																 inputAmount + "?");
-				if(confirmValue == 0) {
-					if(bidder.isBidPlaceable(mySelectedItem.getAuction(), mySelectedItem, BigDecimal.valueOf(bidAmount.getBidAmount()))){
-						myData.placeBid(bidder, bidAmount);
+				if(inputAmount != null) {
+					int confirmValue = JOptionPane.showConfirmDialog(null,  "Do you want place a bid for " +
+																	 inputAmount + "?");
+					if(confirmValue == 0) {
+						final BigDecimal bidAmount = new BigDecimal(inputAmount);
+						final boolean bidPlaced = Bid.isBidValid(bidAmount, mySelectedItem);
+						if(bidPlaced){
+							final Bid bid = new Bid(mySelectedItem.getAuction(), bidAmount, mySelectedItem);
+							myData.placeBid(bidder, bid);
+							JOptionPane.showMessageDialog(null, "Your bid was placed successfully.", "Success!", JOptionPane.INFORMATION_MESSAGE);
+							myBidButton.setEnabled(isBidButtonEnabled());
+						} else {
+							JOptionPane.showMessageDialog(null, "Your bid was NOT placed. The bid value was too low.", "Failure!", JOptionPane.ERROR_MESSAGE);
+						}
 					}
-					//bidder.placeBid(bidAmount); //handled in datahandler
 				}
 			}
 		});
@@ -100,8 +107,6 @@ public class AuctionItemGUI extends Observable {
 		final StringBuilder sb = new StringBuilder();
 		final Auction a = mySelectedItem.getAuction();
 		boolean result = true;
-		myBidButton.setEnabled(bidder.isBidPlaceable(mySelectedItem.getAuction(), mySelectedItem, new BigDecimal("0")));
-
 		if(!Bidder.isDateValid(a.getAuctionDate())) {
 			result = false;
 			sb.append("It is too late to bid on this item.\n");

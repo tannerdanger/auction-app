@@ -60,9 +60,15 @@ public class GUIFrame extends JFrame implements Observer {
 		currentPanel = login;
 		basePanel.setLayout(new BorderLayout());
 		basePanel.add(currentPanel, BorderLayout.CENTER);
-
-		setVisible(true);
+		
 		pack();
+		
+		final Dimension screenDim = Toolkit.getDefaultToolkit().getScreenSize();
+		final int x = (int) ((screenDim.getWidth() - this.getWidth()) / 2);
+		final int y = (int) ((screenDim.getHeight() - this.getHeight()) / 2);
+		this.setLocation(x, y);
+		
+		setVisible(true);
 	}
 
 	public void loginBidder(Bidder theBidder){

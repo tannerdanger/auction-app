@@ -44,6 +44,11 @@ public class AuctionCalendar implements Serializable {
 		sortAuctions(activeAuctions);
 		sortAuctions(pastAuctions);
 	}
+	public ArrayList<Auction> getActiveAuctions() {
+		updateCalendar();
+		return activeAuctions;
+	}
+		
 
 	/**
 	 * Checks the DB to see what auctions have yet to take place, and creates an array
@@ -168,34 +173,6 @@ public class AuctionCalendar implements Serializable {
 	public void setMAX_ITEMS_PER_AUCTION(int MAX_ITEMS_PER_AUCTION) {
 		this.MAX_ITEMS_PER_AUCTION = MAX_ITEMS_PER_AUCTION;
 	}
-
-
-/*
-    public void cancelAuction (int auctionID) {
-    	int index = 0;
-    	for(Auction a: allAuctions){
-            if(a.getauctionID() == auctionID) {
-                break;
-            }
-            index++;
-        }
-    	if (!(allAuctions.get(index).hasBid())) {
-    		allAuctions.remove(index);
-    	}
-    }
-    
-    public ArrayList<Auction> getAuctionsBetweenTwoDates(LocalDateTime earlierDate, LocalDateTime laterDate) {
-    	//updateCalendar();
-    	ArrayList<Auction> auctionsToDisplay = new ArrayList<Auction>();
-    	
-    	for (Auction a: allAuctions) {
-    		if (a.getAuctionDateTime().isAfter(earlierDate) || a.getAuctionDateTime().isEqual(earlierDate)
-    			&& a.getAuctionDateTime().isBefore(laterDate) || a.getAuctionDateTime().isEqual(laterDate)) {
-    			auctionsToDisplay.add(a);
-    		}
-    	}
-    	return auctionsToDisplay;
-    }*/
 
 //	/**
 //	 * Adds an auction to the calendar.

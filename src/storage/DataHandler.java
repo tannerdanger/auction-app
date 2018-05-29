@@ -118,16 +118,16 @@ public class DataHandler extends Observable{
         addUser(staffUser);
 
         ContactPerson contactUser =
-                new ContactPerson("James", "McContact", "contact@contact.com");
+                new ContactPerson("James", "McContact", "contact@contact.com", myAuctionCalendar);
         contactUser.setMyOrgName("Pat's Pneumonic Penguin Preservation");
 
-        ContactPerson contactUser2 = new ContactPerson("Lars", "Rush", "contact2@contact.com");
+        ContactPerson contactUser2 = new ContactPerson("Lars", "Rush", "contact2@contact.com", myAuctionCalendar);
         contactUser2.setMyOrgName("Odio Corp.");
 
-        ContactPerson contactUser3 = new ContactPerson("Russ", "Walker", "Contact3@contact.com");
+        ContactPerson contactUser3 = new ContactPerson("Russ", "Walker", "Contact3@contact.com", myAuctionCalendar);
         contactUser3.setMyOrgName("Risus Industries");
 
-        ContactPerson noContact = new ContactPerson("Migel", "Garcia", "noauction@contact.com");
+        ContactPerson noContact = new ContactPerson("Migel", "Garcia", "noauction@contact.com", myAuctionCalendar);
         noContact.setMyOrgName("The Human Fund");
 
         myUserDB.addUser(noContact);

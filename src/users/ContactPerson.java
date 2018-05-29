@@ -1,9 +1,9 @@
 package users;
 
-import GUI.ErrorPopup;
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
 import auctiondata.Scheduler;
+import storage.AuctionCalendar;
 import storage.DataHandler;
 
 import java.math.BigDecimal;
@@ -29,6 +29,7 @@ public class ContactPerson extends User {
 	
 	private String myOrgName;
 	private int myOrgID;
+	private AuctionCalendar myCalendar;
 
 	/*
 	 * The Contact Person's previous Auction
@@ -39,10 +40,11 @@ public class ContactPerson extends User {
 	 * Constructor for Contact Person, Will take a First name, Last name, and email.
 	 * Will set the current and prior auction to null.
 	 */
-	public ContactPerson(String theFirst, String theLast, String theEmail) {
+	public ContactPerson(String theFirst, String theLast, String theEmail, AuctionCalendar theCalendar) {
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
 		myCurrentAuction = null;
 		mySubmittedAuctions = new ArrayList<Auction>();
+		myCalendar = theCalendar;
 	}
 
 
@@ -76,13 +78,12 @@ public class ContactPerson extends User {
 
 	//TODO: This is the method that the gui calls Make sure the auction request goes through the scheduler
 	public Auction createNewAuction(LocalDateTime theDate) {
-		//Here, do scheduler verification steps
-		if(theDate == theDate/* scheduler verification passes (replace theDate == thedate)*/) {
-			Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
-			return newAuction;
-		}
-		else
-			return null;
+//		//Here, do scheduler verification steps
+//		if(theDate == theDate/* scheduler verification passes (replace theDate == thedate)*/) {
+		Auction newAuction = new Auction(myOrgName, myOrgID, theDate, null);
+		setMyCurrentAuction(newAuction);
+		mySubmittedAuctions.add(newAuction);
+		return newAuction;
 	}	
 	
 	public void setMyOrgName(String myOrgName) {
@@ -94,6 +95,9 @@ public class ContactPerson extends User {
 		boolean flag = isThereNoPriorAuction();
 		if (!flag) {
 			flag = isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(theDate.toLocalDate());
+		}
+		if (flag) {
+			flag = Scheduler.isAuctionRequestValid(theDate, myCalendar.getActiveAuctions(), myCalendar.getActiveAuctions().size());
 		}
 		return flag;
 	}

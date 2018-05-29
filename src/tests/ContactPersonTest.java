@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import auctiondata.Auction;
 import auctiondata.AuctionItem;
+import storage.DataHandler;
 import users.ContactPerson;
 
 /**
@@ -20,6 +21,7 @@ import users.ContactPerson;
  */
 public class ContactPersonTest {
 	ContactPerson contact;
+	DataHandler theData = new DataHandler();
 	Auction auction;
 	AuctionItem item1;
 	AuctionItem item2;
@@ -38,7 +40,7 @@ public class ContactPersonTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		contact = new ContactPerson("wen", "shu", "shuwen@contact.com");
+		contact = new ContactPerson("wen", "shu", "shuwen@contact.com", theData.getMyAuctionCalendar());
 		auction = new Auction("UWTacoma", 12345, LocalDateTime.of(2018, 5, 30, 11, 59), null);
 		item1 = new AuctionItem(1, "pencil", auction);
 		auction.addInventoryItem(item1);
