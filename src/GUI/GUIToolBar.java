@@ -8,12 +8,12 @@ import javax.swing.JMenuItem;
 /**
  * Creates a toolbar for the Auction Central program.
  * Used to allow users to logout or exit the program.
+ * @author Tanner Brown
+ * @version 28 May 2018
  */
 class GUIToolBar extends JMenuBar{
 
 	private GUIFrame myFrame;
-	
-	
 	
 	GUIToolBar(GUIFrame theFrame) {
 		super();
@@ -23,7 +23,7 @@ class GUIToolBar extends JMenuBar{
 
 	private void build() {
 		JMenu myFileMenu = new JMenu("Options");
-		
+
 		myFileMenu.setMnemonic(KeyEvent.VK_O);
 		
 		JMenuItem logoutItem = new JMenuItem("Logout");

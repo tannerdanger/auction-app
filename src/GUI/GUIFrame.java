@@ -17,20 +17,25 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * Creates the frame for the auction central program.
+ * @Author Tanner Brown
+ * @Version 26 May 2018
+ */
 public class GUIFrame extends JFrame implements Observer {
 
-	public JPanel currentPanel;
-	public JPanel basePanel;
-	public JPanel bidderPanel;
+	private JPanel currentPanel;
+	private JPanel basePanel;
+	private JPanel bidderPanel;
 	private DataHandler myData;
 	private User activeUser;
-	GUIToolBar myToolBar;
+
 	public GUIFrame(){
 
 		setName("TCSS 305 Tetris");
-
 		setLocationRelativeTo(null);
-		//Sets logout/default close operations
+
+		//Properly logs out if user hits the 'x' on the frame.
 		addWindowListener(new WindowAdapter() {
 			/**
 			 * Invoked when a window is in the process of being closed.
@@ -40,13 +45,11 @@ public class GUIFrame extends JFrame implements Observer {
 			 */
 			@Override
 			public void windowClosing(WindowEvent e) {
-		;
 					quitProgram();
-
 			}
 		});
 
-		myToolBar = new GUIToolBar(this);
+		GUIToolBar myToolBar = new GUIToolBar(this);
 		setJMenuBar(myToolBar);
 
 		myData = new DataHandler();
@@ -71,6 +74,10 @@ public class GUIFrame extends JFrame implements Observer {
 		setVisible(true);
 	}
 
+	/**
+	 * Logs in a bidder user.
+	 * @param theBidder the user being logged in.
+	 */
 	public void loginBidder(Bidder theBidder){
 		activeUser = theBidder;
 		BidderGUI bidderGUI = new BidderGUI(theBidder, myData);
@@ -79,18 +86,32 @@ public class GUIFrame extends JFrame implements Observer {
 		bidderPanel = bidderGUI.getPanel();
 
 	}
+
+	/**
+	 * Logs in a contact user.
+	 * @param theContact the user logging in.
+	 */
 	public void loginContact(ContactPerson theContact){
 		activeUser = theContact;
 		ContactGUI contactGUI = new ContactGUI(theContact, myData);
 		contactGUI.addObserver(this);
 		changePanel(contactGUI.getPanel());
 	}
+
+	/**
+	 * Logs in a staff user.
+	 * @param theStaff the user logging in.
+	 */
 	public void loginStaff(AuctionStaff theStaff){
 		activeUser = theStaff;
-		StaffGUI staffGUI = new StaffGUI(myData, myData.getMyAuctionCalendar());
+		StaffGUI staffGUI = new StaffGUI(theStaff, myData, myData.getMyAuctionCalendar());
 		changePanel(staffGUI);
 	}
 
+	/**
+	 * Changes the main panel within the frame.
+	 * @param theNewPanel the panel that will take over the previous one.
+	 */
 	public void changePanel(JPanel theNewPanel){
 		basePanel.remove(currentPanel);
 		currentPanel = theNewPanel;
@@ -140,6 +161,9 @@ public class GUIFrame extends JFrame implements Observer {
 		}
 	}
 
+	/**
+	 * Prompts the user to ensure they want to log out.
+	 */
 	protected void logoutPrompt(){
 		int confirm = JOptionPane.showOptionDialog(
 				null, "Are you sure you want to logout of Auction Central?",
@@ -152,6 +176,9 @@ public class GUIFrame extends JFrame implements Observer {
 
 	}
 
+	/**
+	 * Logs out the current user and returns to login panel.
+	 */
 	private void logout(){
 		myData.serialize();
 		activeUser = null;
@@ -159,6 +186,9 @@ public class GUIFrame extends JFrame implements Observer {
 		changePanel(login);
 	}
 
+	/**
+	 * Logs out current user and exits program.
+	 */
 	protected void quitProgram(){
 		int confirm = JOptionPane.showOptionDialog(
 				null, "Are you sure you want to quit Auction Central?",
@@ -169,7 +199,5 @@ public class GUIFrame extends JFrame implements Observer {
 			myData.serialize();
 			System.exit(0);
 		}
-
 	}
-
 }

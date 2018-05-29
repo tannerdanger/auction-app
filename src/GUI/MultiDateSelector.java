@@ -1,11 +1,7 @@
 package GUI;
 
 import javafx.application.Platform;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,15 +13,19 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.util.Observable;
 
+/**
+ * Helper class that opens up a calendar popups from JavaFX to allow a user
+ * to select a date more cleanly.
+ * @author Tanner Brown
+ * @version 26 May 2018
+ */
 public class MultiDateSelector extends Observable {
 
 	private LocalDate[] selectedDates;
-	StaffGUI myStaff;
-	ContactGUI myContact;
-	JFrame myFrame;
-	private String activeClassName;
-	Object myClass;
-	Class myClassType;
+	private StaffGUI myStaff;
+	private ContactGUI myContact;
+	private JFrame myFrame;
+
 
 
 
@@ -39,44 +39,35 @@ public class MultiDateSelector extends Observable {
 		myFrame.add(fxPanel);
 		myFrame.setVisible(true);
 		myFrame.setResizable(false);
-
-
+		myFrame.setLocationRelativeTo(null);
 
 		if(theClass instanceof StaffGUI) {
 			myFrame.setSize(350,175);
 			myStaff = (StaffGUI)theClass;
 			final Scene scene = createDoubleDateScene();
 
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					initFX(scene, fxPanel);
-				}
-			});
+			Platform.runLater(() -> initFX(scene, fxPanel));
 		}
 		else if(theClass.getClass().equals(ContactGUI.class)) {
 			myFrame.setSize(350,150);
 			myContact = (ContactGUI)theClass;
 			final Scene scene = createSingleDateScene();
 
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					initFX(scene, fxPanel);
-				}
-			});
+			Platform.runLater(() -> initFX(scene, fxPanel));
 		}
 
 
 	}
-
-
 
 	private void initFX(Scene theScene, JFXPanel fxPanel) {
 		// This method is invoked on JavaFX thread
 		fxPanel.setScene(theScene);
 	}
 
+	/**
+	 * Creates a scene with two calendar inputs, to allow picking two dates.
+	 * @return a scene with two calendar input objects.
+	 */
 	private Scene createDoubleDateScene() {
 		DatePicker start = new DatePicker();
 		DatePicker end = new DatePicker();
@@ -118,6 +109,12 @@ public class MultiDateSelector extends Observable {
 		return scene;
 	}
 
+	/**
+	 * Creates a scene with one single calendar
+	 * inputs, to allow picking a dates.
+	 *
+	 * @return a scene with one calendar input objects.
+	 */
 	private Scene createSingleDateScene() {
 		DatePicker start = new DatePicker();
 
@@ -145,12 +142,6 @@ public class MultiDateSelector extends Observable {
 			Platform.exit();
 			myFrame.dispose();
 		});
-
-
-		Scene scene = new Scene(grid);
-
-		return scene;
+		return new Scene(grid);
 	}
-
-
 }

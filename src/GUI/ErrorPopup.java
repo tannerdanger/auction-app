@@ -3,7 +3,11 @@ package GUI;
 import javax.swing.*;
 
 /**
- * To Use: Simply call new ErrorPopup("<What the user was doing when it failed>", "<What caused the failure>");
+ * Creates a universal error popup message.
+ * To Use: Simply call
+ * new ErrorPopup("<What the user was doing when it failed>", "<What caused the failure>");
+ * @author Tanner Brown
+ * @version 27 May 2018
  */
 public class ErrorPopup {
 

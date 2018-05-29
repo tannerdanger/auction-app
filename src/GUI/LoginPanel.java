@@ -11,14 +11,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
+/**
+ * Creates a panel that allows a user to login to the program.
+ * @author Tanner Brown
+ * @version 26 May 2018
+ */
 public class LoginPanel extends JPanel{
-	JTextField usernameField;
-	JButton myLoginButton;
-	GUIFrame myMainFrame;
-	DataHandler myData;
+	private JTextField usernameField;
+	private GUIFrame myMainFrame;
+	private DataHandler myData;
 
-	public LoginPanel(DataHandler theData, GUIFrame tempGUIFrame){
+	protected LoginPanel(DataHandler theData, GUIFrame tempGUIFrame){
 		myMainFrame = tempGUIFrame;
 		myData = theData;
 		buildPanel(theData);
@@ -59,7 +62,7 @@ public class LoginPanel extends JPanel{
 		ControlsPanel.add(usernameField);
 		usernameField.setColumns(10);
 
-		myLoginButton = new JButton("Login");
+		JButton myLoginButton = new JButton("Login");
 
 		myLoginButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
