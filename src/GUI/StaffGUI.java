@@ -7,6 +7,7 @@ import javax.swing.event.ListSelectionListener;
 import auctiondata.Auction;
 import storage.AuctionCalendar;
 import storage.DataHandler;
+import users.AuctionStaff;
 
 import java.awt.*;
 import java.time.LocalDate;
@@ -41,9 +42,10 @@ public class StaffGUI extends JPanel implements Observer {
 	/** A progress bar showing how close to max auctions we are */
 	private JProgressBar auctionsProgBar;
 	private Auction mySelectedAuction;
+	private AuctionStaff myStaff;
 
-	public StaffGUI(DataHandler theData, AuctionCalendar theCalendar){
-
+	public StaffGUI(AuctionStaff theStaff, DataHandler theData, AuctionCalendar theCalendar){
+		myStaff = theStaff;
 		myCalendar = theCalendar;
 		myData = theData;
 
@@ -122,8 +124,7 @@ public class StaffGUI extends JPanel implements Observer {
 					"\n the current max is "+myCalendar.getMAX_UPCOMING_AUCTIONS());
 
 			if(!(null==response) && !("".compareTo(response)==0)) {
-				int newMax = Integer.parseInt(response);
-				myCalendar.setMAX_UPCOMING_AUCTIONS(newMax);
+				myStaff.updateNewMaxAuctions(response);
 				updateAll();
 			}
 		});
@@ -131,10 +132,10 @@ public class StaffGUI extends JPanel implements Observer {
 		updateMaxDayBtn.addActionListener(e -> {
 			String response = JOptionPane.showInputDialog(null,
 					"Set the new total number of auctions in a day Auction Central will process" +
-					"\n the current max is "+myCalendar.getMAX_AUCTIONS_DAY());
+							"\n the current max is "+myCalendar.getMAX_AUCTIONS_DAY());
+
 			if(!(null==response) && !("".compareTo(response)==0)) {
-				int newMax = Integer.parseInt(response);
-				myCalendar.setMAX_AUCTIONS_DAY(newMax);
+				myStaff.updateMaxAuctionsDay(response);
 				updateAll();
 			}
 		});
