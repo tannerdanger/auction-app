@@ -459,6 +459,21 @@ public class DataHandler extends Observable{
 
         notifyUpdateAuctions(theAuction);
     }
+    
+    public void cancelAuction (int auctionID) {
+    	int index = 0;
+    	for(Auction a: myAuctionCalendar.getActiveAuctions()){
+            if(a.getauctionID() == auctionID) {
+                break;
+            }
+            index++;
+        }
+    	if (!(myAuctionCalendar.getActiveAuctions().get(index).hasBid())) {
+    		myAuctionCalendar.auctionDB.remove(myAuctionCalendar.getActiveAuctions().get(index));
+    		myAuctionCalendar.getActiveAuctions().remove(index);
+    		
+    	}
+    }
 
     /**
      * Overloaded method that allows for faster adding of auctions if a reference

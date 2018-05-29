@@ -1,108 +1,170 @@
-//package auctiondata;
-//
-//import GUI.ErrorPopup;
-//import storage.*;
-//
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//
-///**
-// * A helper class for determining if auctions fall into
-// * acceptable date ranges.
-// *
-// * @author Tanner Brown, Charlie Grumer, David Perez
-// * @version 05/07/2018
-// */
-//public class Scheduler {
-//
-//	private static final int MAX_DAYS_OUT = 60;
-//
-//	private static int MAX_UPCOMING_AUCTIONS_LIMIT = 25;
-//	private static final int MAX_DAILY_AUCTION_CAPACITY = 2;
-//	private static final int MIN_DAYS_OUT = 14;
-//
-//	private Scheduler(){
-//	}
-//
-//	/**
-//	 * Checks to ensure auction is more than min days from today
-//	 * @param theAuctionDate the requested date of auction
-//	 * @return true if date is valid
-//	 */
-//	public static boolean isMinDaysOut(LocalDateTime theAuctionDate){
-//		if ((theAuctionDate.isAfter(LocalDateTime.now().plusDays(MIN_DAYS_OUT - 1)))) {
-//			new ErrorPopup("Error adding auction",
-//					"Suggested auction date of " + theAuctionDate.toLocalDate() +
-//							"is not at least 14 days into the future.\n please select another date and try again.");
-//		}
-//		return theAuctionDate.isAfter(LocalDateTime.now().plusDays(MIN_DAYS_OUT - 1));
-//	}
-//
-//	//I'm not entirely sure, but instead of using AuctionCalender.get....
-//	//It will instead need a reference to a calender object we create somewhere
-//	//that holds all the auctions.
-//	public static boolean isMaxDailyAuctionsExceeded(LocalDateTime auctionRequestDate, ArrayList<Auction> theAuctions){
-//
-//
-//		int auctionCount = 0;
-//		for (Auction a : theAuctions) {
-//			if (a.getAuctionDate().isEqual(auctionRequestDate.toLocalDate()))
-//				auctionCount++;
-//		}
-//
-//		if(auctionCount >= MAX_DAILY_AUCTION_CAPACITY){
-//			new ErrorPopup("Error adding auction",
-//					"Too many auctions scheduled for " +auctionRequestDate.toLocalDate() +
-//							"\n please select another date and try again.");
-//		}
-//
-//		return auctionCount >= MAX_DAILY_AUCTION_CAPACITY;
-//
-//	}
-//
-//	public static boolean isMaxDaysOutExceeded(LocalDateTime theAuctionDate){
-//		if (!(theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1)))) {
-//			new ErrorPopup("Error adding auction",
-//					"Suggested auction date of " + theAuctionDate.toLocalDate() +
-//							"is not within 60 days into the future.\n please select another date and try again.");
-//		}
-//		//Auction is scheduled for less than 60 days from now
-//		return theAuctionDate.isBefore(LocalDateTime.now().plusDays(MAX_DAYS_OUT + 1));
-//	}
-//
-//	public static int getMaxDaysOut() {
-//		return MAX_DAYS_OUT;
-//	}
-//
-//	public static int getMinDaysOut() {
-//		return MIN_DAYS_OUT;
-//	}
-//
-//	public void setMaxUpcomingAuctionsLimit(int newNumber) {
-//		MAX_UPCOMING_AUCTIONS_LIMIT = newNumber;
-//	}
-//
-//	public static boolean isMaxUpcomingAuctionsExceeded(int calendarSize) {
-//		return calendarSize >= MAX_UPCOMING_AUCTIONS_LIMIT;
-//	}
-//
-//	/**
-//	 * This method goes through several checks that see if we can turn an
-//	 * auction request into an actual auction.
-//	 * @param thePriorAuction contact person's previous auction
-//	 * @param theCurrentAuction contact person's current auction
-//	 * @param theNewDate the contact person's suggested date for their new auction
-//	 * @return true if we can turn this request into an auction, false otherwise.
-//	 */
-//	public static boolean isAuctionRequestValid(LocalDateTime theNewDate, ArrayList<Auction> theAuctions,
-//			int theCalendarSize) {
-//
-//		boolean flag = false;
-//		if (!flag) {
-//			flag = !isMaxDailyAuctionsExceeded(theNewDate, theAuctions) && !isMaxUpcomingAuctionsExceeded(theCalendarSize) &&
-//					isMinDaysOut(theNewDate) && isMaxDaysOutExceeded(theNewDate);
-//		}
-//		return flag;
-//	}
-//}
+package tests;
+
+import static org.junit.Assert.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+import auctiondata.Auction;
+import auctiondata.AuctionItem;
+import auctiondata.Scheduler;
+import storage.AuctionCalendar;
+import storage.DataHandler;
+import users.ContactPerson;
+import users.User;
+
+/**
+ * JUnit 5 test class that deals with submitting an auction request form.
+ * This test class will check if the requested auction has a date that has
+ * elapsed a year since the last requester's last auction.
+ *
+ * @Author David Perez
+ * @version 5/3/2018
+ */
+
+
+public class SubmitAuctionRequestTest {
+
+	//The following tests business rule 7e: No auction can be scheduled
+	// less than a set # of days from the current date, default of 14.
+	DataHandler myData = new DataHandler();
+    ContactPerson contactUser = new ContactPerson("Contact", "McContact", "contact@contact.com", myData.getMyAuctionCalendar());
+
+	@Test
+	public void isThereNoPriorAuction_noPriorAuction_True() {
+		/**
+		 * Tests to ensure that an auction date is valid for request if
+		 * the contact person has no previous auction or current auction.
+		 */
+		Auction priorAuction = null;
+		contactUser.setMyCurrentAuction(priorAuction);
+		
+		assertTrue(contactUser.isThereNoPriorAuction());
+	}
+
+	@Test
+	public void isRequiredTimeElapsedBetweenPriorAndNewAuctionMet_priorAuctionDateLessThanOneYear_False() {
+		/**
+		 *  Tests to ensure that an auction date is invalid for request if
+		 * the contact person's previous action occurred less than one year ago.
+		*/
+
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05, 26, 0, 0);
+
+		LocalDate newDate = LocalDate.of(2018, 05, 25);
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+
+		Auction priorAuction = new Auction("ContactOrg", 5, priorDate, inventorySheet);
+		priorAuction.setAuctionDate(priorDate.toLocalDate());
+		contactUser.setMyCurrentAuction(priorAuction);
+
+		assertFalse(contactUser.isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(newDate));
+	}
+
+	@Test
+	public void  isRequiredTimeElapsedBetweenPriorAndNewAuctionMet_priorAuctionDateEqualToOneYear_True() {
+		/**
+		 *  Tests to ensure that an auction date is valid for request if
+		 * the contact person's previous action occurred exactly one year ago.
+		 */
+
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		LocalDate newDate = LocalDate.of(2018, 05, 25);
+
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+
+		Auction priorAuction = new Auction("ContactOrg", 5, priorDate, inventorySheet);
+		priorAuction.setAuctionDate(priorDate.toLocalDate());
+		contactUser.setMyCurrentAuction(priorAuction);
+		
+		assertTrue(contactUser.isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(newDate));
+	}
+
+	@Test
+	public void isRequiredTimeElapsedBetweenPriorAndNewAuctionMet_priorAuctionDateIsOneYearAndOneDay_True() {
+		/**
+		 *  Tests to ensure that an auction date is valid for request if
+		 * the contact person's previous action occurred exactly one year plus one day ago.
+		 */
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		LocalDate newDate = LocalDate.of(2018, 05, 26);
+
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+
+		Auction priorAuction = new Auction("ContactOrg", 5, priorDate, inventorySheet);
+		priorAuction.setAuctionDate(priorDate.toLocalDate());
+		contactUser.setMyCurrentAuction(priorAuction);
+		
+		assertTrue(contactUser.isRequiredTimeElapsedBetweenPriorAndNewAuctionMet(newDate));
+	}
+
+	@Test
+	public void isMaxUpcomingAuctionsExceeded_lessThanMaxCap_false() {
+		DataHandler newData = new DataHandler();
+
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 22; i++) {
+			Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+			newData.addAuction(priorAuction);
+		}
+
+		assertFalse(Scheduler.isMaxUpcomingAuctionsExceeded(newData.getActiveAuctions().size()));
+	}
+
+
+
+	@Test
+	public void isMaxUpcomingAuctionsExceeded_atMaxCapacity_true() {
+		DataHandler newData = new DataHandler();
+
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 23; i++) {
+		Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+			newData.getMyAuctionCalendar().getActiveAuctions().add(priorAuction);
+		}
+
+		assertTrue(Scheduler.isMaxUpcomingAuctionsExceeded(newData.getActiveAuctions().size()));
+	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_noAuctionsOnThisDay_False() {
+		DataHandler newData = new DataHandler();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+
+		assertFalse(Scheduler.isMaxUpcomingAuctionsExceeded(newData.getActiveAuctions().size()));
+	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_lessThanMaxAuctions_False() {
+		DataHandler newData = new DataHandler();
+
+	Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 1; i++) {
+		Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+			newData.getMyAuctionCalendar().getActiveAuctions().add(priorAuction);
+
+		}
+
+
+		assertFalse(Scheduler.isMaxDailyAuctionsExceeded(priorDate, newData.getActiveAuctions()));
+	}
+	@Test
+	public void isMaxDailyAuctionsExceeded_atMaxCapacityDailyAuctions_True() {
+		DataHandler newData = new DataHandler();
+
+		Map<Integer, AuctionItem> inventorySheet = new HashMap<Integer, AuctionItem>();
+		LocalDateTime priorDate = LocalDateTime.of(2017, 05 ,25, 0, 0);
+		for (int i = 0; i < 2; i++) {
+			Auction priorAuction = new Auction("ContactOrg", i, priorDate, inventorySheet);
+		newData.getMyAuctionCalendar().getActiveAuctions().add(priorAuction);
+
+
+		}
+
+		assertTrue(Scheduler.isMaxDailyAuctionsExceeded(priorDate, newData.getActiveAuctions()));
+	}
+} 
