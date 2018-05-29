@@ -3,6 +3,7 @@ package users;
 
 import storage.AuctionCalendar;
 import storage.DataHandler;
+import auctiondata.Auction;
 
 import javax.swing.*;
 import java.io.Serializable;
