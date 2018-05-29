@@ -114,7 +114,7 @@ public class DataHandler extends Observable{
         myAuctionCalendar = new AuctionCalendar();
         myUserDB = new UserDB();
         //create users
-        AuctionStaff staffUser = new AuctionStaff("James", "GuyantPeach", "staff@staff.com");
+        AuctionStaff staffUser = new AuctionStaff("James", "GuyantPeach", "staff@staff.com", myAuctionCalendar);
         addUser(staffUser);
 
         ContactPerson contactUser =

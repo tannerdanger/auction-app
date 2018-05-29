@@ -15,8 +15,9 @@ public class AuctionStaff extends User implements Serializable {
 
 	private AuctionCalendar myCalendar;
 
-	public AuctionStaff(String theFirst, String theLast, String theEmail){
+	public AuctionStaff(String theFirst, String theLast, String theEmail, AuctionCalendar theCalendar){
 		super(theFirst, theLast, theEmail); //pass basic ID values to User superclass
+		myCalendar = theCalendar;
 	}
 
 

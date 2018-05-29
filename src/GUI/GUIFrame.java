@@ -87,7 +87,7 @@ public class GUIFrame extends JFrame implements Observer {
 	}
 	public void loginStaff(AuctionStaff theStaff){
 		activeUser = theStaff;
-		StaffGUI staffGUI = new StaffGUI(myData, myData.getMyAuctionCalendar());
+		StaffGUI staffGUI = new StaffGUI((AuctionStaff) activeUser, myData, myData.getMyAuctionCalendar());
 		changePanel(staffGUI);
 	}
 
