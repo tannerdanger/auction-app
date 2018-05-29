@@ -118,7 +118,12 @@ public class ContactGUI extends Observable implements Observer {
 		lblActiveAuctions.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblActiveAuctions, BorderLayout.NORTH);
 
-		JLabel activeAuctionsLabel = new JLabel(myActiveAuction + "");
+		JLabel activeAuctionsLabel;
+		if(myActiveAuction != null) {
+			activeAuctionsLabel = new JLabel(myActiveAuction + "");
+		} else {
+			activeAuctionsLabel = new JLabel("You have no active auction.");
+		}
 		activeAuctionsLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 
 		final JPanel buttonsPanel = new JPanel();
