@@ -146,7 +146,7 @@ public class StaffGUI extends JPanel implements Observer {
 					"Please enter the ID of the auction you would like to cancel");
 
 			if(!(null==response) && !("".compareTo(response)==0)){
-				myStaff.cancelAuction(response, myData);
+				myStaff.cancelAuction(response);
 				updateAll();
 				mainBotPanel.remove(myListPane);
 
