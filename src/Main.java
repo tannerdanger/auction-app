@@ -6,13 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- *
+ *  Entry point into auction app
  */
 public class Main {
 
     public static void main(String[] args) {
-		//ConsoleUI.start();
-	    runAuctionCentral();
+		//ConsoleUI.start(); //Starts console version of app
+	    runAuctionCentral(); //Starts GUI version of the app 
     }
 
 	private static void runAuctionCentral() {
@@ -28,12 +28,6 @@ public class Main {
 			public void run(){
 
 				new GUIFrame();
-//
-//				if(Bidder.class.equals(theUser.getClass()))
-//					new BidderGUI((Bidder)theUser, calendar);
-//				else if(ContactPerson.class.equals(theUser.getClass()))
-//					System.out.println("Logging in Contact - (This print for testing only)");
-//					//new ContactPersonGUI((ContactPerson)theUser, calendar);
 			}
 		});
 	}
